@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Stefano Panosetti | Visual Designer</title>
+    <meta name="description" content="Portfolio di Stefano Panosetti. Visual Designer & Frontend Developer.">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Manrope', 'sans-serif'],
+                        display: ['Syne', 'sans-serif'],
+                    },
+                    colors: {
+                        bg: 'var(--bg)',
+                        fg: 'var(--fg)',
+                        border: 'var(--border)',
+                        glass: 'var(--glass)',
+                    },
+                    animation: {
+                        'blob': 'blob 20s infinite',
+                    },
+                    keyframes: {
+                        blob: {
+                            '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                            '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                            '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                            '100%': { transform: 'translate(0px, 0px) scale(1)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* ==========================================================================
+           CORE ARCHITECTURE & THEMES
+           ========================================================================== */
+        :root {
+            --bg: #050505;
+            --fg: #ffffff;
+            --border: rgba(255, 255, 255, 0.15);
+            --border-width: 1px;
+            --radius: 12px; /* Raggio standard */
+            
+            --blob-1: #4f46e5; 
+            --blob-2: #c026d3; 
+            --blob-3: #0891b2; 
+            
+            --glass: rgba(20, 20, 20, 0.4); 
+            --glass-strong: rgba(20, 20, 20, 0.85);
+            --modal-bg: rgba(10, 10, 10, 0.95); 
+            
+            --img-opacity: 0.4;
+            --img-filter: blur(20px) contrast(1.2);
+            --img-blend: overlay;
+            
+            --accent-mono: transparent; 
+        }
+
+        html.light {
+            --bg: #f3f4f6;
+            --fg: #111827;
+            --border: rgba(0, 0, 0, 0.1);
+            --blob-1: #bfdbfe; 
+            --blob-2: #f5d0fe; 
+            --blob-3: #99f6e4;
+            --glass: rgba(255, 255, 255, 0.5);
+            --glass-strong: rgba(255, 255, 255, 0.9);
+            --modal-bg: rgba(240, 240, 240, 0.95);
+            --img-opacity: 0.25;
+            --img-filter: invert(1) blur(20px);
+            --img-blend: multiply;
+        }
+
+        /* BRUTALIST MONO THEME */
+        html.mono {
+            --bg: #000000; 
+            --fg: #000000; 
+            --border: #ffffff; 
+            --border-width: 2px; 
+            --radius: 0px !important; /* FORZA ZERO RADIUS */
+            
+            --blob-1: #000000; --blob-2: #000000; --blob-3: #000000; 
+            --glass: #000000; 
+            --glass-strong: #000000;
+            --modal-bg: #000000;
+            
+            --img-opacity: 0.7; 
+            --img-filter: grayscale(100%) contrast(3);
+            --img-blend: normal;
+            
+            --accent-mono: #FF3300; 
+        }
+
+        /* GLOBAL RESET FOR MONO THEME: ELIMINA TUTTI I BORDER RADIUS */
+        html.mono * {
+            border-radius: 0 !important;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--fg);
+            margin: 0; padding: 0; width: 100%;
+            transition: background-color 0.5s ease, color 0.5s ease;
+            -webkit-font-smoothing: antialiased;
+            overscroll-behavior: none;
+        }
+
+       /* ==========================================================================
+           FORM ARCHITECTURE & STYLING (RE-DESIGN)
+           ========================================================================== */
+        
+        .form-structural-wrapper {
+            position: relative;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 2.5rem; /* Più spazio tra gli elementi per eleganza */
+        }
+
+        .input-group {
+            position: relative;
+            width: 100%;
+        }
+
+        /* Input Base "Editorial Style" */
+        .clean-input {
+            width: 100%;
+            background: transparent !important;
+            border: none;
+            border-bottom: 1px solid rgba(150, 150, 150, 0.3); /* Linea sottile grigia */
+            border-radius: 0;
+            padding: 1rem 0;
+            font-family: 'Manrope', sans-serif;
+            font-size: 1.1rem; /* Testo più grande e leggibile */
+            font-weight: 300;
+            color: var(--fg);
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        /* Stile del Placeholder (Testo guida) */
+        .clean-input::placeholder {
+            color: var(--fg);
+            opacity: 0.4;
+            font-family: 'Syne', sans-serif; /* Font Display per i titoli dei campi */
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+        }
+
+        /* Focus State: La magia */
+        .clean-input:focus {
+            padding-left: 10px; /* Leggero spostamento a destra per feedback */
+        }
+
+        /* Linea Animata Sotto */
+        .input-line {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0%;
+            height: 2px;
+            background-color: var(--fg);
+            transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 10;
+        }
+        
+        /* Quando l'input è attivo, la linea si estende */
+        .clean-input:focus ~ .input-line,
+        .clean-input:not(:placeholder-shown) ~ .input-line {
+            width: 100%;
+        }
+
+        html.mono .input-line { background: var(--accent-mono); }
+        
+        /* Fix per l'autofill (Sfondo Giallo/Bianco di Chrome) */
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover, 
+        input:-webkit-autofill:focus, 
+        textarea:-webkit-autofill,
+        textarea:-webkit-autofill:hover,
+        textarea:-webkit-autofill:focus {
+            -webkit-text-fill-color: var(--fg) !important;
+            -webkit-box-shadow: 0 0 0px 1000px var(--bg) inset !important;
+            transition: background-color 5000s ease-in-out 0s;
+            font-family: 'Manrope', sans-serif !important;
+        }
+
+        /* ==========================================================================
+           SCROLL & LAYOUT SYSTEM
+           ========================================================================== */
+        @media (min-width: 769px) {
+            html, body { overflow: hidden; height: 100vh; width: 100vw; }
+            .viewport { position: fixed; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; perspective: 1000px; }
+            .scroll-container { display: flex; width: max-content; height: 100%; will-change: transform; }
+            .panel { width: 100vw; height: 100vh; flex-shrink: 0; display: flex; align-items: center; justify-content: center; padding: 0 5vw; position: relative; }
+            #panel-works { width: auto; padding-right: 15vw; gap: 6vw; }
+            .cinema-scope { width: 35vw; aspect-ratio: 16/10; height: auto; display: flex; flex-direction: column; justify-content: flex-end; position: relative; }
+            .h-hero { font-size: clamp(3.5rem, 14vw, 11rem); line-height: 0.85; letter-spacing: -0.04em; }
+            .nav-pill { padding: 0.75rem 2rem; border-radius: 999px; top: 2rem; justify-content: center; gap: 2rem; }
+        }
+        @media (max-width: 768px) {
+            html, body { overflow-x: hidden; overflow-y: auto !important; height: auto !important; position: static !important; }
+            .viewport { position: relative !important; width: 100%; height: auto !important; overflow: visible !important; display: block; }
+            .scroll-container { display: flex; flex-direction: column; width: 100%; height: auto; transform: none !important; }
+            .panel { width: 100%; min-height: auto; padding: 2rem 1.25rem; display: flex; flex-direction: column; }
+            #panel-0 { min-height: 100svh; padding-top: 6rem; padding-bottom: 2rem; justify-content: flex-start; gap: 2rem; }
+            .h-hero { font-size: 13vw; line-height: 0.9; letter-spacing: -0.04em; margin-bottom: 0.5rem; }
+            .cinema-scope { width: 92%; margin-left: auto; margin-right: auto; aspect-ratio: 16/10; margin-bottom: 3rem; }
+            .nav-pill { width: 90%; justify-content: space-between; padding: 0.75rem 1.5rem; top: 1.5rem; border-radius: 16px; }
+        }
+
+        /* ==========================================================================
+           UI ELEMENTS
+           ========================================================================== */
+        /* Nav Pill */
+        .nav-pill {
+            position: fixed; left: 50%; transform: translateX(-50%); z-index: 100;
+            background: var(--glass); backdrop-filter: blur(16px);
+            border: 1px solid var(--border); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease; color: var(--fg); display: flex; align-items: center;
+             
+        }
+        html.mono .nav-pill { border: var(--border-width) solid white; background: black; color: white; }
+
+        /* Typography Animations */
+        .h-anim { display: inline-block; width: fit-content; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); transform-origin: center left; cursor: default; white-space: nowrap; }
+        .h-anim:hover { transform: skewX(-10deg) translateX(10px) scale(1.02); letter-spacing: 0.05em; font-style: italic; opacity: 0.8; color: var(--fg); }
+        html.mono .h-anim:hover { color:#FF3300; font-style: normal; text-shadow: 2px 2px 0px rgba(255,255,255,0.1); }
+        
+        .char-wrapper { display: inline-block; overflow: hidden; vertical-align: bottom; }
+        .char { display: inline-block; transform: translateY(110%); transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+        .char.visible { transform: translateY(0); }
+
+        /* Project Cards */
+        .card-wrapper { position: relative; display: flex; flex-direction: column; gap: 1.5rem; cursor: pointer; }
+        .card-visual {
+            width: 100%; height: 100%; border-radius: 12px; overflow: hidden;
+            border: 1px solid var(--border); position: relative; background-color: var(--glass);
+            transition: border-color 0.5s ease, box-shadow 0.3s ease;
+        }
+        html.mono .card-visual { border: var(--border-width) solid white; }
+        .card-img { width: 100%; height: 100%; background-size: cover; background-position: center; transition: transform 0.1s linear, filter 0.5s ease; filter: grayscale(100%); transform: scale(1.1); }
+        .card-wrapper:hover .card-img { filter: grayscale(0%); }
+        html.mono .card-wrapper:hover .card-visual { border-color: var(--accent-mono); box-shadow: 8px 8px 0px var(--accent-mono); }
+
+        /* ==========================================================================
+           LEGAL & PRIVACY STYLES
+           ========================================================================== */
+        .gdpr-wall {
+            position: fixed; bottom: 0; left: 0; width: 100%; height: 100%; z-index: 9000;
+            background: rgba(0,0,0,0.6); backdrop-filter: blur(10px);
+            display: none; justify-content: center; align-items: flex-end;
+            padding-bottom: 2rem; opacity: 0; transition: opacity 0.5s ease;
+        }
+        .gdpr-wall.active { display: flex; opacity: 1; pointer-events: auto; }
+        
+        .cookie-banner {
+            width: 90%; max-width: 800px;
+            background: var(--bg); border: 1px solid var(--border);
+            padding: 2.5rem; border-radius: var(--radius);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+            display: flex; flex-direction: column; gap: 1.5rem;
+            transform: translateY(20px); transition: transform 0.5s ease;
+        }
+        html.mono .cookie-banner { border: 2px solid white; background: black; box-shadow: 10px 10px 0px white; }
+        .gdpr-wall.active .cookie-banner { transform: translateY(0); }
+
+        /* Full Page Overlays */
+        .legal-overlay {
+            position: fixed; inset: 0; z-index: 9999;
+            background: var(--bg); color: var(--fg);
+            overflow-y: auto; padding: 4rem 1.5rem;
+            transform: translateY(100%); transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .legal-overlay.active { transform: translateY(0); }
+        html.mono .legal-overlay { background: black; }
+
+        .legal-container { max-width: 800px; margin: 0 auto; padding-bottom: 100px; }
+        
+        .legal-title { 
+            font-family: 'Syne', sans-serif; 
+            font-size: clamp(2.5rem, 5vw, 4rem); 
+            font-weight: 800; 
+            margin-bottom: 2rem; 
+            border-bottom: 1px solid var(--border); 
+            padding-bottom: 1rem; 
+            letter-spacing: -0.02em;
+            text-transform: uppercase;
+        }
+        
+        .legal-text { font-family: 'Manrope', sans-serif; font-size: 1rem; line-height: 1.8; opacity: 0.9; }
+        .legal-text h2 { font-family: 'Syne', sans-serif; font-size: 1.5rem; font-weight: 700; margin-top: 3rem; margin-bottom: 1rem; color: var(--fg); }
+        
+        /* FOOTER LEGAL LINKS */
+        .panel-footer-legal {
+            margin-top: auto; 
+             
+            display: flex; 
+            justify-content: flex-end; 
+            gap: rem; 
+            padding-top: 4rem;
+            padding-bottom: 2rem;
+        }
+        .legal-link {
+            font-family: 'Manrope', sans-serif; 
+            font-size: 11px; 
+            text-transform: uppercase; 
+            letter-spacing: 0.15em; 
+            opacity: 0.5; 
+            cursor: pointer; 
+            position: relative;
+            transition: opacity 0.3s;
+        }
+        .legal-link::after {
+            content: ''; position: absolute; bottom: -4px; left: 0; width: 0%; height: 1px; background: var(--fg); transition: width 0.3s ease;
+        }
+        .legal-link:hover { opacity: 1; }
+        .legal-link:hover::after { width: 100%; }
+        html.mono .legal-link:hover { color: var(--accent-mono); }
+        html.mono .legal-link::after { background: var(--accent-mono); }
+
+        /* ==========================================================================
+           UTILITIES & BACKGROUND
+           ========================================================================== */
+        .ambient-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; z-index: -10; overflow: hidden; pointer-events: none; }
+        .texture-overlay { position: absolute; inset: 0; background-image: url('https://images.unsplash.com/photo-1618005198919-d3d4b5a92ead?w=800&auto=format&fit=crop&q=80'); background-size: cover; background-position: center; opacity: var(--img-opacity); mix-blend-mode: var(--img-blend); filter: var(--img-filter); transition: all 0.5s ease; }
+        .color-blob { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.6; animation: blob 20s infinite alternate cubic-bezier(0.4, 0, 0.2, 1); }
+        .blob-1 { top: -10%; left: -10%; width: 50vw; height: 50vw; background: var(--blob-1); }
+        .blob-2 { bottom: -10%; right: -10%; width: 50vw; height: 50vw; background: var(--blob-2); animation-delay: -5s; }
+        .blob-3 { top: 40%; left: 40%; width: 40vw; height: 40vw; background: var(--blob-3); animation-delay: -10s; }
+        
+        .interactive-override { position: relative; z-index: 2002 !important; pointer-events: auto !important; cursor: pointer !important; }
+        
+        .close-legal-btn {
+            position: fixed; top: 2rem; right: 2rem; width: 50px; height: 50px; border-radius: 50%;
+            border: 1px solid var(--border); background: var(--glass); display: flex; justify-content: center; align-items: center;
+            cursor: pointer; z-index: 10000; transition: 0.3s;
+        }
+        html.mono .close-legal-btn { border: 2px solid white; background: black; }
+        html.mono .close-legal-btn:hover { background: var(--accent-mono); color: black; border-color: var(--accent-mono); }
+
+        /* Project Modal */
+        .project-modal { position: fixed; inset: 0; z-index: 999; background: var(--modal-bg); backdrop-filter: blur(40px); opacity: 0; pointer-events: none; transition: opacity 0.5s ease; display: flex; justify-content: center; align-items: center; overflow-y: auto; }
+        .project-modal.active { opacity: 1; pointer-events: auto; }
+        .modal-inner { width: 90%; max-width: 1400px; min-height: 90vh; margin: 5vh auto; transform: translateY(50px) scale(0.95); transition: transform 0.6s ease; opacity: 0; }
+        .project-modal.active .modal-inner { transform: translateY(0) scale(1); opacity: 1; }
+        .modal-close { position: absolute; top: 0; right: 0; width: 60px; height: 60px; border-radius: 50%; border: 1px solid var(--border); display: flex; justify-content: center; align-items: center; background: var(--bg); cursor: pointer; z-index: 50; transition: 0.3s; }
+        html.mono .modal-close { border: 2px solid white; }
+        html.mono .modal-close:hover { background: var(--accent-mono); color: black; border-color: var(--accent-mono); }
+        .modal-grid { display: grid; grid-template-columns: 1fr; gap: 2rem; padding-bottom: 4rem; }
+        @media (min-width: 1024px) { .modal-grid { grid-template-columns: 1.5fr 1fr; gap: 4rem; align-items: start; } }
+
+        /* Cursor */
+        @media (pointer: fine) {
+            #cursor { position: fixed; top: 0; left: 0; width: 20px; height: 20px; border: 1px solid var(--fg); border-radius: 50%; pointer-events: none; z-index: 9999; transform: translate(-50%, -50%); mix-blend-mode: difference; transition: transform 0.1s, width 0.3s, height 0.3s; }
+            html.mono #cursor { border-color: var(--accent-mono); mix-blend-mode: normal; border-width: 2px; }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div id="gdpr-wall" class="gdpr-wall">
+        <div class="cookie-banner">
+            <h3 class="font-display text-3xl font-bold" data-i18n="cookie_title">Consenso Cookie</h3>
+            <p class="text-sm opacity-80 leading-relaxed font-mono" data-i18n="cookie_text">
+                Noi e terze parti selezionate utilizziamo cookie o tecnologie simili per finalità tecniche e, con il tuo consenso, anche per altre finalità come specificato nella cookie policy. 
+                Il rifiuto del consenso può rendere non disponibili le relative funzioni.
+            </p>
+            <div class="flex flex-wrap gap-4 pt-6 border-t border-border mt-4">
+                <button onclick="gdpr.accept()" class="px-8 py-4 bg-fg text-bg font-bold font-display uppercase tracking-widest hover:scale-105 transition-transform rounded-full" data-i18n="accept">Accetta Tutti</button>
+                <button onclick="gdpr.reject()" class="px-8 py-4 border border-fg text-fg font-bold font-display uppercase tracking-widest hover:opacity-50 transition-opacity rounded-full" data-i18n="reject">Rifiuta / Solo Tecnici</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="privacy-overlay" class="legal-overlay">
+        <button class="close-legal-btn" onclick="legal.close()"><i data-lucide="x" class="w-6 h-6"></i></button>
+        <div class="legal-container">
+            <h1 class="legal-title">Privacy Policy</h1>
+            <div class="legal-text">
+                <p><strong>Informativa ai sensi dell'art. 13 del Regolamento (UE) 2016/679 (GDPR)</strong></p>
+                <p>Questa informativa descrive le modalità di trattamento dei dati personali degli utenti che consultano il sito web di Stefano Panosetti.</p>
+                
+                <h2>1. Titolare del Trattamento</h2>
+                <p>Stefano Panosetti<br>P.IVA: [INSERIRE P.IVA]<br>Email: panosettistefano@gmail.com<br>Sede: Italia</p>
+                
+                <h2>2. Tipologia di Dati Raccolti</h2>
+                <p>Durante la navigazione e l'utilizzo del sito, possono essere raccolti i seguenti dati:</p>
+                <ul>
+                    <li><strong>Dati di navigazione:</strong> sistemi informatici e procedure software preposte al funzionamento di questo sito acquisiscono, nel corso del loro normale esercizio, alcuni dati personali.</li>
+                    <li><strong>Dati forniti volontariamente:</strong> l'invio facoltativo tramite form di contatto.</li>
+                </ul>
+
+                <h2>3. Finalità del Trattamento</h2>
+                <p>I dati saranno trattati per rispondere a richieste di contatto e analisi statistica aggregata.</p>
+
+                <h2>4. Diritti dell'Interessato</h2>
+                <p>In ogni momento, Lei potrà esercitare, ai sensi degli artt. 15-22 del GDPR, il diritto di accesso, rettifica o cancellazione.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="cookie-overlay" class="legal-overlay">
+        <button class="close-legal-btn" onclick="legal.close()"><i data-lucide="x" class="w-6 h-6"></i></button>
+        <div class="legal-container">
+            <h1 class="legal-title">Cookie Policy</h1>
+            <div class="legal-text">
+                <h2>Cosa sono i cookie</h2>
+                <p>I cookie sono piccoli file di testo che i siti visitati dagli utenti inviano ai loro terminali.</p>
+
+                <h2>Tipologie di cookie utilizzati</h2>
+                <ul>
+                    <li><strong>Cookie Tecnici:</strong> Necessari per il funzionamento del sito.</li>
+                    <li><strong>Cookie Analitici:</strong> Utilizzati per statistiche anonime (es. Google Analytics).</li>
+                </ul>
+
+                <h2>Gestione del Consenso</h2>
+                <p>Puoi revocare il tuo consenso in qualsiasi momento cancellando la cache del browser o utilizzando il pulsante qui sotto.</p>
+                
+                <button onclick="gdpr.reset()" class="px-6 py-3 border border-fg text-xs uppercase tracking-widest mt-4 hover:bg-fg hover:text-bg transition-colors">Resetta Preferenze Cookie</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="project-modal" class="project-modal">
+        <div class="modal-inner">
+            <button class="modal-close" onclick="projectManager.close()"><i data-lucide="x" class="w-8 h-8"></i></button>
+            <div class="modal-grid">
+                <div class="space-y-4">
+                    <img src="" id="m-img" class="modal-hero-img shadow-2xl w-full rounded-xl border border-border" alt="Project Cover">
+                    <div class="flex gap-4 opacity-50 font-mono text-xs">
+                        <span id="m-year">2024</span><span>•</span><span id="m-role">DESIGN & DEV</span>
+                    </div>
+                </div>
+                <div class="flex flex-col justify-center h-full pt-10 lg:pt-0">
+                    <span id="m-tags" class="font-mono text-blob-1 text-sm tracking-widest mb-4 block">TAGS</span>
+                    <h2 id="m-title" class="font-display text-5xl md:text-7xl font-bold mb-8 leading-none">TITLE</h2>
+                    <div class="space-y-6 text-lg font-light leading-relaxed opacity-90 border-l-2 border-border pl-6 mb-12">
+                        <p id="m-desc">Description goes here...</p>
+                    </div>
+                    <a id="m-link" href="#" target="_blank" class="interactive-override group inline-flex items-center gap-4 text-2xl font-display font-bold hover:gap-6 transition-all w-fit">
+                        <span class="border-b border-fg pb-1" data-i18n="visit">VISITA IL SITO</span>
+                        <i data-lucide="arrow-right" class="group-hover:translate-x-2 transition-transform"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="ambient-layer">
+        <div class="color-blob blob-1"></div>
+        <div class="color-blob blob-2"></div>
+        <div class="color-blob blob-3"></div>
+        <div class="texture-overlay"></div>
+    </div>
+    <div id="cursor" class="hidden md:block"></div>
+
+    <nav class="nav-pill">
+        <a href="#" class="font-display font-bold text-xl tracking-tighter" onclick="scrollEngine.scrollToPanel(0)">PANOSETTI</a>
+        <div class="hidden md:flex gap-8 items-center text-xs font-bold uppercase tracking-widest">
+            <button class="hover:opacity-60 transition-opacity" onclick="scrollEngine.scrollToPanel(1)" data-i18n="nav_about">About</button>
+            <button class="hover:opacity-60 transition-opacity" onclick="scrollEngine.scrollToPanel('works')" data-i18n="nav_work">Work</button>
+            <button class="hover:opacity-60 transition-opacity" onclick="scrollEngine.scrollToPanel(4)" data-i18n="nav_contact">Contact</button>
+        </div>
+        <div class="flex gap-4 items-center pl-4 border-l border-white/20 ml-4">
+            <div id="lang-btn" class="font-display font-bold cursor-pointer hover:opacity-60" onclick="languageManager.toggle()">IT</div>
+            <button id="theme-btn" class="hover:scale-110 transition-transform"><i data-lucide="sun" class="w-5 h-5" id="theme-icon"></i></button>
+        </div>
+    </nav>
+
+    <div class="viewport">
+        <div class="scroll-container" id="container">
+            
+            <section class="panel" id="panel-0">
+                <div class="w-full max-w-7xl flex flex-col h-full flex-grow">
+                    <div class="md:hidden pt-4"><p class="font-mono text-xs tracking-[0.2em] font-bold opacity-60">PORTFOLIO 2025</p></div>
+                    <div class="flex flex-col justify-center flex-grow mt-8 md:mt-0">
+                        <p class="hidden md:block font-mono text-xs tracking-[0.3em] mb-8 font-bold opacity-70 w-fit">PORTFOLIO 2025</p>
+                        <h1 class="font-display font-bold h-hero leading-none drop-shadow-2xl flex flex-col w-full">
+                            <span class="word-anim h-anim w-fit">VISUAL</span>
+                            <span class="word-anim h-anim w-fit md:self-center opacity-60">DESIGNER</span>
+                            <span class="word-anim h-anim w-fit self-end md:self-end">& DEV</span>
+                        </h1>
+                    </div>
+                </div>
+            </section>
+
+            <section class="panel" id="panel-1">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-20 max-w-6xl w-full items-center">
+                    <div class="flex flex-col items-start">
+                        <span class="font-mono text-xs tracking-widest opacity-50 block mb-6" data-i18n="profile_label">01 / PROFILE</span>
+                        <h2 class="font-display text-5xl md:text-8xl font-bold mb-8 flex flex-col"><span class="h-anim w-fit">HYBRID</span><span class="h-anim w-fit">MIND.</span></h2>
+                    </div>
+                    <div class="space-y-8 text-lg md:text-xl font-light leading-relaxed backdrop-blur-md bg-white/5 p-8 rounded-2xl border border-border shadow-xl">
+                        <p data-i18n="bio_p1">Ciao sono Stefano Panosetti :) <br> Sono laureato in comunicazione e specializzato in <strong class="border-b border-fg font-medium">Visual e Web Design!</strong></p>
+                        <p data-i18n="bio_p2">Attualmente studio informatica presso l'ITS di Lanciano perchè mi piace curare anche quello che è sotto la scatola.</p>
+                        <ul class="space-y-4 font-mono text-sm opacity-80">
+                            <li class="flex items-center gap-3"><i data-lucide="graduation-cap" class="w-4 h-4"></i> <span data-i18n="edu_1">UniTo: Laurea in Comunicazione</span></li>
+                            <li class="flex items-center gap-3"><i data-lucide="code-2" class="w-4 h-4"></i> <span data-i18n="edu_2">250h Master Web Design</span></li>
+                            <li class="flex items-center gap-3"><i data-lucide="users" class="w-4 h-4"></i> <span data-i18n="edu_3">Hospitality Management</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section class="panel" id="panel-works">
+                <div class="flex flex-col justify-center h-full max-w-md shrink-0 md:mr-20">
+                    <span class="font-mono text-xs tracking-widest opacity-50 block mb-6" data-i18n="works_label">02 / SELECTED WORKS</span>
+                    <h2 class="font-display text-5xl md:text-7xl font-bold flex flex-col leading-tight"><span class="h-anim w-fit">RECENT</span><span class="h-anim w-fit">PROJECTS.</span></h2>
+                    <p class="mt-8 opacity-50 text-sm font-mono flex items-center gap-2 hidden md:flex" data-i18n="click_expand">CLICK TO EXPAND <i data-lucide="expand" class="w-4 h-4"></i></p>
+                </div>
+                <article id="proj-otf" class="cinema-scope card-wrapper group parallax-trigger" onclick="projectManager.open(this)" data-title="Otfzone" data-tags="Branding / Identity" data-img="img/otfzone1.png" data-year="2023" data-link="https://otfzone.altervista.org/">
+                    <div class="card-visual"><div class="card-img" style="background-image: url('img/otfzone1.png');"></div></div>
+                    <div class="meta-compact"><h3 class="text-3xl font-display font-bold group-hover:translate-x-2 transition-transform">Otfzone</h3><span class="text-[10px] uppercase tracking-widest opacity-50">Identity</span></div>
+                </article>
+                <article id="proj-doja" class="cinema-scope card-wrapper group parallax-trigger" onclick="projectManager.open(this)" data-title="Doja Crypto" data-tags="UI Design / Dashboard" data-img="img/doja.png" data-year="2024" data-link="https://panosettistefano.github.io/Website/">
+                    <div class="card-visual"><div class="card-img" style="background-image: url('img/doja.png');"></div></div>
+                    <div class="meta-compact"><h3 class="text-3xl font-display font-bold group-hover:translate-x-2 transition-transform">Doja Crypto</h3><span class="text-[10px] uppercase tracking-widest opacity-50">UI / UX</span></div>
+                </article>
+                <article id="proj-dog" class="cinema-scope card-wrapper group parallax-trigger" onclick="projectManager.open(this)" data-title="Dogtype" data-tags="Editorial / Web Layout" data-img="img/Dogtype.png" data-year="2022" data-link="https://dogtype.altervista.org/">
+                    <div class="card-visual"><div class="card-img" style="background-image: url('img/Dogtype.png');"></div></div>
+                    <div class="meta-compact"><h3 class="text-3xl font-display font-bold group-hover:translate-x-2 transition-transform">Dogtype</h3><span class="text-[10px] uppercase tracking-widest opacity-50">Editorial</span></div>
+                </article>
+            </section>
+
+           <section class="panel" id="panel-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-24 w-full max-w-7xl items-start flex-grow pt-10 md:pt-0">
+                    
+                    <div class="flex flex-col justify-center items-start h-full">
+                        <span class="font-mono text-xs tracking-widest opacity-50 block mb-6" data-i18n="contact_label">03 / CONTACT</span>
+                        
+                        <h2 class="font-display text-6xl md:text-8xl font-bold leading-none mb-10 flex flex-col">
+                            <span class="h-anim w-fit">LET'S</span>
+                            <span class="h-anim w-fit">TALK.</span>
+                        </h2>
+
+                        <div class="space-y-6 font-mono text-sm opacity-80 mt-auto md:mt-0">
+                            <a href="mailto:panosettistefano@gmail.com" class="interactive-override flex items-center gap-4 hover:text-fg transition-colors group">
+                                <div class="w-10 h-10 rounded-full border border-border flex items-center justify-center group-hover:bg-fg group-hover:text-bg transition-all">
+                                    <i data-lucide="mail" class="w-4 h-4"></i>
+                                </div>
+                                <span class="tracking-widest">PANOSETTISTEFANO@GMAIL.COM</span>
+                            </a>
+                            <a href="tel:+393341556321" class="interactive-override flex items-center gap-4 hover:text-fg transition-colors group">
+                                <div class="w-10 h-10 rounded-full border border-border flex items-center justify-center group-hover:bg-fg group-hover:text-bg transition-all">
+                                    <i data-lucide="phone" class="w-4 h-4"></i>
+                                </div>
+                                <span class="tracking-widest">+39 334 155 63 21</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="w-full flex flex-col justify-center h-full mt-8 md:mt-0">
+                        <div class="form-structural-wrapper w-full max-w-lg mx-auto md:mx-0 interactive-override p-1 md:p-0">
+                            
+                            <form action="https://formsubmit.co/panosettistefano@gmail.com" method="POST" class=" flex flex-col ">
+                                <input type="hidden" name="_captcha" value="false">
+                                <input type="hidden" name="_template" value="table">
+                                <input type="hidden" name="_next" value="https://panosettistefano.github.io/Website/"> 
+
+                                <div class="input-group">
+                                    <input type="text" name="name" id="fname" class="clean-input peer" placeholder="Il tuo nome" required autocomplete="name">
+                                    <span class="input-line"></span>
+                                </div>
+
+                                <div class="input-group">
+                                    <input type="email" name="email" id="femail" class="clean-input peer" placeholder="La tua email" required autocomplete="email">
+                                    <span class="input-line"></span>
+                                </div>
+
+                                <div class="input-group">
+                                    <textarea name="message" id="fmsg" rows="3" class="clean-input peer resize-none" placeholder="Parlami del tuo progetto..." required></textarea>
+                                    <span class="input-line"></span>
+                                </div>
+                                
+                                <button type="submit" class="group rounded-2xl relative px-8 py-5 bg-transparent border border-fg text-fg font-display font-bold uppercase tracking-widest overflow-hidden transition-all hover:text-bg mt-4 w-full">
+                                    <span class="absolute top-0 left-0 w-full h-full bg-fg transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-in-out z-[-1]"></span>
+                                    <span class="relative z-10 flex justify-between items-center w-full" data-i18n="send_btn">
+                                        Invia <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                                    </span>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="panel-footer-legal pb-8 md:pb-0 pr-8">
+                    <span class="legal-link" onclick="legal.open('privacy')">Privacy Policy</span>
+                    <span class="legal-link" onclick="legal.open('cookie')">Cookie Policy</span>
+                    <span class="font-mono text-[10px] opacity-30 tracking-widest">© 2025</span>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        // ------------------------------------------------------------------
+        // GDPR MANAGER
+        // ------------------------------------------------------------------
+        class GDPRManager {
+            constructor() {
+                this.wall = document.getElementById('gdpr-wall');
+                this.key = 'panosetti_gdpr_consent_v3';
+                this.init();
+            }
+
+            init() {
+                const status = localStorage.getItem(this.key);
+                if (status === 'granted') {
+                    this.unlockSite();
+                    this.injectScripts();
+                } else if (status === 'denied') {
+                    this.unlockSite();
+                } else {
+                    this.wall.classList.add('active');
+                    if(window.innerWidth > 768) document.body.style.overflow = 'hidden';
+                }
+            }
+
+            accept() {
+                localStorage.setItem(this.key, 'granted');
+                this.unlockSite();
+                this.injectScripts();
+            }
+
+            reject() {
+                localStorage.setItem(this.key, 'denied');
+                this.unlockSite();
+            }
+
+            reset() {
+                localStorage.removeItem(this.key);
+                location.reload();
+            }
+
+            unlockSite() {
+                this.wall.classList.remove('active');
+                if (window.innerWidth > 768) {
+                    document.body.style.overflow = 'hidden'; 
+                } else {
+                    document.body.style.overflowY = 'auto';
+                }
+            }
+
+            injectScripts() {
+                console.log("Consent Granted: Injecting Analytics...");
+                // Add Google Analytics here when ready
+            }
+        }
+        const gdpr = new GDPRManager();
+
+        // ------------------------------------------------------------------
+        // LEGAL & PROJECT OVERLAYS
+        // ------------------------------------------------------------------
+        const legal = {
+            open: (type) => {
+                const id = type === 'privacy' ? 'privacy-overlay' : 'cookie-overlay';
+                document.getElementById(id).classList.add('active');
+            },
+            close: () => {
+                document.querySelectorAll('.legal-overlay').forEach(m => m.classList.remove('active'));
+            }
+        };
+
+        const projectManager = {
+            modal: document.getElementById('project-modal'),
+            elements: { 
+                title: document.getElementById('m-title'), desc: document.getElementById('m-desc'), 
+                img: document.getElementById('m-img'), tags: document.getElementById('m-tags'), 
+                link: document.getElementById('m-link'), year: document.getElementById('m-year') 
+            },
+            isOpen: false,
+            
+            init: function() {
+                document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && this.isOpen) this.close(); });
+            },
+            open: function(element) {
+                const data = element.dataset;
+                this.elements.title.innerText = data.title;
+                this.elements.desc.innerText = data.desc;
+                this.elements.img.src = data.img;
+                this.elements.tags.innerText = data.tags;
+                this.elements.link.href = data.link;
+                if(data.year) this.elements.year.innerText = data.year;
+                
+                this.modal.classList.add('active');
+                this.isOpen = true;
+                document.body.style.overflow = 'hidden';
+            },
+            close: function() {
+                this.modal.classList.remove('active');
+                this.isOpen = false;
+                if (scrollEngine.isDesktop) document.body.style.overflow = 'hidden'; 
+                else document.body.style.overflowY = 'auto'; 
+            }
+        };
+        projectManager.init();
+
+        // ------------------------------------------------------------------
+        // LANGUAGE ENGINE
+        // ------------------------------------------------------------------
+        const TRANSLATIONS = {
+            it: {
+                nav_about: 'Chi sono', nav_work: 'Lavori', nav_contact: 'Contatti',
+                hero_footer: 'Vivo in Italia<br>Disponibile per collaborazioni',
+                profile_label: '01 / PROFILO',
+                bio_p1: 'Ciao sono Stefano Panosetti :) <br> Sono laureato in comunicazione e specializzato in <strong class="border-b border-fg font-medium">Visual e Web Design!</strong>',
+                bio_p2: 'Attualmente studio informatica presso l\'ITS di Lanciano perchè mi piace curare anche quello che è sotto la scatola.',
+                edu_1: 'UniTo: Laurea in Comunicazione', edu_2: '250h Master Web Design', edu_3: 'Hospitality Management',
+                works_label: '02 / SELEZIONE LAVORI', click_expand: 'Clicca per sapere di più',
+                contact_label: '03 / CONTATTI',
+                ph_name: 'IL TUO NOME *', ph_email: 'LA TUA EMAIL *', ph_msg: 'IL PROGETTO *',
+                send_btn: 'Invia', visit: 'VISITA IL SITO',
+                cookie_title: 'Consenso Cookie',
+                cookie_text: 'Noi e terze parti selezionate utilizziamo cookie o tecnologie simili per finalità tecniche e, con il tuo consenso, anche per altre finalità.',
+                accept: 'Accetta Tutti', reject: 'Rifiuta / Solo Tecnici',
+                proj_otf_desc: 'Un progetto di rebranding completo per una community gaming. Il focus è stato posto su una tipografia aggressiva e una palette colori ad alto contrasto.',
+                proj_doja_desc: 'Interfaccia utente sperimentale per una dashboard di criptovalute. Studio approfondito su data visualization e dark mode nativa OLED.',
+                proj_dog_desc: 'Layout editoriale digitale focalizzato sulla leggibilità e gerarchia visiva. Un approccio minimalista con grandi spazi bianchi.'
+            },
+            en: {
+                nav_about: 'About', nav_work: 'Work', nav_contact: 'Contact',
+                hero_footer: 'Based in Italy<br>Remote First',
+                profile_label: '01 / PROFILE',
+                bio_p1: 'Hi I\'m Stefano Panosetti :) <br> I have a degree in communication and I specialize in <strong class="border-b border-fg font-medium">Visual & Web Design!</strong>',
+                bio_p2: 'I am currently studying Computer Science at ITS Lanciano because I love caring about what’s under the hood.',
+                edu_1: 'UniTo: Communication Degree', edu_2: '250h Master Web Design', edu_3: 'Hospitality Management',
+                works_label: '02 / SELECTED WORKS', click_expand: 'CLICK TO EXPAND',
+                contact_label: '03 / CONTACT',
+                ph_name: 'YOUR NAME *', ph_email: 'YOUR EMAIL *', ph_msg: 'THE PROJECT *',
+                send_btn: 'Send', visit: 'VISIT WEBSITE',
+                cookie_title: 'Cookie Consent',
+                cookie_text: 'We and selected third parties use cookies or similar technologies for technical purposes and, with your consent, for other purposes.',
+                accept: 'Accept All', reject: 'Reject / Technical Only',
+                proj_otf_desc: 'A complete rebranding project for a competitive gaming community. Focus on aggressive typography and high-contrast color palette.',
+                proj_doja_desc: 'Experimental UI for a crypto trading dashboard. Deep dive into data visualization and native OLED dark mode.',
+                proj_dog_desc: 'Digital editorial layout focused on readability and visual hierarchy. A minimalist approach with generous whitespace.'
+            }
+        };
+
+        class LanguageManager {
+            constructor() {
+                this.lang = localStorage.getItem('lang') || 'it';
+                this.btn = document.getElementById('lang-btn');
+                this.updateDOM();
+            }
+            toggle() {
+                this.lang = this.lang === 'it' ? 'en' : 'it';
+                localStorage.setItem('lang', this.lang);
+                this.updateDOM();
+            }
+            updateDOM() {
+                this.btn.innerText = this.lang.toUpperCase();
+                document.querySelectorAll('[data-i18n]').forEach(el => {
+                    const key = el.getAttribute('data-i18n');
+                    if(TRANSLATIONS[this.lang][key]) el.innerHTML = TRANSLATIONS[this.lang][key];
+                });
+                document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+                    const key = el.getAttribute('data-i18n-ph');
+                    if(TRANSLATIONS[this.lang][key]) el.placeholder = TRANSLATIONS[this.lang][key];
+                });
+                const otf = document.getElementById('proj-otf'); if(otf) otf.setAttribute('data-desc', TRANSLATIONS[this.lang].proj_otf_desc);
+                const doja = document.getElementById('proj-doja'); if(doja) doja.setAttribute('data-desc', TRANSLATIONS[this.lang].proj_doja_desc);
+                const dog = document.getElementById('proj-dog'); if(dog) dog.setAttribute('data-desc', TRANSLATIONS[this.lang].proj_dog_desc);
+                lucide.createIcons();
+            }
+        }
+        const languageManager = new LanguageManager();
+
+        // ------------------------------------------------------------------
+        // SCROLL ENGINE
+        // ------------------------------------------------------------------
+        class HybridScrollEngine {
+            constructor() {
+                this.container = document.getElementById('container');
+                this.isDesktop = window.innerWidth > 768;
+                this.currentX = 0; this.targetX = 0; this.maxScroll = 0; this.ease = 0.08;
+                this.init();
+                window.addEventListener('resize', this.handleResize.bind(this));
+            }
+            init() {
+                this.handleResize(); this.startLoop();
+                window.addEventListener('wheel', (e) => {
+                    if (this.isDesktop && !projectManager.isOpen && !document.getElementById('gdpr-wall').classList.contains('active')) {
+                        this.targetX += e.deltaY;
+                        this.targetX = Math.max(0, Math.min(this.targetX, this.maxScroll));
+                    }
+                });
+            }
+            handleResize() {
+                this.isDesktop = window.innerWidth > 768;
+                if (this.isDesktop) {
+                    this.maxScroll = this.container.scrollWidth - window.innerWidth;
+                    document.body.style.overflow = 'hidden'; document.body.style.height = '100vh';
+                    this.container.style.transform = `translateX(-${this.currentX}px)`;
+                } else {
+                    this.maxScroll = 0; document.body.style.overflowY = 'auto'; document.body.style.overflowX = 'hidden'; document.body.style.height = 'auto';
+                    this.container.style.transform = "none";
+                }
+            }
+            startLoop() {
+                const animate = () => {
+                    if (this.isDesktop) {
+                        this.currentX += (this.targetX - this.currentX) * this.ease;
+                        if (Math.abs(this.targetX - this.currentX) > 0.1) {
+                            this.container.style.transform = `translateX(-${this.currentX}px)`;
+                            parallaxEngine.update(this.currentX);
+                        }
+                    }
+                    requestAnimationFrame(animate);
+                };
+                animate();
+            }
+            scrollToPanel(panelId) {
+                let panel = panelId === 'works' ? document.getElementById('panel-works') : document.getElementById(`panel-${panelId}`);
+                if (this.isDesktop && panel) this.targetX = panel.offsetLeft;
+                else if (panel) {
+                    const y = panel.getBoundingClientRect().top + window.pageYOffset - 80;
+                    window.scrollTo({top: y, behavior: 'smooth'});
+                }
+            }
+        }
+
+        class ParallaxImageEngine {
+            constructor() { this.triggers = document.querySelectorAll('.parallax-trigger'); this.images = document.querySelectorAll('.card-img'); }
+            update(scrollX) {
+                if(window.innerWidth <= 768) return;
+                this.triggers.forEach((trigger, index) => {
+                    const rect = trigger.getBoundingClientRect(); const viewWidth = window.innerWidth;
+                    if (rect.left < viewWidth && rect.right > 0) {
+                        const center = rect.left + rect.width / 2; const distFromCenter = center - viewWidth / 2;
+                        const offset = distFromCenter * 0.05; 
+                        if(this.images[index]) this.images[index].style.transform = `scale(1.1) translateX(${offset}px)`;
+                    }
+                });
+            }
+        }
+        const parallaxEngine = new ParallaxImageEngine();
+        const scrollEngine = new HybridScrollEngine();
+
+        // ------------------------------------------------------------------
+        // UTILS: THEME, CURSOR, ANIMATIONS
+        // ------------------------------------------------------------------
+        const animWords = document.querySelectorAll('.word-anim');
+        animWords.forEach(word => {
+            if(word.querySelector('.char')) return;
+            const text = word.textContent; word.innerHTML = '';
+            text.split('').forEach((char, index) => {
+                const wrapper = document.createElement('span'); wrapper.className = 'char-wrapper';
+                const span = document.createElement('span'); span.className = 'char';
+                span.style.transitionDelay = `${index * 0.05}s`; span.textContent = char === ' ' ? '\u00A0' : char;
+                wrapper.appendChild(span); word.appendChild(wrapper);
+            });
+        });
+        window.addEventListener('load', () => { setTimeout(() => { document.querySelectorAll('.char').forEach(char => char.classList.add('visible')); scrollEngine.handleResize(); }, 300); });
+
+        const themeBtn = document.getElementById('theme-btn');
+        const themeIcon = document.getElementById('theme-icon');
+        const html = document.documentElement;
+        const themes = ['dark', 'light', 'mono'];
+        let currentThemeIndex = localStorage.theme ? themes.indexOf(localStorage.theme) : 0;
+        if(currentThemeIndex === -1) currentThemeIndex = 0;
+        
+        function applyTheme(theme) {
+            html.classList.remove('light', 'mono'); if (theme !== 'dark') html.classList.add(theme); localStorage.theme = theme;
+            let iconName = theme === 'dark' ? 'sun' : (theme === 'light' ? 'circle' : 'sparkles');
+            themeIcon.setAttribute('data-lucide', iconName); lucide.createIcons();
+        }
+        applyTheme(themes[currentThemeIndex]);
+        themeBtn.addEventListener('click', () => { currentThemeIndex = (currentThemeIndex + 1) % themes.length; applyTheme(themes[currentThemeIndex]); });
+
+        if (window.matchMedia("(pointer: fine)").matches) {
+            const cursor = document.getElementById('cursor');
+            document.addEventListener('mousemove', e => { cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px'; });
+            const interactables = 'a, button, input, .h-anim, .card-wrapper, .modal-close, .interactive-override, .lang-switch, .legal-link';
+            document.body.addEventListener('mouseover', (e) => {
+                cursor.style.transform = e.target.closest(interactables) ? "translate(-50%, -50%) scale(2.5)" : "translate(-50%, -50%) scale(1)";
+            });
+        }
+    </script>
+</body>
+</html>
+
