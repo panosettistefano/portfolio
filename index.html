@@ -572,14 +572,21 @@
 
             <section class="panel" id="panel-1">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-20 max-w-6xl w-full items-center">
-                    <div class="flex flex-col items-start">
+                    <div class="flex flex-col items-center md:items-start text-center md:text-left">
                         <span class="font-mono text-xs tracking-widest opacity-50 block mb-6" data-i18n="profile_label">01 / PROFILE</span>
-                        <h2 class="font-display text-5xl md:text-8xl font-bold mb-8 flex flex-col"><span class="h-anim w-fit" data-i18n="approccio">HYBRID</span><span class="h-anim w-fit" data-i18n="ibrido">MIND.</span></h2>
+                        <h2 class="font-display text-5xl md:text-8xl font-bold mb-8 flex flex-col">
+                            <span class="h-anim w-fit" data-i18n="approccio">HYBRID</span>
+                            <span class="h-anim w-fit" data-i18n="ibrido">MIND.</span>
+                        </h2>
                     </div>
-                    <div class="space-y-8 text-lg md:text-xl font-light leading-relaxed backdrop-blur-md bg-white/5 p-8 rounded-2xl border border-border shadow-xl">
+                    
+                   <div class="space-y-8 text-lg md:text-xl font-light leading-relaxed backdrop-blur-md bg-white/5 p-8 rounded-2xl border border-border shadow-xl text-center md:text-left">
+    
                         <p data-i18n="bio_p1">Ciao sono Stefano Panosetti :) <br> Sono laureato in comunicazione e specializzato in <strong class="border-b border-fg font-medium">Visual e Web Design!</strong></p>
+                        
                         <p data-i18n="bio_p2">Attualmente studio informatica presso l'ITS di Lanciano perchè mi piace curare anche quello che è sotto la scatola.</p>
-                        <ul class="space-y-4 font-mono text-sm opacity-80">
+                        
+                        <ul class="space-y-4 font-mono text-sm opacity-80 text-left w-fit mx-auto md:mx-0">
                             <li class="flex items-center gap-3"><i data-lucide="graduation-cap" class="w-4 h-4"></i> <span data-i18n="edu_1">UniTo: Laurea in Comunicazione</span></li>
                             <li class="flex items-center gap-3"><i data-lucide="pen-tool" class="w-4 h-4"></i> <span data-i18n="edu_2">Master Web Design</span></li>
                             <li class="flex items-center gap-3"><i data-lucide="code-2" class="w-4 h-4"></i> <span data-i18n="edu_3">Studente in ITC</span></li>
@@ -589,40 +596,56 @@
             </section>
 
             <section class="panel" id="panel-works">
-                <div class="flex flex-col justify-center h-full max-w-md shrink-0 md:mr-20">
+                <div class="flex flex-col justify-center h-full max-w-md shrink-0 md:mr-20 items-center md:items-start text-center md:text-left mb-12 md:mb-0">
                     <span class="font-mono text-xs tracking-widest opacity-50 block mb-6" data-i18n="works_label">02 / SELECTED WORKS</span>
-                    <h2 class="font-display text-5xl md:text-7xl font-bold flex flex-col leading-tight "><span class="h-anim w-fit" data-i18n="recenti">RECENT</span><span class="h-anim w-fit" data-i18n="progetti">PROJECTS.</span></h2>
+                    <h2 class="font-display text-5xl md:text-7xl font-bold flex flex-col leading-tight ">
+                        <span class="h-anim w-fit" data-i18n="recenti">RECENT</span>
+                        <span class="h-anim w-fit" data-i18n="progetti">PROJECTS.</span>
+                    </h2>
                     <p class="mt-8 opacity-50 text-sm font-mono flex items-center gap-2 hidden md:flex" data-i18n="click_expand">CLICK TO EXPAND <i data-lucide="expand" class="w-4 h-4"></i></p>
                 </div>
 
                 <article id="proj-doja" class="cinema-scope card-wrapper group parallax-trigger" onclick="projectManager.open(this)" data-title="Doja Crypto" data-tags="UI Design / Dashboard" data-img="img/doja.png" data-year="2024" data-link="https://panosettistefano.github.io/Website/">
                     <div class="card-visual"><div class="card-img" style="background-image: url('img/doja.png');"></div></div>
-                    <div class="meta-compact"><h3 class="text-3xl font-display font-bold group-hover:translate-x-2 transition-transform">Doja Crypto</h3><span class="text-[10px] uppercase tracking-widest opacity-50">UI / UX</span></div>
+                    
+                    <div class="meta-compact text-center md:text-left">
+                        <h3 class="text-3xl font-display font-bold group-hover:translate-x-2 transition-transform">Doja Crypto</h3>
+                        <span class="text-[10px] uppercase tracking-widest opacity-50">UI / UX</span>
+                    </div>
                 </article>
 
                 <article id="proj-otf" class="cinema-scope card-wrapper group parallax-trigger" onclick="projectManager.open(this)" data-title="Otfzone" data-tags="Branding / Identity" data-img="img/otfzone1.png" data-year="2023" data-link="https://otfzone.altervista.org/">
                     <div class="card-visual"><div class="card-img" style="background-image: url('img/otfzone1.png');"></div></div>
-                    <div class="meta-compact"><h3 class="text-3xl font-display font-bold group-hover:translate-x-2 transition-transform">Otfzone</h3><span class="text-[10px] uppercase tracking-widest opacity-50">Identity</span></div>
+                    
+                    <div class="meta-compact text-center md:text-left">
+                        <h3 class="text-3xl font-display font-bold group-hover:translate-x-2 transition-transform">Otfzone</h3>
+                        <span class="text-[10px] uppercase tracking-widest opacity-50">Identity</span>
+                    </div>
                 </article>
                 
                 <article id="proj-dog" class="cinema-scope card-wrapper group parallax-trigger" onclick="projectManager.open(this)" data-title="Dogtype" data-tags="Editorial / Web Layout" data-img="img/Dogtype.png" data-year="2022" data-link="#">
                     <div class="card-visual"><div class="card-img" style="background-image: url('img/Dogtype.png');"></div></div>
-                    <div class="meta-compact"><h3 class="text-3xl font-display font-bold group-hover:translate-x-2 transition-transform">Dogtype</h3><span class="text-[10px] uppercase tracking-widest opacity-50">Editorial</span></div>
+                    
+                    <div class="meta-compact text-center md:text-left">
+                        <h3 class="text-3xl font-display font-bold group-hover:translate-x-2 transition-transform">Dogtype</h3>
+                        <span class="text-[10px] uppercase tracking-widest opacity-50">Editorial</span>
+                    </div>
                 </article>
             </section>
 
            <section class="panel" id="panel-4">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-24 w-full max-w-7xl items-start flex-grow pt-10 md:pt-0">
+            <section class="panel" id="panel-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-32 w-full max-w-7xl items-center md:items-start flex-grow pt-10 md:pt-0">
                     
-                    <div class="flex flex-col justify-center items-start h-full">
+                    <div class="flex flex-col justify-center items-center md:items-start h-full text-center md:text-left">
                         <span class="font-mono text-xs tracking-widest opacity-50 block mb-6" data-i18n="contact_label">03 / CONTACT</span>
                         
-                        <h2 class="font-display text-6xl md:text-8xl font-bold leading-none mb-10 flex flex-col">
+                        <h2 class="font-display text-6xl md:text-8xl font-bold leading-none mb-10 flex flex-col items-center md:items-start">
                             <span class="h-anim w-fit" data-i18n="lets">LET'S</span>
                             <span class="h-anim w-fit" data-i18n="talk">TALK.</span>
                         </h2>
 
-                        <div class="space-y-6 font-mono text-sm opacity-80 mt-auto md:mt-0">
+                        <div class="space-y-6 font-mono text-sm opacity-80 mt-auto md:mt-0 w-full flex flex-col items-center md:items-start">
                             <a href="mailto:panosettistefano@gmail.com" class="interactive-override flex items-center gap-4 hover:text-fg transition-colors group">
                                 <div class="w-10 h-10 rounded-full border border-border flex items-center justify-center group-hover:bg-fg group-hover:text-[#FF3300] transition-all">
                                     <i data-lucide="mail" class="w-4 h-4"></i>
@@ -639,7 +662,7 @@
                     </div>
 
                     <div class="w-full flex flex-col justify-center h-full mt-8 md:mt-0">
-                        <div class="form-structural-wrapper w-full max-w-lg mx-auto md:mx-0 interactive-override p-1 md:p-0">
+                        <div class="form-structural-wrapper w-full max-w-lg mx-auto md:mx-0 md:pl-12 interactive-override p-1 md:p-0">
                             
                             <form action="https://formsubmit.co/panudovesei@gmail.com" method="POST" class=" flex flex-col ">
                                 <input type="hidden" name="_captcha" value="false">
@@ -647,23 +670,24 @@
                                 <input type="hidden" name="_next" value="https://panosettistefano.github.io/Website/"> 
 
                                 <div class="input-group">
-                                    <input type="text" name="name" id="fname" class="clean-input peer" placeholder="Name" required autocomplete="name">
+                                    <input type="text" name="name" id="fname" class="clean-input peer text-center md:text-left" placeholder="Name" required autocomplete="name">
                                     <span class="input-line"></span>
                                 </div>
 
                                 <div class="input-group">
-                                    <input type="email" name="email" id="femail" class="clean-input peer" placeholder="Email" required autocomplete="email">
+                                    <input type="email" name="email" id="femail" class="clean-input peer text-center md:text-left" placeholder="Email" required autocomplete="email">
                                     <span class="input-line"></span>
                                 </div>
 
                                 <div class="input-group">
-                                    <textarea name="message" id="fmsg" rows="3" class="clean-input peer resize-none" placeholder="Project" required></textarea>
+                                    <textarea name="message" id="fmsg" rows="3" class="clean-input peer resize-none text-center md:text-left" placeholder="Project" required></textarea>
                                     <span class="input-line"></span>
                                 </div>
                                 
                                 <button type="submit" class="group rounded-2xl relative px-8 py-5 bg-transparent border border-fg text-fg font-display font-bold uppercase tracking-widest overflow-hidden transition-all hover:text-[#FF3300] mt-4 w-full">
                                     <span class="absolute top-0 left-0 w-full h-full bg-fg transform -translate-x-full group-hover:translate-x-0  transition-transform duration-300 ease-in-out z-[-1]"></span>
-                                    <span class="relative z-10 flex justify-between items-center w-full" data-i18n="send_btn">
+                                    
+                                    <span class="relative z-10 flex justify-center gap-4 md:justify-between md:gap-0 items-center w-full" data-i18n="send_btn">
                                         Invia <i data-lucide="arrow-right" class="w-5 h-5"></i>
                                     </span>
                                 </button>
@@ -672,7 +696,7 @@
                     </div>
                 </div>
                 
-                <div class="panel-footer-legal pb-8 md:pb-0 pr-8">
+                <div class="panel-footer-legal pb-8 md:pb-0 pr-0 md:pr-8 flex justify-center md:justify-end gap-6 md:gap-8 w-full">
                     <span class="legal-link" onclick="legal.open('privacy')">Privacy Policy</span>
                     <span class="legal-link" onclick="legal.open('cookie')">Cookie Policy</span>
                     <span class="font-mono text-[10px] opacity-30 tracking-widest">© 2025</span>
