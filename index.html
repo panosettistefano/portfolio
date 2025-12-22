@@ -445,7 +445,7 @@
             </p>
             <div class="flex flex-wrap gap-4 pt-6 border-t border-border mt-4">
                 <button onclick="gdpr.accept()" class="px-8 py-4 bg-fg text-bg font-bold font-display uppercase tracking-widest hover:scale-105 transition-transform rounded-full" data-i18n="accept">Accetta Tutti</button>
-                <button onclick="gdpr.reject()" class="px-8 py-4 border border-fg text-fg font-bold font-display uppercase tracking-widest hover:opacity-50 transition-opacity rounded-full" data-i18n="reject">Rifiuta / Solo Tecnici</button>
+                <button onclick="gdpr.reject()" class="px-8 py-4 border border-fg text-fg font-bold font-display uppercase tracking-widest hover:opacity-50 transition-opacity rounded-full" data-i18n="reject">Solo Tecnici</button>
             </div>
         </div>
     </div>
@@ -559,10 +559,13 @@
                             <span class="word-anim h-anim w-fit self-end md:self-end">& DEV</span>
                         </h1>
                     </div>
-                    <div class="md:hidden w-full flex justify-between items-end border-t border-border pt-4 mt-4">
-                        <div class="font-mono text-[10px] uppercase tracking-widest opacity-60 leading-relaxed">
+                    <div class="md:hidden w-full flex justify-between items-end border-t border-border pt-4 mt-4 cursor-pointer active:opacity-60 transition-opacity"
+                        onclick="document.getElementById('panel-1').scrollIntoView({ behavior: 'smooth' })">
+                        
+                        <div class="font-mono text-[10px] uppercase tracking-widest opacity-60 leading-relaxed text-left">
                             Based in Italy<br>Available for hire
                         </div>
+                        
                         <div class="animate-bounce">
                             <i data-lucide="arrow-down" class="w-5 h-5 opacity-80"></i>
                         </div>
