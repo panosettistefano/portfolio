@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Stefano Panosetti | Visual Designer</title>
     
-    <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20512%20512%22%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2250%25%22%20fill%3D%22white%22%20font-family%3D%22sans-serif%22%20font-weight%3D%22700%22%20font-size%3D%22280%22%20text-anchor%3D%22middle%22%20dy%3D%22.35em%22%3ESP%3C%2Ftext%3E%3C%2Fsvg%3E"
+    <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20512%20512%22%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2250%25%22%20fill%3D%22white%22%20font-family%3D%22sans-serif%22%20font-weight%3D%22700%22%20font-size%3D%22280%22%20text-anchor%3D%22middle%22%20dy%3D%22.35em%22%3ESP%3C%2Ftext%3E%3C%2Fsvg%3E">
 
     <meta name="description" content="Portfolio di Stefano Panosetti. Visual Designer & Frontend Developer.">
     
@@ -73,7 +73,6 @@
             
             --accent-mono: transparent; 
 
-            /* MODIFICA: Colore testo modale DEFAULT (Bianco) */
             --modal-text: var(--fg);
         }
 
@@ -91,7 +90,6 @@
             --img-filter: invert(1) blur(5px) contrast(2) saturate(1.5);
             --img-blend: multiply;
             
-            /* MODIFICA: Colore testo modale LIGHT (Scuro) */
             --modal-text: var(--fg);
         }
 
@@ -114,11 +112,9 @@
             
             --accent-mono: #FF3300; 
             
-            /* MODIFICA: Colore testo modale SOLO qui Arancione */
-            --modal-text: #FF3300;
+            --modal-text: #ffffff;
         }
 
-        /* GLOBAL RESET FOR MONO THEME */
         html.mono * {
             border-radius: 0 !important;
         }
@@ -202,16 +198,8 @@
         textarea:-webkit-autofill,
         textarea:-webkit-autofill:hover,
         textarea:-webkit-autofill:focus {
-            /* Imposta il colore del testo */
             -webkit-text-fill-color: var(--fg) !important;
-            
-            /* TRUCCO PER LA TRASPARENZA: */
-            /* Ritarda il cambio di colore di sfondo di 50000s, 
-            così il browser non applica mai il suo sfondo bianco/giallo 
-            e rimane il tuo gradiente sotto. */
             transition: background-color 50000s ease-in-out 0s;
-            
-            /* Assicurati che il font rimanga corretto */
             font-family: 'Manrope', sans-serif !important;
         }
 
@@ -226,6 +214,7 @@
             #panel-works { width: auto; padding-right: 15vw; gap: 6vw; }
             .cinema-scope { width: 35vw; aspect-ratio: 16/10; height: auto; display: flex; flex-direction: column; justify-content: flex-end; position: relative; }
             .h-hero { font-size: clamp(3.5rem, 14vw, 11rem); line-height: 0.85; letter-spacing: -0.04em; }
+            /* UPDATED: Nav pill styles for better touch targets */
             .nav-pill { padding: 0.75rem 2rem; border-radius: 999px; top: 2rem; justify-content: center; gap: 2rem; }
         }
         @media (max-width: 768px) {
@@ -257,99 +246,117 @@
         .h-anim:hover { transform: skewX(-10deg) translateX(10px) scale(1.02); letter-spacing: 0.05em; font-style: italic; opacity: 0.8; color: var(--fg); }
         html.mono .h-anim:hover { color:#FF3300; font-style: normal; text-shadow: 2px 2px 0px rgba(255,255,255,0.1); }
         
-        .char-wrapper { display: inline-block; overflow: hidden; vertical-align: bottom; }
-        .char { display: inline-block; transform: translateY(110%); transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
-        .char.visible { transform: translateY(0); }
-
         /* Project Cards */
         .card-wrapper { position: relative; display: flex; flex-direction: column; gap: 1.5rem; cursor: pointer; }
+        
         .card-visual {
-            width: 100%; height: 100%; border-radius: 12px; overflow: hidden    ;
+            width: 100%; height: 100%; border-radius: 12px; overflow: hidden;
             border: 1px solid var(--border); position: relative; background-color: var(--glass);
-            transition: border-color 0.5s ease, box-shadow 0.3s ease,;
+            transition: border-color 0.5s ease, box-shadow 0.3s ease;
         }
+        
         html.mono .card-visual { border: var(--border-width) solid white; }
-        .card-img { width: 100%; height: 100%; background-size: cover; background-position: center; transition: transform 0.1s linear, filter 0.5s ease; filter: grayscale(100%); transform: scale(1.1); }
-        .card-wrapper:hover .card-img { filter: grayscale(0%); }
+        
+        /* MODIFICA UX DEV: Immagine a colori di default per Light/Dark */
+        .card-img { 
+            width: 100%; height: 100%; 
+            background-size: cover; background-position: center; 
+            transition: transform 0.1s linear, filter 0.5s ease; 
+            filter: grayscale(0%); /* Default: Colori */
+            transform: scale(1); 
+        }
+
+        /* Hover Effect: Zoom leggero per tutti */
+        .card-wrapper:hover .card-img { 
+            filter: grayscale(0%); /* Assicura colore pieno all'hover */
+        }
+        
+        /* MONO THEME OVERRIDE: Torna Bianco e Nero di default */
+        html.mono .card-img {
+            filter: grayscale(100%) contrast(4); /* B&W e contrasto alto */
+        }
+
+        /* MONO THEME HOVER: Rivela il colore (o riduce il contrasto eccessivo) */
+        html.mono .card-wrapper:hover .card-img {
+            filter: grayscale(0%) contrast(1); /* Torna a colori e contrasto normale */
+        }
+
         html.mono .card-wrapper:hover .card-visual:hover { border-color: var(--accent-mono); box-shadow: 8px 8px 0px var(--accent-mono); }
         .shadow-xl:hover {box-shadow: 8px 8px 0px var(--accent-mono);}
 
         /* ==========================================================================
-           LEGAL & PRIVACY STYLES
+           LEGAL & PRIVACY STYLES (UPDATED FOR BETTER UX)
            ========================================================================== */
-        .gdpr-wall {
-            position: fixed; bottom: 0; left: 0; width: 100%; height: 100%; z-index: 9000;
-            background: rgba(0,0,0,0.6); backdrop-filter: blur(10px);
-            display: none; justify-content: center; align-items: flex-end;
-            padding-bottom: 2rem; opacity: 0; transition: opacity 0.5s ease;
-        }
-        .gdpr-wall.active { display: flex; opacity: 1; pointer-events: auto; }
         
-        .cookie-banner {
-            width: 90%; max-width: 800px;
-            background: var(--bg); border: 1px solid var(--border);
-            padding: 2.5rem; border-radius: var(--radius);
-            box-shadow: none; /* MODIFICA 1: Rimosso box-shadow */
-            display: flex; flex-direction: column; gap: 1.5rem;
-            transform: translateY(20px); transition: transform 0.5s ease;
+        /* UPDATED: Banner fluttuante invece di Wall bloccante */
+        .gdpr-wall {
+            position: fixed; 
+            bottom: 2rem; 
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%; 
+            max-width: 600px;
+            height: auto; 
+            z-index: 9000;
+            display: none; 
+            justify-content: center; 
+            align-items: flex-end;
+            pointer-events: none; /* Permette il click sullo sfondo */
         }
 
-           /* =========================================
-   FIX COOKIE BANNER - TEMA MONO (COLORI & MOBILE)
-   ========================================= */
+        .gdpr-wall.active { 
+            display: flex; 
+            animation: slideUp 0.5s ease forwards;
+        }
 
-        /* 1. TESTO: Forza il bianco nel container */
+        .cookie-banner {
+            width: 100%;
+            background: var(--bg); 
+            border: 1px solid var(--border);
+            padding: 2rem; 
+            border-radius: var(--radius);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            display: flex; flex-direction: column; gap: 1.5rem;
+            pointer-events: auto; /* Riabilita il click sul banner */
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translate(-50%, 20px); }
+            to { opacity: 1; transform: translate(-50%, 0); }
+        }
+
+        /* MONO THEME TWEAKS FOR COOKIE BANNER */
         html.mono .cookie-banner,
         html.mono .cookie-banner h3,
         html.mono .cookie-banner p {
             color: #ffffff !important;
             border-color: #ffffff;
         }
+        html.mono .cookie-banner { border: 2px solid white; background: black; box-shadow: none; color: white; border-radius: 0; }
 
-        /* 2. BOTTONE ACCETTA (Arancione) */
         html.mono .cookie-banner button:first-of-type {
-            background-color: var(--accent-mono) !important; /* Arancione #FF3300 */
+            background-color: var(--accent-mono) !important;
             color: #000000 !important;
             border: none !important;
         }
-        /* Hover Accetta */
-        html.mono .cookie-banner button:first-of-type:hover {
-            transform: scale(1.05);
-            opacity: 0.9;
-        }
+        html.mono .cookie-banner button:first-of-type:hover { transform: scale(1.05); opacity: 0.9; }
 
-        /* 3. BOTTONE RIFIUTA (Bordo Bianco) */
         html.mono .cookie-banner button:last-of-type {
             border: 1px solid #ffffff !important;
             color: #ffffff !important;
             background-color: transparent !important;
         }
-        /* Hover Rifiuta */
         html.mono .cookie-banner button:last-of-type:hover {
             background-color: #ffffff !important;
             color: #000000 !important;
         }
 
-        /* =========================================
-        NUOVO: MODIFICA MOBILE
-        ========================================= */
         @media (max-width: 768px) {
-            /* Seleziona il contenitore dei bottoni e li impila verticalmente */
-            html.mono .cookie-banner > div.flex {
-                flex-direction: column !important;
-                gap: 1rem !important; /* Spazio tra i bottoni */
-            }
-
-            /* Rende i bottoni larghi al 100% (stessa lunghezza) e centra il testo */
-            html.mono .cookie-banner button {
-                width: 100% !important;
-                justify-content: center !important;
-                text-align: center !important;
-            }
-        }}
-        /* MODIFICA 2: Aggiunto colore bianco per il testo e rimosso box-shadow per il flat design */
-        html.mono .cookie-banner { border: 2px solid white; background: black; box-shadow: none; color: white; }
-        .gdpr-wall.active .cookie-banner { transform: translateY(0); color: #ffffff; }
+            html.mono .cookie-banner > div.flex { flex-direction: column !important; gap: 1rem !important; }
+            html.mono .cookie-banner button { width: 100% !important; justify-content: center !important; text-align: center !important; }
+        }
 
         /* Full Page Overlays */
         .legal-overlay {
@@ -377,9 +384,7 @@
         .legal-text { font-family: 'Manrope', sans-serif; font-size: 1rem; line-height: 1.8; opacity: 0.9; }
         .legal-text h2 { font-family: 'Syne', sans-serif; font-size: 1.5rem; font-weight: 700; margin-top: 3rem; margin-bottom: 1rem; color: var(--fg); }
 
-        /* =========================================
-           FIX COLORI TESTO LEGAL - TEMA MONO
-           ========================================= */
+        /* MONO THEME LEGAL TEXT FIX */
         html.mono .legal-overlay,
         html.mono .legal-overlay .legal-title,
         html.mono .legal-overlay .legal-text,
@@ -387,48 +392,22 @@
         html.mono .legal-overlay .legal-text p,
         html.mono .legal-overlay .legal-text li,
         html.mono .legal-overlay .legal-text strong {
-            color: var(--accent-mono) !important; /* Usa il tuo arancione #FF3300 */
+            color: var(--accent-mono) !important;
         }
-
-        /* Rende arancione anche la riga sotto il titolo "Privacy Policy" */
-        html.mono .legal-title {
-            border-bottom-color: var(--accent-mono) !important;
-        }
-
-        /* Rende arancione il pulsante di reset cookie */
-        html.mono .legal-overlay button {
-            border-color: var(--accent-mono);
-            color: var(--accent-mono);
-        }
-        
-        html.mono .legal-overlay button:hover {
-            background-color: var(--accent-mono);
-            color: black;
-        }
+        html.mono .legal-title { border-bottom-color: var(--accent-mono) !important; }
+        html.mono .legal-overlay button { border-color: var(--accent-mono); color: var(--accent-mono); }
+        html.mono .legal-overlay button:hover { background-color: var(--accent-mono); color: black; }
         
         /* FOOTER LEGAL LINKS */
         .panel-footer-legal {
-            margin-top: auto; 
-             
-            display: flex; 
-            justify-content: flex-end; 
-            gap: rem; 
-            padding-top: 4rem;
-            padding-bottom: 2rem;
+            margin-top: auto; display: flex; justify-content: flex-end; gap: rem; padding-top: 4rem; padding-bottom: 2rem;
         }
         .legal-link {
             font-family: 'Manrope', sans-serif; 
-            font-size: 11px; 
-            text-transform: uppercase; 
-            letter-spacing: 0.15em; 
-            opacity: 0.5; 
-            cursor: pointer; 
-            position: relative;
-            transition: opacity 0.3s;
+            font-size: 11px; text-transform: uppercase; letter-spacing: 0.15em; 
+            opacity: 0.5; cursor: pointer; position: relative; transition: opacity 0.3s;
         }
-        .legal-link::after {
-            content: ''; position: absolute; bottom: -4px; left: 0; width: 0%; height: 1px; background: var(--fg); transition: width 0.3s ease;
-        }
+        .legal-link::after { content: ''; position: absolute; bottom: -4px; left: 0; width: 0%; height: 1px; background: var(--fg); transition: width 0.3s ease; }
         .legal-link:hover { opacity: 1; }
         .legal-link:hover::after { width: 100%; }
         html.mono .legal-link:hover { color: var(--accent-mono); }
@@ -461,8 +440,6 @@
             backdrop-filter: blur(40px); 
             opacity: 0; pointer-events: none; transition: opacity 0.5s ease; 
             display: flex; justify-content: center; align-items: center; overflow-y: auto; 
-            
-            /* MODIFICA: Usa la variabile dinamica per il colore del testo */
             color: var(--modal-text); 
         }
         .project-modal.active { opacity: 1; pointer-events: auto; }
@@ -488,7 +465,6 @@
             html.mono #cursor { border-color: var(--accent-mono); mix-blend-mode: normal; border-width: 2px; }
         }
 
-        
     </style>
 </head>
 <body class="antialiased">
@@ -589,16 +565,18 @@
     </div>
     <div id="cursor" class="hidden md:block"></div>
 
-    <nav class="nav-pill">
-        <a href="#" class="font-display font-bold text-xl tracking-tighter" onclick="scrollEngine.scrollToPanel(0)">PANOSETTI</a>
-        <div class="hidden md:flex gap-8 items-center text-xs font-bold uppercase tracking-widest">
-            <button class="hover:opacity-60 transition-opacity" onclick="scrollEngine.scrollToPanel(1)" data-i18n="nav_about">About</button>
-            <button class="hover:opacity-60 transition-opacity" onclick="scrollEngine.scrollToPanel('works')" data-i18n="nav_work">Work</button>
-            <button class="hover:opacity-60 transition-opacity" onclick="scrollEngine.scrollToPanel(4)" data-i18n="nav_contact">Contact</button>
-        </div>
+    <nav class="nav-pill" aria-label="Navigazione principale">
+        <a href="#" class="font-display font-bold text-xl tracking-tighter focus:outline-none focus:ring-2 focus:ring-fg rounded-lg px-2" onclick="scrollEngine.scrollToPanel(0)">PANOSETTI</a>
+        
+        <ul class="hidden md:flex gap-8 items-center text-xs font-bold uppercase tracking-widest list-none m-0 p-0">
+            <li><button class="hover:opacity-60 transition-opacity focus:outline-none focus:underline" onclick="scrollEngine.scrollToPanel(1)" data-i18n="nav_about">About</button></li>
+            <li><button class="hover:opacity-60 transition-opacity focus:outline-none focus:underline" onclick="scrollEngine.scrollToPanel('works')" data-i18n="nav_work">Work</button></li>
+            <li><button class="hover:opacity-60 transition-opacity focus:outline-none focus:underline" onclick="scrollEngine.scrollToPanel(4)" data-i18n="nav_contact">Contact</button></li>
+        </ul>
+
         <div class="flex gap-4 items-center pl-4 border-l border-white/20 ml-4">
-            <div id="lang-btn" class="font-display font-bold cursor-pointer hover:opacity-60" onclick="languageManager.toggle()">IT</div>
-            <button id="theme-btn" class="hover:scale-110 transition-transform"><i data-lucide="sun" class="w-5 h-5" id="theme-icon"></i></button>
+            <button id="lang-btn" class="font-display font-bold cursor-pointer hover:opacity-60 focus:outline-none focus:ring-2 focus:ring-fg rounded px-1" onclick="languageManager.toggle()" aria-label="Cambia lingua">IT</button>
+            <button id="theme-btn" class="hover:scale-110 transition-transform focus:outline-none focus:ring-2 focus:ring-fg rounded-full p-1" aria-label="Cambia tema"><i data-lucide="circle" class="w-5 h-5" id="theme-icon"></i></button>
         </div>
     </nav>
 
@@ -689,6 +667,25 @@
                     <div class="meta-compact text-center md:text-left">
                         <h3 class="text-3xl font-display font-bold group-hover:translate-x-2 transition-transform">Otfzone</h3>
                         <span class="text-[10px] uppercase tracking-widest opacity-50">Identity</span>
+                    </div>
+                </article>
+
+                <article id="proj-adfdq" class="cinema-scope card-wrapper group parallax-trigger" onclick="projectManager.open(this)" data-title="Dogtype" data-tags="Editorial / Web Layout" data-img="img/Dogtype.png" data-year="2022" data-link="#">
+                    <div class="card-visual"><div class="card-img" style="background-image: url('img/adfdq.png');"></div></div>
+                    
+                    <div class="meta-compact text-center md:text-left">
+                        <h3 class="text-3xl font-display font-bold group-hover:translate-x-2 transition-transform">Al di fuori di qui</h3>
+                        <span class="text-[10px] uppercase tracking-widest opacity-50">Graphic Design</span>
+                        <span class="text-[10px] uppercase tracking-widest opacity-50">| Shooting</span>
+                    </div>
+                </article>
+
+                <article id="proj-bdp" class="cinema-scope card-wrapper group parallax-trigger" onclick="projectManager.open(this)" data-title="Dogtype" data-tags="Editorial / Web Layout" data-img="img/Dogtype.png" data-year="2022" data-link="#">
+                    <div class="card-visual"><div class="card-img" style="background-image: url('img/Dogtype.png');"></div></div>
+                    
+                    <div class="meta-compact text-center md:text-left">
+                        <h3 class="text-3xl font-display font-bold group-hover:translate-x-2 transition-transform">Le bimbe di pezza</h3>
+                        <span class="text-[10px] uppercase tracking-widest opacity-50">Graphic Design</span>
                     </div>
                 </article>
                 
@@ -796,7 +793,7 @@
                     this.unlockSite();
                 } else {
                     this.wall.classList.add('active');
-                    if(window.innerWidth > 768) document.body.style.overflow = 'hidden';
+                    // Removed overflow hidden blocking for improved UX (banner is floating now)
                 }
             }
 
@@ -818,11 +815,6 @@
 
             unlockSite() {
                 this.wall.classList.remove('active');
-                if (window.innerWidth > 768) {
-                    document.body.style.overflow = 'hidden'; 
-                } else {
-                    document.body.style.overflowY = 'auto';
-                }
             }
 
             injectScripts() {
@@ -951,25 +943,50 @@
         const languageManager = new LanguageManager();
 
         // ------------------------------------------------------------------
-        // SCROLL ENGINE
+        // SCROLL ENGINE (UPDATED: Keyboard Support)
         // ------------------------------------------------------------------
         class HybridScrollEngine {
             constructor() {
                 this.container = document.getElementById('container');
                 this.isDesktop = window.innerWidth > 768;
-                this.currentX = 0; this.targetX = 0; this.maxScroll = 0; this.ease = 0.08;
+                this.currentX = 0; 
+                this.targetX = 0; 
+                this.maxScroll = 0; 
+                this.ease = 0.08;
                 this.init();
                 window.addEventListener('resize', this.handleResize.bind(this));
+                
+                // ADDED: Keydown listener for arrow navigation
+                window.addEventListener('keydown', this.handleKeydown.bind(this));
             }
+            
             init() {
                 this.handleResize(); this.startLoop();
                 window.addEventListener('wheel', (e) => {
-                    if (this.isDesktop && !projectManager.isOpen && !document.getElementById('gdpr-wall').classList.contains('active')) {
+                    if (this.isDesktop && !projectManager.isOpen) {
                         this.targetX += e.deltaY;
-                        this.targetX = Math.max(0, Math.min(this.targetX, this.maxScroll));
+                        this.clampTarget();
                     }
                 });
             }
+
+            // ADDED: Logic for arrow keys
+            handleKeydown(e) {
+                if (!this.isDesktop || projectManager.isOpen) return;
+                const step = 300; // Scroll amount per key press
+                if (e.key === 'ArrowRight') {
+                    this.targetX += step;
+                    this.clampTarget();
+                } else if (e.key === 'ArrowLeft') {
+                    this.targetX -= step;
+                    this.clampTarget();
+                }
+            }
+
+            clampTarget() {
+                this.targetX = Math.max(0, Math.min(this.targetX, this.maxScroll));
+            }
+
             handleResize() {
                 this.isDesktop = window.innerWidth > 768;
                 if (this.isDesktop) {
@@ -981,6 +998,7 @@
                     this.container.style.transform = "none";
                 }
             }
+            
             startLoop() {
                 const animate = () => {
                     if (this.isDesktop) {
@@ -994,9 +1012,15 @@
                 };
                 animate();
             }
+            
             scrollToPanel(panelId) {
                 let panel = panelId === 'works' ? document.getElementById('panel-works') : document.getElementById(`panel-${panelId}`);
-                if (this.isDesktop && panel) this.targetX = panel.offsetLeft;
+                if (!panel && typeof panelId === 'number') panel = document.getElementById(`panel-${panelId}`);
+
+                if (this.isDesktop && panel) {
+                    this.targetX = panel.offsetLeft;
+                    this.clampTarget();
+                }
                 else if (panel) {
                     const y = panel.getBoundingClientRect().top + window.pageYOffset - 80;
                     window.scrollTo({top: y, behavior: 'smooth'});
