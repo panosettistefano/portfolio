@@ -52,7 +52,7 @@
            CORE ARCHITECTURE & THEMES
            ========================================================================== */
         :root {
-            --bg: #050505;
+            --bg: #050505c6;
             --fg: #ffffff; 
             --border: rgba(255, 255, 255, 0.15);
             --border-width: 1px;
@@ -67,8 +67,8 @@
             
             --modal-bg: rgba(0, 0, 0, 0.3); 
             
-            --img-opacity: 0.4;
-            --img-filter: blur(20px) contrast(1.2);
+            --img-opacity: 0.2;
+            --img-filter: blur(12px) contrast(3);
             --img-blend: overlay;
             
             --accent-mono: transparent; 
@@ -78,7 +78,7 @@
         }
 
         html.light {
-            --bg: #f3f4f6;
+            --bg: #f3f4f6e5;
             --fg: #111827;
             --border: rgba(0, 0, 0, 0.1);
             --blob-1: #bfdbfe; 
@@ -88,7 +88,7 @@
             --glass-strong: rgba(255, 255, 255, 0.9);
             --modal-bg: rgba(240, 240, 240, 0.95);
             --img-opacity: 0.25;
-            --img-filter: invert(1) blur(20px);
+            --img-filter: invert(1) blur(5px) contrast(4) saturate(3);
             --img-blend: multiply;
             
             /* MODIFICA: Colore testo modale LIGHT (Scuro) */
@@ -264,9 +264,9 @@
         /* Project Cards */
         .card-wrapper { position: relative; display: flex; flex-direction: column; gap: 1.5rem; cursor: pointer; }
         .card-visual {
-            width: 100%; height: 100%; border-radius: 12px; overflow: hidden;
+            width: 100%; height: 100%; border-radius: 12px; overflow: hidden    ;
             border: 1px solid var(--border); position: relative; background-color: var(--glass);
-            transition: border-color 0.5s ease, box-shadow 0.3s ease;
+            transition: border-color 0.5s ease, box-shadow 0.3s ease,;
         }
         html.mono .card-visual { border: var(--border-width) solid white; }
         .card-img { width: 100%; height: 100%; background-size: cover; background-position: center; transition: transform 0.1s linear, filter 0.5s ease; filter: grayscale(100%); transform: scale(1.1); }
@@ -589,17 +589,26 @@
                         
                         <p data-i18n="bio_p2">Attualmente studio informatica presso l'ITS di Lanciano perchè mi piace curare anche quello che è sotto la scatola.</p>
                         
-                        <ul class="space-y-4 font-mono text-sm opacity-80 text-left w-fit mx-auto md:mx-0">
-                            <li class="flex items-center gap-3"><i data-lucide="graduation-cap" class="w-4 h-4"></i> <span data-i18n="edu_1">UniTo: Laurea in Comunicazione</span></li>
-                            <li class="flex items-center gap-3"><i data-lucide="pen-tool" class="w-4 h-4"></i> <span data-i18n="edu_2">Master Web Design</span></li>
-                            <li class="flex items-center gap-3"><i data-lucide="code-2" class="w-4 h-4"></i> <span data-i18n="edu_3">Studente in ITC</span></li>
+                        <ul class="space-y-4 font-mono text-sm opacity-80 w-full md:w-fit md:mx-0">
+                            <li class="flex items-center justify-center md:justify-start gap-3">
+                                <i data-lucide="graduation-cap" class="w-4 h-4"></i> 
+                                <span data-i18n="edu_1">UniTo: Laurea in Comunicazione</span>
+                            </li>
+                            <li class="flex items-center justify-center md:justify-start gap-3">
+                                <i data-lucide="pen-tool" class="w-4 h-4"></i> 
+                                <span data-i18n="edu_2">Master Web Design</span>
+                            </li>
+                            <li class="flex items-center justify-center md:justify-start gap-3">
+                                <i data-lucide="code-2" class="w-4 h-4"></i> 
+                                <span data-i18n="edu_3">Studente in ITC</span>
+                            </li>
                         </ul>
                     </div>
                 </div>
             </section>
 
             <section class="panel" id="panel-works">
-                <div class="flex flex-col justify-center h-full max-w-md shrink-0 md:mr-20 items-center md:items-start text-center md:text-left mb-12 md:mb-0">
+                <div class="flex flex-col justify-center h-full max-w-md shrink-0 md:mr-20 items-center md:items-start  md:text-left mb-12 md:mb-0">
                     <span class="font-mono text-xs tracking-widest opacity-50 block mb-6" data-i18n="works_label">02 / SELECTED WORKS</span>
                     <h2 class="font-display text-5xl md:text-7xl font-bold flex flex-col leading-tight ">
                         <span class="h-anim w-fit" data-i18n="recenti">RECENT</span>
@@ -820,7 +829,7 @@
             it: {
                 nav_about: 'Chi sono', nav_work: 'Lavori', nav_contact: 'Contatti',
                 hero_footer: 'Vivo in Italia<br>Disponibile per collaborazioni',
-                profile_label: '01 / PROFILO', approccio: "MENTE", ibrido: "IBRIDA", 
+                profile_label: '01 / PROFILO', approccio: "COSA", ibrido: "FACCIO", 
                 bio_p1: 'Ciao sono Stefano Panosetti :) <br> Sono laureato in comunicazione e specializzato in <strong class="border-b border-fg font-medium">Visual e Web Design!</strong>',
                 bio_p2: 'Attualmente studio informatica presso l\'ITS di Lanciano perchè mi piace curare anche quello che è sotto la scatola.',
                 edu_1: 'UniTo: Laurea in Comunicazione', edu_2: 'Master Web Design', edu_3: 'Studente di ICT',
@@ -830,7 +839,7 @@
                 send_btn: 'Invia', visit: 'VISITA IL SITO',
                 cookie_title: 'Consenso Cookie',
                 cookie_text: 'Noi e terze parti selezionate utilizziamo cookie o tecnologie simili per finalità tecniche e, con il tuo consenso, anche per altre finalità.',
-                accept: 'Accetta Tutti', reject: 'Rifiuta / Solo Tecnici',
+                accept: 'Accetta Tutti', reject: 'Solo Tecnici',
                 proj_otf_desc: 'Otfzone è un brand che ho ideato io stesso per un progetto universitario. Durante il corso di WebDesign, sperimentando su Wp in particolare con Elementor ho creato questo piccolo sito che è un sito-vetrina con diverse caratteristiche. Dal portale delle prenotazioni, al login con contenuti esclusivi',
                 proj_doja_desc: 'Interfaccia utente sperimentale per una dashboard di criptovalute. Studio approfondito su data visualization e dark mode nativa OLED. Qui è stato fatto un focus sulla ux design ed è stato un progretto realizzato con taildwind e vanilla JS',
                 proj_dog_desc: 'Primo sito realizzato con Wp. Frutto del lavoro di gruppo svolto durante il corso di Wordpress.'
@@ -838,7 +847,7 @@
             en: {
                 nav_about: 'About', nav_work: 'Work', nav_contact: 'Contact',
                 hero_footer: 'Based in Italy<br>Remote First',
-                profile_label: '01 / PROFILE', approccio: "HYBRID", ibrido: "MIND",
+                profile_label: '01 / PROFILE', approccio: "WHAT", ibrido: "I DO ",
                 bio_p1: 'Hi I\'m Stefano Panosetti :) <br> I have a degree in communication and I specialize in <strong class="border-b border-fg font-medium">Visual & Web Design!</strong>',
                 bio_p2: 'I am currently studying Computer Science at ITS Lanciano because I love caring about what’s under the hood.',
                 edu_1: 'UniTo: Communication Degree', edu_2: 'Master Web Design', edu_3: 'ICT Student',
@@ -848,7 +857,7 @@
                 send_btn: 'Send', visit: 'VISIT WEBSITE',
                 cookie_title: 'Cookie Consent',
                 cookie_text: 'We and selected third parties use cookies or similar technologies for technical purposes and, with your consent, for other purposes.',
-                accept: 'Accept All', reject: 'Reject / Technical Only',
+                accept: 'Accept All', reject: 'Technical Only',
                 proj_otf_desc: 'Otfzone is a brand that I created myself for a university project. During the WebDesign course, experimenting on Wp in particular with Elementor, I created this small site which is a showcase site with various features. From the booking portal, to the login with exclusive content',
                 proj_doja_desc: 'Experimental user interface for a cryptocurrency dashboard. In-depth study on data visualization and native OLED dark mode. Here there was a focus on ux design and it was a project created with taildwind and vanilla JS',
                 proj_dog_desc: 'First site created with Wp. Result of the group work carried out during the Wordpress course.'
