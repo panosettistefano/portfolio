@@ -234,12 +234,14 @@
         /* Nav Pill */
         .nav-pill {
             position: fixed; left: 50%; transform: translateX(-50%); z-index: 100;
-            background: var(--glass); backdrop-filter: blur(16px);
-            border: 1px solid var(--border); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+            background: var(--glass); backdrop-filter: blur(30px);
+            border: 1px solid var(--border); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.32);
             transition: all 0.3s ease; color: var(--fg); display: flex; align-items: center;
              
         }
         html.mono .nav-pill { border: var(--border-width) solid white; background: black; color: white; }
+
+        
 
         /* Typography Animations */
         .h-anim { display: inline-block; width: fit-content; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); transform-origin: center left; cursor: default; white-space: nowrap; }
@@ -263,7 +265,7 @@
             background-size: cover; background-position: center; 
             transition: transform 0.1s linear, filter 0.5s ease; 
             filter: grayscale(0%); /* Default: Colori */
-            transform: scale(1); 
+            transform: scale(1.1); 
         }
 
         /* Hover Effect: Zoom leggero per tutti */
@@ -283,6 +285,8 @@
 
         html.mono .card-wrapper:hover .card-visual:hover { border-color: var(--accent-mono); box-shadow: 8px 8px 0px var(--accent-mono); }
         .shadow-xl:hover {box-shadow: 8px 8px 0px var(--accent-mono);}
+
+        
 
         /* ==========================================================================
            LEGAL & PRIVACY STYLES (UPDATED FOR BETTER UX)
@@ -565,18 +569,24 @@
     </div>
     <div id="cursor" class="hidden md:block"></div>
 
-    <nav class="nav-pill" aria-label="Navigazione principale">
-        <a href="#" class="font-display font-bold text-xl tracking-tighter focus:outline-none focus:ring-2 focus:ring-fg rounded-lg px-2" onclick="scrollEngine.scrollToPanel(0)">PANOSETTI</a>
+   <nav class="nav-pill" aria-label="Navigazione principale">
+        <a href="#" class="font-display font-bold text-xl tracking-tighter outline-none focus:outline-none hover:opacity-60 transition-opacity px-2" onclick="scrollEngine.scrollToPanel(0)">PANOSETTI</a>
         
-        <ul class="hidden md:flex gap-8 items-center text-xs font-bold uppercase tracking-widest list-none m-0 p-0">
-            <li><button class="hover:opacity-60 transition-opacity focus:outline-none focus:underline" onclick="scrollEngine.scrollToPanel(1)" data-i18n="nav_about">About</button></li>
-            <li><button class="hover:opacity-60 transition-opacity focus:outline-none focus:underline" onclick="scrollEngine.scrollToPanel('works')" data-i18n="nav_work">Work</button></li>
-            <li><button class="hover:opacity-60 transition-opacity focus:outline-none focus:underline" onclick="scrollEngine.scrollToPanel(4)" data-i18n="nav_contact">Contact</button></li>
+        <ul class="hidden md:flex gap-8 items-center text-xs font-medium uppercase tracking-widest list-none m-0 p-0">
+            <li>
+                <button class="hover:opacity-60 transition-opacity focus:outline-none focus:font-bold" onclick="scrollEngine.scrollToPanel(1)" data-i18n="nav_about">About</button>
+            </li>
+            <li>
+                <button class="hover:opacity-60 transition-opacity focus:outline-none focus:font-bold" onclick="scrollEngine.scrollToPanel('works')" data-i18n="nav_work">Work</button>
+            </li>
+            <li>
+                <button class="hover:opacity-60 transition-opacity focus:outline-none focus:font-bold" onclick="scrollEngine.scrollToPanel(4)" data-i18n="nav_contact">Contact</button>
+            </li>
         </ul>
 
         <div class="flex gap-4 items-center pl-4 border-l border-white/20 ml-4">
-            <button id="lang-btn" class="font-display font-bold cursor-pointer hover:opacity-60 focus:outline-none focus:ring-2 focus:ring-fg rounded px-1" onclick="languageManager.toggle()" aria-label="Cambia lingua">IT</button>
-            <button id="theme-btn" class="hover:scale-110 transition-transform focus:outline-none focus:ring-2 focus:ring-fg rounded-full p-1" aria-label="Cambia tema"><i data-lucide="circle" class="w-5 h-5" id="theme-icon"></i></button>
+            <button id="lang-btn" class="font-display font-bold cursor-pointer hover:opacity-60 focus:outline-none rounded px-1" onclick="languageManager.toggle()" aria-label="Cambia lingua">IT</button>
+            <button id="theme-btn" class="hover:scale-110 transition-transform focus:outline-none rounded-full p-1" aria-label="Cambia tema"><i data-lucide="circle" class="w-5 h-5" id="theme-icon"></i></button>
         </div>
     </nav>
 
@@ -670,7 +680,7 @@
                     </div>
                 </article>
 
-                <article id="proj-adfdq" class="cinema-scope card-wrapper group parallax-trigger" onclick="projectManager.open(this)" data-title="Dogtype" data-tags="Editorial / Web Layout" data-img="img/Dogtype.png" data-year="2022" data-link="#">
+                <article id="proj-adfdq" class="cinema-scope card-wrapper group parallax-trigger" onclick="projectManager.open(this)" data-title="Dogtype" data-tags="Editorial / Web Layout" data-img="img/Aldifuoridiqui.png" data-year="2022" data-link="#">
                     <div class="card-visual"><div class="card-img" style="background-image: url('img/adfdq.png');"></div></div>
                     
                     <div class="meta-compact text-center md:text-left">
@@ -680,8 +690,8 @@
                     </div>
                 </article>
 
-                <article id="proj-bdp" class="cinema-scope card-wrapper group parallax-trigger" onclick="projectManager.open(this)" data-title="Dogtype" data-tags="Editorial / Web Layout" data-img="img/Dogtype.png" data-year="2022" data-link="#">
-                    <div class="card-visual"><div class="card-img" style="background-image: url('img/Dogtype.png');"></div></div>
+                <article id="proj-bdp" class="cinema-scope card-wrapper group parallax-trigger" onclick="projectManager.open(this)" data-title="Dogtype" data-tags="Editorial / Web Layout" data-img="img/ladimbedipezza.png" data-year="2022" data-link="#">
+                    <div class="card-visual"><div class="card-img" style="background-image: url('img/lbdp.png');"></div></div>
                     
                     <div class="meta-compact text-center md:text-left">
                         <h3 class="text-3xl font-display font-bold group-hover:translate-x-2 transition-transform">Le bimbe di pezza</h3>
