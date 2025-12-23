@@ -293,9 +293,63 @@
             display: flex; flex-direction: column; gap: 1.5rem;
             transform: translateY(20px); transition: transform 0.5s ease;
         }
+
+           /* =========================================
+   FIX COOKIE BANNER - TEMA MONO (COLORI & MOBILE)
+   ========================================= */
+
+        /* 1. TESTO: Forza il bianco nel container */
+        html.mono .cookie-banner,
+        html.mono .cookie-banner h3,
+        html.mono .cookie-banner p {
+            color: #ffffff !important;
+            border-color: #ffffff;
+        }
+
+        /* 2. BOTTONE ACCETTA (Arancione) */
+        html.mono .cookie-banner button:first-of-type {
+            background-color: var(--accent-mono) !important; /* Arancione #FF3300 */
+            color: #000000 !important;
+            border: none !important;
+        }
+        /* Hover Accetta */
+        html.mono .cookie-banner button:first-of-type:hover {
+            transform: scale(1.05);
+            opacity: 0.9;
+        }
+
+        /* 3. BOTTONE RIFIUTA (Bordo Bianco) */
+        html.mono .cookie-banner button:last-of-type {
+            border: 1px solid #ffffff !important;
+            color: #ffffff !important;
+            background-color: transparent !important;
+        }
+        /* Hover Rifiuta */
+        html.mono .cookie-banner button:last-of-type:hover {
+            background-color: #ffffff !important;
+            color: #000000 !important;
+        }
+
+        /* =========================================
+        NUOVO: MODIFICA MOBILE
+        ========================================= */
+        @media (max-width: 768px) {
+            /* Seleziona il contenitore dei bottoni e li impila verticalmente */
+            html.mono .cookie-banner > div.flex {
+                flex-direction: column !important;
+                gap: 1rem !important; /* Spazio tra i bottoni */
+            }
+
+            /* Rende i bottoni larghi al 100% (stessa lunghezza) e centra il testo */
+            html.mono .cookie-banner button {
+                width: 100% !important;
+                justify-content: center !important;
+                text-align: center !important;
+            }
+        }}
         /* MODIFICA 2: Aggiunto colore bianco per il testo e rimosso box-shadow per il flat design */
         html.mono .cookie-banner { border: 2px solid white; background: black; box-shadow: none; color: white; }
-        .gdpr-wall.active .cookie-banner { transform: translateY(0); }
+        .gdpr-wall.active .cookie-banner { transform: translateY(0); color: #ffffff; }
 
         /* Full Page Overlays */
         .legal-overlay {
@@ -433,6 +487,8 @@
             #cursor { position: fixed; top: 0; left: 0; width: 20px; height: 20px; border: 1px solid var(--fg); border-radius: 50%; pointer-events: none; z-index: 9999; transform: translate(-50%, -50%); mix-blend-mode: difference; transition: transform 0.1s, width 0.3s, height 0.3s; }
             html.mono #cursor { border-color: var(--accent-mono); mix-blend-mode: normal; border-width: 2px; }
         }
+
+        
     </style>
 </head>
 <body class="antialiased">
@@ -830,7 +886,7 @@
             it: {
                 nav_about: 'Chi sono', nav_work: 'Lavori', nav_contact: 'Contatti',
                 hero_footer: 'Vivo in Italia<br>Disponibile per collaborazioni',
-                profile_label: '01 / PROFILO', approccio: "COSA", ibrido: "FACCIO", 
+                profile_label: '01 / PROFILO', approccio: "CHI", ibrido: "SONO", 
                 bio_p1: 'Ciao sono Stefano Panosetti :) <br> Sono laureato in comunicazione e specializzato in <strong class="border-b border-fg font-medium">Visual e Web Design!</strong>',
                 bio_p2: 'Attualmente studio informatica presso l\'ITS di Lanciano perchè mi piace curare anche quello che è sotto la scatola.',
                 edu_1: 'UniTo: Laurea in Comunicazione', edu_2: 'Master Web Design', edu_3: 'Studente di ICT',
@@ -848,7 +904,7 @@
             en: {
                 nav_about: 'About', nav_work: 'Work', nav_contact: 'Contact',
                 hero_footer: 'Based in Italy<br>Remote First',
-                profile_label: '01 / PROFILE', approccio: "WHAT", ibrido: "I DO ",
+                profile_label: '01 / PROFILE', approccio: "HOW", ibrido: "I AM ",
                 bio_p1: 'Hi I\'m Stefano Panosetti :) <br> I have a degree in communication and I specialize in <strong class="border-b border-fg font-medium">Visual & Web Design!</strong>',
                 bio_p2: 'I am currently studying Computer Science at ITS Lanciano because I love caring about what’s under the hood.',
                 edu_1: 'UniTo: Communication Degree', edu_2: 'Master Web Design', edu_3: 'ICT Student',
