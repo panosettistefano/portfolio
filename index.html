@@ -69,7 +69,7 @@
             --modal-bg: rgba(0, 0, 0, 0.3); 
             
             --img-opacity: 0.2;
-            --img-filter: blur(20px) contrast(3);
+            --img-filter: blur(20px) contrast(0);
             --img-blend: overlay;
             
             --accent-mono: transparent; 
@@ -88,7 +88,7 @@
             --glass-strong: rgba(255, 255, 255, 0.9);
             --modal-bg: rgba(240, 240, 240, 0.95);
             --img-opacity: 0.25;
-            --img-filter: invert(1) blur(5px) contrast(2) saturate(1.5);
+            --img-filter: invert(1) blur(10px);
             --img-blend: multiply;
             
             --modal-text: var(--fg);
@@ -438,25 +438,33 @@
         html.mono .close-legal-btn { border: 2px solid white; background: black; }
         html.mono .close-legal-btn:hover { background: var(--accent-mono); color: black; border-color: var(--accent-mono); }
 
-        /* Project Modal */
         .project-modal { 
-            position: fixed; inset: 0; z-index: 999; 
-            background: var(--modal-bg); 
-            backdrop-filter: blur(40px); 
-            opacity: 0; pointer-events: none; transition: opacity 0.5s ease; 
-            display: flex; justify-content: center; align-items: center; overflow-y: auto; 
-            color: var(--modal-text); 
-        }
+        position: fixed; inset: 0; z-index: 999; 
+        background: var(--modal-bg); 
+        backdrop-filter: blur(40px); 
+        opacity: 0; pointer-events: none; transition: opacity 0.5s ease; 
+        
+        /* CAMBIATO: Usa flex-start invece di center per evitare il taglio in alto */
+        display: flex; 
+        justify-content: center; 
+        align-items: flex-start;  
+        
+        overflow-y: auto; /* Abilita lo scroll */
+        color: var(--modal-text); 
+    }
         .project-modal.active { opacity: 1; pointer-events: auto; }
         
-        .modal-inner { 
-            width: 90%; max-width: 1400px; 
-            min-height: 90vh; 
-            margin: 12vh auto 8vh auto; 
-            padding-top: 4rem; 
-            transform: translateY(50px) scale(0.95); transition: transform 0.6s ease; opacity: 0; 
-        }
+       .modal-inner { 
+        width: 90%; max-width: 1400px; 
+        min-height: auto; /* CAMBIATO: Rimuovi 90vh fisso per adattarsi al contenuto */
         
+        /* CAMBIATO: Margini ottimizzati per mobile e desktop */
+        margin: 6rem auto 4rem auto; 
+        
+        padding-top: 2rem; /* Ridotto leggermente */
+        transform: translateY(50px) scale(0.95); transition: transform 0.6s ease; opacity: 0; 
+    }
+            
         .project-modal.active .modal-inner { transform: translateY(0) scale(1); opacity: 1; }
         .modal-close { position: absolute; top: 0; right: 0; width: 60px; height: 60px; border-radius: 50%; border: 1px solid var(--border); display: flex; justify-content: center; align-items: center; background: var(--bg); cursor: pointer; z-index: 50; transition: 0.3s; }
         html.mono .modal-close { border: 2px solid white; }
@@ -496,6 +504,13 @@
         @media (min-width: 769px) {
             .progress-container {
                 display: block;
+            }
+        }
+        @media (max-width: 768px) {
+            .modal-inner {
+                margin-top: 5rem; /* Meno spazio in alto su mobile */
+                width: 92%;       /* Un po' più largo su mobile */
+                padding-top: 1rem;
             }
         }
 
