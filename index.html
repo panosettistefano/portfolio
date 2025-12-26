@@ -11,7 +11,8 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -468,10 +469,46 @@
             #cursor { position: fixed; top: 0; left: 0; width: 20px; height: 20px; border: 1px solid var(--fg); border-radius: 50%; pointer-events: none; z-index: 9999; transform: translate(-50%, -50%); mix-blend-mode: difference; transition: transform 0.1s, width 0.3s, height 0.3s; }
             html.mono #cursor { border-color: var(--accent-mono); mix-blend-mode: normal; border-width: 2px; }
         }
+        /* Stile base della barra */
+        .progress-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px; /* Spessore della barra */
+            background: transparent;
+            z-index: 9999; /* Deve stare sopra a tutto */
+            display: none; /* Nascosta di default (mobile) */
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: #ffffff; /* COLORE DELLA BARRA */
+            width: 0%;
+            transition: width 0.1s ease-out;
+        }
+        html.mono .progress-bar{
+            background-color: #FF3300;
+        }
+
+
+        /* Mostra solo su Desktop (> 768px) */
+        @media (min-width: 769px) {
+            .progress-container {
+                display: block;
+            }
+        }
+
+        .ambient-layer {
+        pointer-events: none; /* mi risolve i probelmi del clock . */
+         }
 
     </style>
 </head>
 <body class="antialiased">
+    <div class="progress-container">
+        <div class="progress-bar" id="myBar"></div>
+    </div>
 
     <div id="gdpr-wall" class="gdpr-wall">
         <div class="cookie-banner">
@@ -490,7 +527,7 @@
     <div id="privacy-overlay" class="legal-overlay">
         <button class="close-legal-btn" onclick="legal.close()"><i data-lucide="x" class="w-6 h-6"></i></button>
         <div class="legal-container">
-            <h1 class="legal-title">Privacy Policy</h1>
+            <h1 class="legal-title" data-speed="0.5">Privacy Policy</h1>
             <div class="legal-text">
                 <p><strong>Informativa ai sensi dell'art. 13 del Regolamento (UE) 2016/679 (GDPR)</strong></p>
                 <p>Questa informativa descrive le modalità di trattamento dei dati personali degli utenti che consultano il sito web di Stefano Panosetti.</p>
@@ -552,7 +589,7 @@
                     <div class="space-y-6 text-lg font-light leading-relaxed opacity-90 border-l-2 border-border pl-6 mb-12">
                         <p id="m-desc">Description goes here...</p>
                     </div>
-                    <a id="m-link" href="#" target="_blank" class="interactive-override group inline-flex items-center gap-4 text-2xl font-display font-bold hover:gap-6 transition-all w-fit">
+                    <a id="m-link" href="" target="_blank" class="interactive-override group inline-flex items-center gap-4 text-2xl font-display font-bold hover:gap-6 transition-all w-fit">
                         <span class="border-b border-fg pb-1" data-i18n="visit">VISITA IL SITO</span>
                         <i data-lucide="arrow-right" class="group-hover:translate-x-2 transition-transform"></i>
                     </a>
@@ -570,7 +607,7 @@
     <div id="cursor" class="hidden md:block"></div>
 
    <nav class="nav-pill" aria-label="Navigazione principale">
-        <a href="#" class="font-display font-bold text-xl tracking-tighter outline-none focus:outline-none hover:opacity-60 transition-opacity px-2" onclick="scrollEngine.scrollToPanel(0)">PANOSETTI</a>
+        <button class="font-display font-bold text-xl tracking-tighter outline-none focus:outline-none hover:opacity-60 transition-opacity px-2 bg-transparent border-none cursor-pointer" onclick="scrollEngine.scrollToPanel(0)">PANOSETTI</button>
         
         <ul class="hidden md:flex gap-8 items-center text-xs font-medium uppercase tracking-widest list-none m-0 p-0">
             <li>
@@ -622,17 +659,17 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-20 max-w-6xl w-full items-center">
                     <div class="flex flex-col items-center md:items-start text-center md:text-left">
                         <span class="font-mono text-xs tracking-widest opacity-50 block mb-6" data-i18n="profile_label">01 / PROFILE</span>
-                        <h2 class="font-display text-5xl md:text-8xl font-bold mb-8 flex flex-col">
-                            <span class="h-anim w-fit" data-i18n="approccio">HYBRID</span>
-                            <span class="h-anim w-fit" data-i18n="ibrido">MIND.</span>
+                        <h2 class="font-display text-5xl md:text-8xl font-bold mb-8 flex flex-col items-center md:items-start" data-speed="0.5">
+                            <span class="h-anim w-fit" data-i18n="approccio">CHI</span>
+                            <span class="h-anim w-fit" data-i18n="ibrido">SONO</span>
                         </h2>
                     </div>
                     
                    <div class="space-y-8 text-lg md:text-xl font-light leading-relaxed backdrop-blur-md bg-white/5 p-8 rounded-2xl border border-border shadow-xl text-center md:text-left">
     
-                        <p data-i18n="bio_p1">Ciao sono Stefano Panosetti :) <br> Sono laureato in comunicazione e specializzato in <strong class="border-b border-fg font-medium">Visual e Web Design!</strong></p>
+                        <p data-i18n="bio_p1"> Ciao, sono Stefano Panosetti! Dopo una laurea in comunicazione e vari corsi di grafica e web design ho iniziato ad appassionarmi anche allo sviluppo. <br><br> Infatti, oggi studio ICT all’Its , con l’obiettivo di unire competenze visive a competenze tecniche.</p>
                         
-                        <p data-i18n="bio_p2">Attualmente studio informatica presso l'ITS di Lanciano perchè mi piace curare anche quello che è sotto la scatola.</p>
+                        <p data-i18n="bio_p2"> Dalla logica del codice con Java e React alla gestione di database e infrastrutture cloud, fino alla sfida della cybersecurity.  </p>
                         
                         <ul class="space-y-4 font-mono text-sm opacity-80 w-full md:w-fit md:mx-0">
                             <li class="flex items-center justify-center md:justify-start gap-3">
@@ -655,7 +692,7 @@
             <section class="panel" id="panel-works">
                 <div class="flex flex-col justify-center h-full max-w-md shrink-0 md:mr-20 items-center md:items-start  md:text-left mb-12 md:mb-0">
                     <span class="font-mono text-xs tracking-widest opacity-50 block mb-6" data-i18n="works_label">02 / SELECTED WORKS</span>
-                    <h2 class="font-display text-5xl md:text-7xl font-bold flex flex-col leading-tight ">
+                    <h2 class="font-display text-5xl md:text-7xl font-bold flex flex-col leading-tight items-center md:items-start" data-speed="0.5">
                         <span class="h-anim w-fit" data-i18n="recenti">RECENT</span>
                         <span class="h-anim w-fit" data-i18n="progetti">PROJECTS.</span>
                     </h2>
@@ -676,40 +713,50 @@
                     
                     <div class="meta-compact text-center md:text-left">
                         <h3 class="text-3xl font-display font-bold group-hover:translate-x-2 transition-transform">Otfzone</h3>
-                        <span class="text-[10px] uppercase tracking-widest opacity-50">Identity</span>
+                        <span class="text-[10px] uppercase tracking-widest opacity-50">Brand Identity | Elementor</span>
                     </div>
                 </article>
 
-                <article id="proj-adfdq" class="cinema-scope card-wrapper group parallax-trigger" onclick="projectManager.open(this)" data-title="Dogtype" data-tags="Editorial / Web Layout" data-img="img/Aldifuoridiqui.png" data-year="2022" data-link="#">
-                    <div class="card-visual"><div class="card-img" style="background-image: url('img/adfdq.png');"></div></div>
+               <article id="proj-adfdq" class="cinema-scope card-wrapper group parallax-trigger" onclick="projectManager.open(this)" 
+                data-title="Al di fuori di qui" 
+                data-tags="Editorial / Web Layout" 
+                data-img="img/adfdq.png" 
+                data-year="2022" 
+                data-link="#" 
+                data-desc=""> <div class="card-visual"><div class="card-img" style="background-image: url('img/adfdq.png');"></div></div>
+                
+                <div class="meta-compact text-center md:text-left">
+                    <h3 class="text-3xl font-display font-bold group-hover:translate-x-2 transition-transform">Al di fuori di qui</h3>
+                    <span class="text-[10px] uppercase tracking-widest opacity-50">Graphic Design | Shooting </span>
                     
-                    <div class="meta-compact text-center md:text-left">
-                        <h3 class="text-3xl font-display font-bold group-hover:translate-x-2 transition-transform">Al di fuori di qui</h3>
-                        <span class="text-[10px] uppercase tracking-widest opacity-50">Graphic Design</span>
-                        <span class="text-[10px] uppercase tracking-widest opacity-50">| Shooting</span>
-                    </div>
-                </article>
+                </div>
+            </article>
 
-                <article id="proj-bdp" class="cinema-scope card-wrapper group parallax-trigger" onclick="projectManager.open(this)" data-title="Dogtype" data-tags="Editorial / Web Layout" data-img="img/ladimbedipezza.png" data-year="2022" data-link="#">
-                    <div class="card-visual"><div class="card-img" style="background-image: url('img/lbdp.png');"></div></div>
-                    
-                    <div class="meta-compact text-center md:text-left">
-                        <h3 class="text-3xl font-display font-bold group-hover:translate-x-2 transition-transform">Le bimbe di pezza</h3>
-                        <span class="text-[10px] uppercase tracking-widest opacity-50">Graphic Design</span>
-                    </div>
-                </article>
+            <article id="proj-bdp" class="cinema-scope card-wrapper group parallax-trigger" onclick="projectManager.open(this)" 
+                data-title="Le bimbe di pezza" 
+                data-tags="Editorial / Web Layout" 
+                data-img="img/lbdp.png" 
+                data-year="2022" 
+                data-link="#"
+                data-desc=""> <div class="card-visual"><div class="card-img" style="background-image: url('img/lbdp.png');"></div></div>
+    
+    <div class="meta-compact text-center md:text-left">
+        <h3 class="text-3xl font-display font-bold group-hover:translate-x-2 transition-transform">Le bimbe di pezza</h3>
+        <span class="text-[10px] uppercase tracking-widest opacity-50">Graphic Design</span>
+    </div>
+</article>
                 
                 <article id="proj-dog" class="cinema-scope card-wrapper group parallax-trigger" onclick="projectManager.open(this)" data-title="Dogtype" data-tags="Editorial / Web Layout" data-img="img/Dogtype.png" data-year="2022" data-link="#">
                     <div class="card-visual"><div class="card-img" style="background-image: url('img/Dogtype.png');"></div></div>
                     
                     <div class="meta-compact text-center md:text-left">
                         <h3 class="text-3xl font-display font-bold group-hover:translate-x-2 transition-transform">Dogtype</h3>
-                        <span class="text-[10px] uppercase tracking-widest opacity-50">Editorial</span>
+                        <span class="text-[10px] uppercase tracking-widest opacity-50">Wordpress</span>
                     </div>
                 </article>
             </section>
 
-           <section class="panel" id="panel-4">
+           
             <section class="panel" id="panel-4">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-32 w-full max-w-7xl items-center md:items-start flex-grow pt-10 md:pt-0">
                     
@@ -737,7 +784,7 @@
                         </div>
                     </div>
 
-                    <div class="w-full flex flex-col justify-center h-full mt-8 md:mt-0">
+                    <div class="w-full flex flex-col justify-center h-full mt-8 md:ml-20 md:mt-0">
                         <div class="form-structural-wrapper w-full max-w-lg mx-auto md:mx-0 md:pl-12 interactive-override p-1 md:p-0">
                             
                             <form action="https://formsubmit.co/panudovesei@gmail.com" method="POST" class=" flex flex-col ">
@@ -772,7 +819,7 @@
                     </div>
                 </div>
                 
-                <div class="panel-footer-legal pb-8 md:pb-0 pr-0 md:pr-8 flex justify-center md:justify-end gap-6 md:gap-8 w-full">
+                <div class="panel-footer-legal pb-8 md:pb-5 pr-0 md:pr-8 flex justify-center md:justify-end gap-6 md:gap-8 w-full">
                     <span class="legal-link" onclick="legal.open('privacy')">Privacy Policy</span>
                     <span class="legal-link" onclick="legal.open('cookie')">Cookie Policy</span>
                     <span class="font-mono text-[10px] opacity-30 tracking-widest">© 2025</span>
@@ -889,8 +936,8 @@
                 nav_about: 'Chi sono', nav_work: 'Lavori', nav_contact: 'Contatti',
                 hero_footer: 'Vivo in Italia<br>Disponibile per collaborazioni',
                 profile_label: '01 / PROFILO', approccio: "CHI", ibrido: "SONO", 
-                bio_p1: 'Ciao sono Stefano Panosetti :) <br> Sono laureato in comunicazione e specializzato in <strong class="border-b border-fg font-medium">Visual e Web Design!</strong>',
-                bio_p2: 'Attualmente studio informatica presso l\'ITS di Lanciano perchè mi piace curare anche quello che è sotto la scatola.',
+                bio_p1: 'Ciao, sono Stefano Panosetti! \n Dopo una laurea in comunicazione e vari corsi di grafica e web design ho iniziato ad appassionarmi anche allo sviluppo. \n\n Infatti, oggi studio ICT all’Its , con l’obiettivo di unire competenze visive a competenze tecniche.' ,
+                bio_p2: ' \n Dalla logica del codice con Java e React alla gestione di database e infrastrutture cloud, fino alla sfida della cybersecurity. \n \n ',
                 edu_1: 'UniTo: Laurea in Comunicazione', edu_2: 'Master Web Design', edu_3: 'Studente di ICT',
                 works_label: '02 / SELEZIONE LAVORI', recenti: 'PROGETTI', progetti: "RECENTI",  click_expand: 'Clicca per sapere di più',
                 contact_label: '03 / CONTATTI', lets: "LA TUA", talk: "IDEA ?",
@@ -900,15 +947,17 @@
                 cookie_text: 'Noi e terze parti selezionate utilizziamo cookie o tecnologie simili per finalità tecniche e, con il tuo consenso, anche per altre finalità.',
                 accept: 'Accetta Tutti', reject: 'Solo Tecnici',
                 proj_otf_desc: 'Otfzone è un brand che ho ideato io stesso per un progetto universitario. Durante il corso di WebDesign, sperimentando su Wp in particolare con Elementor ho creato questo piccolo sito che è un sito-vetrina con diverse caratteristiche. Dal portale delle prenotazioni, al login con contenuti esclusivi',
-                proj_doja_desc: 'Interfaccia utente sperimentale per una dashboard di criptovalute. Studio approfondito su data visualization e dark mode nativa OLED. Qui è stato fatto un focus sulla ux design ed è stato un progretto realizzato con taildwind e vanilla JS',
-                proj_dog_desc: 'Primo sito realizzato con Wp. Frutto del lavoro di gruppo svolto durante il corso di Wordpress.'
+                proj_doja_desc: 'Interfaccia utente sperimentale per una dashboard di criptovalute. \n\n Qui è stato fatto un focus sul brand e successivamente sulla ux deisgn disegnando un prototipo su figma.\n Successivamente ed è stato realizzato il progetto nel front-end utilizzando tailwind e js vanilla. \n\n Questo Lavoro resta un lavoro personale che implementerò quando avrò le competenze necessarie per svilppuare il backend',
+                proj_dog_desc: 'Primo sito in assoluto realizzato con Wordpress. Durante il progetto svolto con la classe abbiamo creato un sito di prova sull\'addestramento canino, contenente un blog, una newsletter e molte catorgie. \n\n Sicuramente non il miglior sito creato, ma un lavoro a cui sono affezionato essendo il primo sito svolto in co-working  ',
+                proj_adfdq_desc: 'Progetto di Grafica a fotografia.\n In questo caso ho collaborato con un\'artista locale e, ascoltando le sue richieste e necessità, ho scattato fotografie che successivamente sono state trasformate in grafiche, di cui post social e copertine album ',
+                proj_bdp_desc: 'Le bimbe di pezza è un progetto grafico sperimentale. Il focus è sulla composizione visiva e l\'uso di texture per evocare sensazioni tattili attraverso il medium digitale.'
             },
             en: {
                 nav_about: 'About', nav_work: 'Work', nav_contact: 'Contact',
                 hero_footer: 'Based in Italy<br>Remote First',
                 profile_label: '01 / PROFILE', approccio: "HOW", ibrido: "I AM ",
-                bio_p1: 'Hi I\'m Stefano Panosetti :) <br> I have a degree in communication and I specialize in <strong class="border-b border-fg font-medium">Visual & Web Design!</strong>',
-                bio_p2: 'I am currently studying Computer Science at ITS Lanciano because I love caring about what’s under the hood.',
+                bio_p1: 'Hi, I\'m Stefano Panosetti! After a degree in communication and various courses in graphics and web design, I also began to develop a passion.\n\n In fact, today I study ICT at ITS, with the aim of combining visual and technical skills.',
+                bio_p2: 'From code logic with Java and React to database and cloud infrastructure management, to the challenge of cybersecurity. ',
                 edu_1: 'UniTo: Communication Degree', edu_2: 'Master Web Design', edu_3: 'ICT Student',
                 works_label: '02 / SELECTED WORKS', recenti: 'RECENT', progetti: "PROJECT", click_expand: 'CLICK TO EXPAND',
                 contact_label: '03 / CONTACT', lets: "LET'S", talk: "TALK",
@@ -918,8 +967,10 @@
                 cookie_text: 'We and selected third parties use cookies or similar technologies for technical purposes and, with your consent, for other purposes.',
                 accept: 'Accept All', reject: 'Technical Only',
                 proj_otf_desc: 'Otfzone is a brand that I created myself for a university project. During the WebDesign course, experimenting on Wp in particular with Elementor, I created this small site which is a showcase site with various features. From the booking portal, to the login with exclusive content',
-                proj_doja_desc: 'Experimental user interface for a cryptocurrency dashboard. In-depth study on data visualization and native OLED dark mode. Here there was a focus on ux design and it was a project created with taildwind and vanilla JS',
-                proj_dog_desc: 'First site created with Wp. Result of the group work carried out during the Wordpress course.'
+                proj_doja_desc: 'Experimental user interface for a cryptocurrency dashboard. \n\n Here we focused on the brand and subsequently on the ux design by drawing a prototype on figma.\n Subsequently, the project was created in the front-end using tailwind and vanilla js. \n\nThis Work remains a personal work that I will implement when I have the necessary skills to develop the backend',
+                proj_dog_desc: 'First ever site built with WordPress. During the project we did with the class, we created a test site on \'dog training, containing a blog, a newsletter, and many cathorgias. \n\n It\'s definitely not the best site I\'ve created, but it\'s a job I\'m fond of, being the first site I\'ve done in co-working  ',
+                proj_adfdq_desc: 'Editorial design and art direction project. A layout that explores typography and negative space to tell a visual story through curated photography and modern typesetting.',
+                proj_bdp_desc: 'Le bimbe di pezza is an experimental graphic project. The focus is on visual composition and the use of textures to evoke tactile sensations through the digital medium.'
             }
         };
 
@@ -936,17 +987,36 @@
             }
             updateDOM() {
                 this.btn.innerText = this.lang.toUpperCase();
+                
+                // Traduzione testi generici
                 document.querySelectorAll('[data-i18n]').forEach(el => {
                     const key = el.getAttribute('data-i18n');
                     if(TRANSLATIONS[this.lang][key]) el.innerHTML = TRANSLATIONS[this.lang][key];
                 });
+
+                // Traduzione placeholder form
                 document.querySelectorAll('[data-i18n-ph]').forEach(el => {
                     const key = el.getAttribute('data-i18n-ph');
                     if(TRANSLATIONS[this.lang][key]) el.placeholder = TRANSLATIONS[this.lang][key];
                 });
-                const otf = document.getElementById('proj-otf'); if(otf) otf.setAttribute('data-desc', TRANSLATIONS[this.lang].proj_otf_desc);
-                const doja = document.getElementById('proj-doja'); if(doja) doja.setAttribute('data-desc', TRANSLATIONS[this.lang].proj_doja_desc);
-                const dog = document.getElementById('proj-dog'); if(dog) dog.setAttribute('data-desc', TRANSLATIONS[this.lang].proj_dog_desc);
+
+                // --- AGGIORNAMENTO DESCRIZIONI PROGETTI ---
+                const otf = document.getElementById('proj-otf'); 
+                if(otf) otf.setAttribute('data-desc', TRANSLATIONS[this.lang].proj_otf_desc);
+                
+                const doja = document.getElementById('proj-doja'); 
+                if(doja) doja.setAttribute('data-desc', TRANSLATIONS[this.lang].proj_doja_desc);
+                
+                const dog = document.getElementById('proj-dog'); 
+                if(dog) dog.setAttribute('data-desc', TRANSLATIONS[this.lang].proj_dog_desc);
+
+                // NUOVI PROGETTI AGGIUNTI
+                const adfdq = document.getElementById('proj-adfdq'); 
+                if(adfdq) adfdq.setAttribute('data-desc', TRANSLATIONS[this.lang].proj_adfdq_desc);
+
+                const bdp = document.getElementById('proj-bdp'); 
+                if(bdp) bdp.setAttribute('data-desc', TRANSLATIONS[this.lang].proj_bdp_desc);
+                
                 lucide.createIcons();
             }
         }
@@ -1096,6 +1166,44 @@
                 cursor.style.transform = e.target.closest(interactables) ? "translate(-50%, -50%) scale(2.5)" : "translate(-50%, -50%) scale(1)";
             });
         }
+        
+      // Seleziona gli elementi
+    const progressBar = document.getElementById("myBar");
+    const container = document.getElementById("container");
+
+    // Funzione di aggiornamento continuo (Loop)
+    function trackHorizontalScroll() {
+        // Esegui solo su Desktop
+        if (window.innerWidth > 768 && container) {
+            
+            // 1. Leggi la posizione attuale del contenitore (translateX)
+            const style = window.getComputedStyle(container);
+            const matrix = new WebKitCSSMatrix(style.transform);
+            const currentX = Math.abs(matrix.m41); // m41 è il valore di spostamento orizzontale
+            
+            // 2. Calcola quanto è lungo tutto il contenuto
+            const maxScroll = container.scrollWidth - window.innerWidth;
+            
+            // 3. Calcola la percentuale
+            // (evitiamo divisioni per zero)
+            const percent = maxScroll > 0 ? (currentX / maxScroll) * 100 : 0;
+            
+            // 4. Applica alla barra
+            progressBar.style.width = percent + "%";
+        } else {
+            // Su mobile nascondi o resetta
+            progressBar.style.width = "0%";
+        }
+
+        // Richiedi il prossimo frame (aggiornamento fluido 60fps)
+        requestAnimationFrame(trackHorizontalScroll);
+    }
+
+    // Avvia il tracciamento
+    trackHorizontalScroll();  
+       
     </script>
+        
+    
 </body>
 </html>
