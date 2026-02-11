@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Stefano Panosetti | Visual Designer</title>
+    
+    <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20512%20512%22%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2250%25%22%20fill%3D%22white%22%20font-family%3D%22sans-serif%22%20font-weight%3D%22700%22%20font-size%3D%22280%22%20text-anchor%3D%22middle%22%20dy%3D%22.35em%22%3ESP%3C%2Ftext%3E%3C%2Fsvg%3E">
+
+    <meta name="description" content="Portfolio di Stefano Panosetti. Visual Designer & Frontend Developer.">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Manrope', 'sans-serif'],
+                        display: ['Syne', 'sans-serif'],
+                    },
+                    colors: {
+                        bg: 'var(--bg)',
+                        fg: 'var(--fg)',
+                        border: 'var(--border)',
+                        glass: 'var(--glass)',
+                    },
+                    animation: {
+                        'blob': 'blob 20s infinite',
+                    },
+                    keyframes: {
+                        blob: {
+                            '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                            '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                            '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                            '100%': { transform: 'translate(0px, 0px) scale(1)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* ==========================================================================
+           CORE ARCHITECTURE & THEMES
+           ========================================================================== */
+        :root {
+            /* DARK DEFAULT */
+            --bg: #05050555;
+            --fg: #ffffff; 
+            --border: rgba(255, 255, 255, 0.15);
+            --border-width: 1px;
+            --radius: 12px; 
+            
+            --blob-1: #4f46e5; 
+            --blob-2: #c026d3; 
+            --blob-3: #0891b2; 
+            
+            --glass: rgba(20, 20, 20, 0.4); 
+            --glass-strong: rgba(20, 20, 20, 0.85);
+            
+            --modal-bg: rgba(0, 0, 0, 0.3); 
+            
+            --img-opacity: 0.6; /* Visibilità foto sfondo dark */
+            --img-filter: contrast(2) saturate(1);
+            --img-blend: overlay;
+            
+            --accent-mono: transparent; 
+            --modal-text: var(--fg);
+        }
+
+        html.light {
+            --bg: #f3f4f6;
+            --fg: #111827;
+            --border: rgba(0, 0, 0, 0.1);
+            --blob-1: #bfdbfe; 
+            --blob-2: #f5d0fe; 
+            --blob-3: #99f6e4;
+            --glass: rgba(255, 255, 255, 0.65); /* Più opaco per leggibilità su foto */
+            --glass-strong: rgba(255, 255, 255, 0.95);
+            --modal-bg: rgba(240, 240, 240, 0.95);
+            
+            --img-opacity: 0.8; /* Visibilità foto sfondo light */
+            --img-filter: saturate(1.2) brightness(1.1);
+            --img-blend: multiply;
+            
+            --modal-text: var(--fg);
+        }
+
+        html.mono {
+            /* UX CHANGE: Alzato da #000000 a #141414 per ridurre l'affaticamento visivo */
+            --bg: #141414; 
+            --fg: #e5e5e5; 
+            --border: #333333; 
+            --border-width: 1px; 
+            --radius: 0px !important; 
+            
+            --blob-1: #141414; --blob-2: #141414; --blob-3: #141414; 
+            --glass: #1a1a1a; 
+            --glass-strong: #1a1a1a;
+            --modal-bg: #141414;
+            
+            --img-opacity: 0.15; /* Sfondo appena visibile per texture */
+            --img-filter: grayscale(100%) contrast(5); /* Monocromatico */
+            --img-blend: normal;
+            
+            --accent-mono: #FF4500; /* ARANCIONE SOLO HOVER */
+            --modal-text: #ffffff;
+        }
+
+        html.mono * { border-radius: 0 !important; }
+        
+        /* HOVER ARANCIONI SOLO PER MONO */
+        html.mono a:hover, 
+        html.mono button:hover,
+        html.mono .interactive-override:hover,
+        html.mono .nav-pill button:hover,
+        html.mono .legal-link:hover {
+            color: var(--accent-mono) !important;
+            border-color: var(--accent-mono) !important;
+        }
+        html.mono .card-wrapper:hover .card-visual {
+            border-color: var(--accent-mono) !important;
+            box-shadow: 4px 4px 0px var(--accent-mono) !important;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--fg);
+            margin: 0; padding: 0; width: 100%;
+            transition: background-color 0.5s ease, color 0.5s ease;
+            -webkit-font-smoothing: antialiased;
+            overscroll-behavior: none;
+        }
+
+        /* --- NEW: GOD MODE CANVASES --- */
+        #gl-canvas {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
+            z-index: -2; pointer-events: none; opacity: 0.6; mix-blend-mode: screen;
+        }
+        html.light #gl-canvas { mix-blend-mode: multiply; opacity: 0.3; }
+        html.mono #gl-canvas { filter: grayscale(100%); opacity: 0.1; } /* Spento in mono */
+        
+        #grain-canvas {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 9998; pointer-events: none; mix-blend-mode: overlay; opacity: 0.07;
+        }
+
+        /* ==========================================================================
+           FORM ARCHITECTURE & STYLING
+           ========================================================================== */
+        .form-structural-wrapper { position: relative; width: 100%; display: flex; flex-direction: column; gap: 2.5rem; }
+        .input-group { position: relative; width: 100%; }
+        .clean-input {
+            width: 100%; background: transparent !important; border: none;
+            border-bottom: 1px solid rgba(150, 150, 150, 0.3); border-radius: 0;
+            padding: 1rem 0; font-family: 'Manrope', sans-serif; font-size: 1.1rem;
+            font-weight: 300; color: var(--fg); outline: none; transition: all 0.3s ease;
+        }
+        .clean-input::placeholder { color: var(--fg); opacity: 0.4; font-family: 'Syne', sans-serif; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; font-size: 0.8rem; }
+        .clean-input:focus { padding-left: 10px; }
+        .input-line { position: absolute; bottom: 0; left: 0; width: 0%; height: 2px; background-color: var(--fg); transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1); z-index: 10; }
+        .clean-input:focus ~ .input-line, .clean-input:not(:placeholder-shown) ~ .input-line { width: 100%; }
+        html.mono .input-line { background: var(--accent-mono); }
+        
+        input:-webkit-autofill, input:-webkit-autofill:hover, input:-webkit-autofill:focus, textarea:-webkit-autofill, textarea:-webkit-autofill:hover, textarea:-webkit-autofill:focus {
+            -webkit-text-fill-color: var(--fg) !important;
+            transition: background-color 50000s ease-in-out 0s;
+            font-family: 'Manrope', sans-serif !important;
+        }
+
+        /* ==========================================================================
+           SCROLL & LAYOUT SYSTEM
+           ========================================================================== */
+        @media (min-width: 769px) {
+            html, body { overflow: hidden; height: 100vh; width: 100vw; }
+            .viewport { position: fixed; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; perspective: 1000px; }
+            .scroll-container { display: flex; width: max-content; height: 100%; will-change: transform; transform-style: preserve-3d; }
+            .panel { width: 100vw; height: 100vh; flex-shrink: 0; display: flex; align-items: center; justify-content: center; padding: 0 5vw; position: relative; }
+            #panel-works { width: auto; padding-right: 15vw; gap: 6vw; }
+            .cinema-scope { width: 35vw; aspect-ratio: 16/10; height: auto; display: flex; flex-direction: column; justify-content: flex-end; position: relative; }
+            .h-hero { font-size: clamp(3.5rem, 14vw, 11rem); line-height: 0.85; letter-spacing: -0.04em; }
+            .nav-pill { padding: 0.75rem 2rem; border-radius: 999px; top: 2rem; justify-content: center; gap: 2rem; }
+        }
+        @media (max-width: 768px) {
+            html, body { overflow-x: hidden; overflow-y: auto !important; height: auto !important; position: static !important; }
+            .viewport { position: relative !important; width: 100%; height: auto !important; overflow: visible !important; display: block; }
+            .scroll-container { display: flex; flex-direction: column; width: 100%; height: auto; transform: none !important; }
+            .panel { width: 100%; min-height: auto; padding: 2rem 1.25rem; display: flex; flex-direction: column; }
+            #panel-0 { min-height: 100svh; padding-top: 6rem; padding-bottom: 2rem; justify-content: flex-start; gap: 2rem; }
+            .h-hero { font-size: 13vw; line-height: 0.9; letter-spacing: -0.04em; margin-bottom: 0.5rem; }
+            .cinema-scope { width: 92%; margin-left: auto; margin-right: auto; aspect-ratio: 16/10; margin-bottom: 3rem; }
+            .nav-pill { width: 90%; justify-content: space-between; padding: 0.75rem 1.5rem; top: 1.5rem; border-radius: 16px; }
+        }
+
+        /* ==========================================================================
+           UI ELEMENTS
+           ========================================================================== */
+        .nav-pill {
+            position: fixed; left: 50%; transform: translateX(-50%); z-index: 100;
+            background: var(--glass); backdrop-filter: blur(16px);
+            border: 1px solid var(--border); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease; color: var(--fg); display: flex; align-items: center;
+        }
+        html.mono .nav-pill { border: var(--border-width) solid white; background: var(--bg); color: var(--fg); }
+
+        /* Typography Animations */
+        .h-anim { display: inline-block; width: fit-content; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); transform-origin: center left; cursor: default; white-space: nowrap; }
+        .h-anim:hover { transform: skewX(-10deg) translateX(10px) scale(1.02); letter-spacing: 0.05em; font-style: italic; opacity: 0.8; color: var(--fg); }
+        html.mono .h-anim:hover { color: var(--accent-mono); font-style: normal; text-shadow: 2px 2px 0px rgba(255,69,0,0.2); }
+        
+        .char-wrapper { display: inline-block; overflow: hidden; vertical-align: bottom; }
+        .char { display: inline-block; transform: translateY(110%); } /* GSAP handles transition now */
+        .char.visible { transform: translateY(0); }
+
+        /* Project Cards */
+        .card-wrapper { position: relative; display: flex; flex-direction: column; gap: 1.5rem; cursor: pointer; }
+        .card-visual {
+            width: 100%; height: 100%; border-radius: 12px; overflow: hidden;
+            border: 1px solid var(--border); position: relative; background-color: var(--glass);
+            transition: border-color 0.5s ease, box-shadow 0.3s ease;
+        }
+        html.mono .card-visual { border: var(--border-width) solid white; background-color: #1a1a1a; }
+        .card-img { width: 100%; height: 100%; background-size: cover; background-position: center; transition: transform 0.1s linear, filter 0.5s ease; filter: grayscale(100%); transform: scale(1.1); }
+        .card-wrapper:hover .card-img { filter: grayscale(0%); }
+        html.mono .card-wrapper:hover .card-visual { border-color: var(--accent-mono); box-shadow: 8px 8px 0px var(--accent-mono); }
+        html.mono .card-wrapper:hover .card-img { filter: grayscale(100%); opacity: 0.5; } /* Img resta B/N in mono */
+
+        /* ==========================================================================
+           LEGAL & PRIVACY
+           ========================================================================== */
+        .gdpr-wall {
+            position: fixed; bottom: 0; left: 0; width: 100%; height: 100%; z-index: 9000;
+            background: rgba(0,0,0,0.6); backdrop-filter: blur(10px);
+            display: none; justify-content: center; align-items: flex-end;
+            padding-bottom: 2rem; opacity: 0; transition: opacity 0.5s ease;
+        }
+        .gdpr-wall.active { display: flex; opacity: 1; pointer-events: auto; }
+        .cookie-banner {
+            width: 90%; max-width: 800px; background: var(--bg); border: 1px solid var(--border);
+            padding: 2.5rem; border-radius: var(--radius); box-shadow: none;
+            display: flex; flex-direction: column; gap: 1.5rem; transform: translateY(20px); transition: transform 0.5s ease;
+        }
+        html.mono .cookie-banner { border: 2px solid white; background: var(--bg); box-shadow: none; color: white; }
+        .gdpr-wall.active .cookie-banner { transform: translateY(0); }
+
+        .legal-overlay {
+            position: fixed; inset: 0; z-index: 9999; background: var(--bg); color: var(--fg);
+            overflow-y: auto; padding: 4rem 1.5rem; transform: translateY(100%); transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .legal-overlay.active { transform: translateY(0); }
+        html.mono .legal-overlay { background: var(--bg); }
+        .legal-container { max-width: 800px; margin: 0 auto; padding-bottom: 100px; }
+        .legal-title { font-family: 'Syne', sans-serif; font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 800; margin-bottom: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem; letter-spacing: -0.02em; text-transform: uppercase; }
+        .legal-text { font-family: 'Manrope', sans-serif; font-size: 1rem; line-height: 1.8; opacity: 0.9; }
+        .legal-text h2 { font-family: 'Syne', sans-serif; font-size: 1.5rem; font-weight: 700; margin-top: 3rem; margin-bottom: 1rem; color: var(--fg); }
+        
+        /* MONO LEGAL OVERRIDES */
+        html.mono .legal-overlay .legal-title { border-bottom-color: white !important; color: white !important; }
+        html.mono .legal-overlay button { border-color: white; color: white; }
+        html.mono .legal-overlay button:hover { border-color: var(--accent-mono); color: var(--accent-mono); }
+        
+        .panel-footer-legal { margin-top: auto; display: flex; justify-content: flex-end; gap: 2rem; padding-top: 4rem; padding-bottom: 2rem; }
+        .legal-link { font-family: 'Manrope', sans-serif; font-size: 11px; text-transform: uppercase; letter-spacing: 0.15em; opacity: 0.5; cursor: pointer; position: relative; transition: opacity 0.3s; }
+        .legal-link::after { content: ''; position: absolute; bottom: -4px; left: 0; width: 0%; height: 1px; background: var(--fg); transition: width 0.3s ease; }
+        .legal-link:hover { opacity: 1; }
+        .legal-link:hover::after { width: 100%; }
+        html.mono .legal-link:hover { color: var(--accent-mono); }
+        html.mono .legal-link::after { background: var(--accent-mono); }
+
+        /* ==========================================================================
+           UTILITIES & BACKGROUND
+           ========================================================================== */
+        
+        /* --- MODIFICA: INTEGRAZIONE SFONDO.PNG --- */
+        .ambient-layer { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100vh; z-index: -10; overflow: hidden; pointer-events: none;
+            background-image: url('img/sfondo.png');
+            background-size: cover;
+            background-position: center;
+            opacity: var(--img-opacity);
+            filter: var(--img-filter);
+            mix-blend-mode: var(--img-blend);
+            transition: all 0.5s ease;
+        }
+
+        .interactive-override { position: relative; z-index: 2002 !important; pointer-events: auto !important; cursor: pointer !important; }
+        
+        .close-legal-btn { position: fixed; top: 2rem; right: 2rem; width: 50px; height: 50px; border-radius: 50%; border: 1px solid var(--border); background: var(--glass); display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 10000; transition: 0.3s; }
+        html.mono .close-legal-btn { border: 2px solid white; background: black; }
+        html.mono .close-legal-btn:hover { background: transparent; color: var(--accent-mono); border-color: var(--accent-mono); }
+
+        .project-modal { position: fixed; inset: 0; z-index: 999; background: var(--modal-bg); backdrop-filter: blur(40px); opacity: 0; pointer-events: none; transition: opacity 0.5s ease; display: flex; justify-content: center; align-items: center; overflow-y: auto; color: var(--modal-text); }
+        .project-modal.active { opacity: 1; pointer-events: auto; }
+        .modal-inner { width: 90%; max-width: 1400px; min-height: 90vh; margin: 12vh auto 8vh auto; padding-top: 4rem; transform: translateY(50px) scale(0.95); transition: transform 0.6s ease; opacity: 0; }
+        .project-modal.active .modal-inner { transform: translateY(0) scale(1); opacity: 1; }
+        .modal-close { position: absolute; top: 0; right: 0; width: 60px; height: 60px; border-radius: 50%; border: 1px solid var(--border); display: flex; justify-content: center; align-items: center; background: var(--bg); cursor: pointer; z-index: 50; transition: 0.3s; }
+        html.mono .modal-close { border: 2px solid white; }
+        html.mono .modal-close:hover { background: transparent; color: var(--accent-mono); border-color: var(--accent-mono); }
+        .modal-grid { display: grid; grid-template-columns: 1fr; gap: 2rem; padding-bottom: 4rem; }
+        @media (min-width: 1024px) { .modal-grid { grid-template-columns: 1.5fr 1fr; gap: 4rem; align-items: start; } }
+
+        /* Custom Cursor */
+        @media (pointer: fine) {
+            #cursor { position: fixed; top: 0; left: 0; width: 20px; height: 20px; border: 1px solid var(--fg); border-radius: 50%; pointer-events: none; z-index: 9999; transform: translate(-50%, -50%); mix-blend-mode: difference; transition: width 0.3s, height 0.3s; }
+            html.mono #cursor { border-color: var(--accent-mono); mix-blend-mode: normal; border-width: 2px; }
+            body.hovering #cursor { width: 60px; height: 60px; background: rgba(255,255,255,0.1); border-color: transparent; }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <canvas id="gl-canvas"></canvas>
+    <canvas id="grain-canvas"></canvas>
+
+    <div id="gdpr-wall" class="gdpr-wall">
+        <div class="cookie-banner">
+            <h3 class="font-display text-3xl font-bold" data-i18n="cookie_title">Consenso Cookie</h3>
+            <p class="text-sm opacity-80 leading-relaxed font-mono" data-i18n="cookie_text">
+                Noi e terze parti selezionate utilizziamo cookie o tecnologie simili per finalità tecniche e, con il tuo consenso, anche per altre finalità come specificato nella cookie policy. 
+                Il rifiuto del consenso può rendere non disponibili le relative funzioni.
+            </p>
+            <div class="flex flex-wrap gap-4 pt-6 border-t border-border mt-4">
+                <button onclick="gdpr.accept()" class="interactive-override px-8 py-4 bg-fg text-bg font-bold font-display uppercase tracking-widest hover:scale-105 transition-transform rounded-full" data-i18n="accept">Accetta Tutti</button>
+                <button onclick="gdpr.reject()" class="interactive-override px-8 py-4 border border-fg text-fg font-bold font-display uppercase tracking-widest hover:opacity-50 transition-opacity rounded-full" data-i18n="reject">Solo Tecnici</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="privacy-overlay" class="legal-overlay">
+        <button class="close-legal-btn interactive-override" onclick="legal.close()"><i data-lucide="x" class="w-6 h-6"></i></button>
+        <div class="legal-container">
+            <h1 class="legal-title">Privacy Policy</h1>
+            <div class="legal-text">
+                <p><strong>Informativa ai sensi dell'art. 13 del Regolamento (UE) 2016/679 (GDPR)</strong></p>
+                <p>Questa informativa descrive le modalità di trattamento dei dati personali degli utenti che consultano il sito web di Stefano Panosetti.</p>
+                <h2>1. Titolare del Trattamento</h2>
+                <p>Stefano Panosetti<br>P.IVA: [INSERIRE P.IVA]<br>Email: panosettistefano@gmail.com<br>Sede: Italia</p>
+                <h2>2. Tipologia di Dati Raccolti</h2>
+                <p>Durante la navigazione e l'utilizzo del sito, possono essere raccolti i seguenti dati:</p>
+                <ul><li><strong>Dati di navigazione:</strong> sistemi informatici e procedure software preposte al funzionamento di questo sito acquisiscono, nel corso del loro normale esercizio, alcuni dati personali.</li><li><strong>Dati forniti volontariamente:</strong> l'invio facoltativo tramite form di contatto.</li></ul>
+                <h2>3. Finalità del Trattamento</h2>
+                <p>I dati saranno trattati per rispondere a richieste di contatto e analisi statistica aggregata.</p>
+                <h2>4. Diritti dell'Interessato</h2>
+                <p>In ogni momento, Lei potrà esercitare, ai sensi degli artt. 15-22 del GDPR, il diritto di accesso, rettifica o cancellazione.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="cookie-overlay" class="legal-overlay">
+        <button class="close-legal-btn interactive-override" onclick="legal.close()"><i data-lucide="x" class="w-6 h-6"></i></button>
+        <div class="legal-container">
+            <h1 class="legal-title">Cookie Policy</h1>
+            <div class="legal-text">
+                <h2>Cosa sono i cookie</h2>
+                <p>I cookie sono piccoli file di testo che i siti visitati dagli utenti inviano ai loro terminali.</p>
+                <h2>Tipologie di cookie utilizzati</h2>
+                <ul><li><strong>Cookie Tecnici:</strong> Necessari per il funzionamento del sito.</li><li><strong>Cookie Analitici:</strong> Utilizzati per statistiche anonime (es. Google Analytics).</li></ul>
+                <h2>Gestione del Consenso</h2>
+                <p>Puoi revocare il tuo consenso in qualsiasi momento cancellando la cache del browser o utilizzando il pulsante qui sotto.</p>
+                <button onclick="gdpr.reset()" class="interactive-override px-6 py-3 border border-fg text-xs uppercase tracking-widest mt-4 hover:bg-fg hover:text-bg transition-colors">Resetta Preferenze Cookie</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="project-modal" class="project-modal">
+        <div class="modal-inner">
+            <button class="modal-close interactive-override" onclick="projectManager.close()"><i data-lucide="x" class="w-8 h-8"></i></button>
+            <div class="modal-grid">
+                <div class="space-y-4">
+                    <img src="" id="m-img" class="modal-hero-img shadow-2xl w-full rounded-xl border border-border" alt="Project Cover">
+                    <div class="flex gap-4 opacity-50 font-mono text-xs">
+                        <span id="m-year">2024</span><span>•</span><span id="m-role">DESIGN & DEV</span>
+                    </div>
+                </div>
+                <div class="flex flex-col justify-center h-full pt-10 lg:pt-0">
+                    <span id="m-tags" class="font-mono text-blob-1 text-sm tracking-widest mb-4 block">TAGS</span>
+                    <h2 id="m-title" class="font-display text-5xl md:text-7xl font-bold mb-8 leading-none">TITLE</h2>
+                    <div class="space-y-6 text-lg font-light leading-relaxed opacity-90 border-l-2 border-border pl-6 mb-12">
+                        <p id="m-desc">Description goes here...</p>
+                    </div>
+                    <a id="m-link" href="#" target="_blank" class="interactive-override group inline-flex items-center gap-4 text-2xl font-display font-bold hover:gap-6 transition-all w-fit">
+                        <span class="border-b border-fg pb-1" data-i18n="visit">VISITA IL SITO</span>
+                        <i data-lucide="arrow-right" class="group-hover:translate-x-2 transition-transform"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="ambient-layer"></div>
+    <div id="cursor" class="hidden md:block"></div>
+
+    <nav class="nav-pill">
+        <a href="#" class="interactive-override font-display font-bold text-xl tracking-tighter" onclick="scrollEngine.scrollToPanel(0)">PANOSETTI</a>
+        <div class="hidden md:flex gap-8 items-center text-xs font-bold uppercase tracking-widest">
+            <button class="interactive-override hover:opacity-60 transition-opacity" onclick="scrollEngine.scrollToPanel(1)" data-i18n="nav_about">About</button>
+            <button class="interactive-override hover:opacity-60 transition-opacity" onclick="scrollEngine.scrollToPanel('works')" data-i18n="nav_work">Work</button>
+            <button class="interactive-override hover:opacity-60 transition-opacity" onclick="scrollEngine.scrollToPanel(4)" data-i18n="nav_contact">Contact</button>
+        </div>
+        <div class="flex gap-4 items-center pl-4 border-l border-white/20 ml-4">
+            <div id="lang-btn" class="interactive-override font-display font-bold cursor-pointer hover:opacity-60" onclick="languageManager.toggle()">IT</div>
+            <button id="theme-btn" class="interactive-override hover:scale-110 transition-transform"><i data-lucide="sun" class="w-5 h-5" id="theme-icon"></i></button>
+        </div>
+    </nav>
+
+    <div class="viewport">
+        <div class="scroll-container" id="container">
+            
+            <section class="panel" id="panel-0">
+                <div class="w-full max-w-7xl flex flex-col h-full flex-grow">
+                    <div class="md:hidden pt-4"><p class="font-mono text-xs tracking-[0.2em] font-bold opacity-60">PORTFOLIO 2025</p></div>
+                    <div class="flex flex-col justify-center flex-grow mt-8 md:mt-0">
+                        <p class="hidden md:block font-mono text-xs tracking-[0.3em] mb-8 font-bold opacity-70 w-fit">PORTFOLIO 2025</p>
+                        <h1 class="font-display font-bold h-hero leading-none drop-shadow-2xl flex flex-col w-full">
+                            <span class="word-anim h-anim w-fit">VISUAL</span>
+                            <span class="word-anim h-anim w-fit md:self-center opacity-60">DESIGNER</span>
+                            <span class="word-anim h-anim w-fit self-end md:self-end">& DEV</span>
+                        </h1>
+                    </div>
+                    <div class="md:hidden w-full flex justify-between items-end border-t border-border pt-4 mt-4 cursor-pointer active:opacity-60 transition-opacity"
+                        onclick="document.getElementById('panel-1').scrollIntoView({ behavior: 'smooth' })">
+                        <div class="font-mono text-[10px] uppercase tracking-widest opacity-60 leading-relaxed text-left">
+                            Based in Italy<br>Available for hire
+                        </div>
+                        <div class="animate-bounce">
+                            <i data-lucide="arrow-down" class="w-5 h-5 opacity-80"></i>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="panel" id="panel-1">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-20 max-w-6xl w-full items-center">
+                    <div class="flex flex-col items-center md:items-start text-center md:text-left">
+                        <span class="font-mono text-xs tracking-widest opacity-50 block mb-6" data-i18n="profile_label">01 / PROFILE</span>
+                        <h2 class="font-display text-5xl md:text-8xl font-bold mb-8 flex flex-col">
+                            <span class="h-anim w-fit" data-i18n="approccio">HYBRID</span>
+                            <span class="h-anim w-fit" data-i18n="ibrido">MIND.</span>
+                        </h2>
+                    </div>
+                    
+                   <div class="space-y-8 text-lg md:text-xl font-light leading-relaxed backdrop-blur-md bg-white/5 p-8 rounded-2xl border border-border shadow-xl text-center md:text-left">
+                        <p data-i18n="bio_p1">Ciao sono Stefano Panosetti :) <br> Sono laureato in comunicazione e specializzato in <strong class="border-b border-fg font-medium">Visual e Web Design!</strong></p>
+                        <p data-i18n="bio_p2">Attualmente studio informatica presso l'ITS di Lanciano perchè mi piace curare anche quello che è sotto la scatola.</p>
+                        <ul class="space-y-4 font-mono text-sm opacity-80 text-left w-fit mx-auto md:mx-0">
+                            <li class="flex items-center gap-3"><i data-lucide="graduation-cap" class="w-4 h-4"></i> <span data-i18n="edu_1">UniTo: Laurea in Comunicazione</span></li>
+                            <li class="flex items-center gap-3"><i data-lucide="pen-tool" class="w-4 h-4"></i> <span data-i18n="edu_2">Master Web Design</span></li>
+                            <li class="flex items-center gap-3"><i data-lucide="code-2" class="w-4 h-4"></i> <span data-i18n="edu_3">Studente in ITC</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section class="panel" id="panel-works">
+                <div class="flex flex-col justify-center h-full max-w-md shrink-0 md:mr-20 items-center md:items-start text-center md:text-left mb-12 md:mb-0">
+                    <span class="font-mono text-xs tracking-widest opacity-50 block mb-6" data-i18n="works_label">02 / SELECTED WORKS</span>
+                    <h2 class="font-display text-5xl md:text-7xl font-bold flex flex-col leading-tight ">
+                        <span class="h-anim w-fit" data-i18n="recenti">RECENT</span>
+                        <span class="h-anim w-fit" data-i18n="progetti">PROJECTS.</span>
+                    </h2>
+                    <p class="mt-8 opacity-50 text-sm font-mono flex items-center gap-2 hidden md:flex" data-i18n="click_expand">CLICK TO EXPAND <i data-lucide="expand" class="w-4 h-4"></i></p>
+                </div>
+
+                <article id="proj-doja" class="cinema-scope card-wrapper group parallax-trigger interactive-override" onclick="projectManager.open(this)" data-title="Doja Crypto" data-tags="UI Design / Dashboard" data-img="img/doja.png" data-year="2024" data-link="https://panosettistefano.github.io/Website/">
+                    <div class="card-visual"><div class="card-img" style="background-image: url('img/doja.png');"></div></div>
+                    <div class="meta-compact text-center md:text-left">
+                        <h3 class="text-3xl font-display font-bold group-hover:translate-x-2 transition-transform">Doja Crypto</h3>
+                        <span class="text-[10px] uppercase tracking-widest opacity-50">UI / UX</span>
+                    </div>
+                </article>
+
+                <article id="proj-otf" class="cinema-scope card-wrapper group parallax-trigger interactive-override" onclick="projectManager.open(this)" data-title="Otfzone" data-tags="Branding / Identity" data-img="img/otfzone1.png" data-year="2023" data-link="https://otfzone.altervista.org/">
+                    <div class="card-visual"><div class="card-img" style="background-image: url('img/otfzone1.png');"></div></div>
+                    <div class="meta-compact text-center md:text-left">
+                        <h3 class="text-3xl font-display font-bold group-hover:translate-x-2 transition-transform">Otfzone</h3>
+                        <span class="text-[10px] uppercase tracking-widest opacity-50">Identity</span>
+                    </div>
+                </article>
+                
+                <article id="proj-dog" class="cinema-scope card-wrapper group parallax-trigger interactive-override" onclick="projectManager.open(this)" data-title="Dogtype" data-tags="Editorial / Web Layout" data-img="img/Dogtype.png" data-year="2022" data-link="#">
+                    <div class="card-visual"><div class="card-img" style="background-image: url('img/Dogtype.png');"></div></div>
+                    <div class="meta-compact text-center md:text-left">
+                        <h3 class="text-3xl font-display font-bold group-hover:translate-x-2 transition-transform">Dogtype</h3>
+                        <span class="text-[10px] uppercase tracking-widest opacity-50">Editorial</span>
+                    </div>
+                </article>
+            </section>
+
+            <section class="panel" id="panel-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-32 w-full max-w-7xl items-center md:items-start flex-grow pt-10 md:pt-0">
+                    <div class="flex flex-col justify-center items-center md:items-start h-full text-center md:text-left">
+                        <span class="font-mono text-xs tracking-widest opacity-50 block mb-6" data-i18n="contact_label">03 / CONTACT</span>
+                        <h2 class="font-display text-6xl md:text-8xl font-bold leading-none mb-10 flex flex-col items-center md:items-start">
+                            <span class="h-anim w-fit" data-i18n="lets">LET'S</span>
+                            <span class="h-anim w-fit" data-i18n="talk">TALK.</span>
+                        </h2>
+                        <div class="space-y-6 font-mono text-sm opacity-80 mt-auto md:mt-0 w-full flex flex-col items-center md:items-start">
+                            <a href="mailto:panosettistefano@gmail.com" class="interactive-override flex items-center gap-4 hover:text-fg transition-colors group">
+                                <div class="w-10 h-10 rounded-full border border-border flex items-center justify-center group-hover:bg-fg group-hover:text-[#FF3300] transition-all">
+                                    <i data-lucide="mail" class="w-4 h-4"></i>
+                                </div>
+                                <span class="tracking-widest">PANOSETTISTEFANO@GMAIL.COM</span>
+                            </a>
+                            <a href="tel:+393341556321" class="interactive-override flex items-center gap-4 hover:text-fg transition-colors group">
+                                <div class="w-10 h-10 rounded-full border border-border flex items-center justify-center group-hover:bg-fg group-hover:text-[#FF3300] transition-all">
+                                    <i data-lucide="phone" class="w-4 h-4"></i>
+                                </div>
+                                <span class="tracking-widest">+39 334 155 63 21</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="w-full flex flex-col justify-center h-full mt-8 md:mt-0">
+                        <div class="form-structural-wrapper w-full max-w-lg mx-auto md:mx-0 md:pl-12 interactive-override p-1 md:p-0">
+                            <form action="https://formsubmit.co/panudovesei@gmail.com" method="POST" class=" flex flex-col ">
+                                <input type="hidden" name="_captcha" value="false">
+                                <input type="hidden" name="_template" value="table">
+                                <input type="hidden" name="_next" value="https://panosettistefano.github.io/Website/"> 
+                                <div class="input-group">
+                                    <input type="text" name="name" id="fname" class="clean-input peer text-center md:text-left" placeholder="Name" required autocomplete="name">
+                                    <span class="input-line"></span>
+                                </div>
+                                <div class="input-group">
+                                    <input type="email" name="email" id="femail" class="clean-input peer text-center md:text-left" placeholder="Email" required autocomplete="email">
+                                    <span class="input-line"></span>
+                                </div>
+                                <div class="input-group">
+                                    <textarea name="message" id="fmsg" rows="3" class="clean-input peer resize-none text-center md:text-left" placeholder="Project" required></textarea>
+                                    <span class="input-line"></span>
+                                </div>
+                                <button type="submit" class="interactive-override group rounded-2xl relative px-8 py-5 bg-transparent border border-fg text-fg font-display font-bold uppercase tracking-widest overflow-hidden transition-all hover:text-[#FF3300] mt-4 w-full">
+                                    <span class="absolute top-0 left-0 w-full h-full bg-fg transform -translate-x-full group-hover:translate-x-0  transition-transform duration-300 ease-in-out z-[-1]"></span>
+                                    <span class="relative z-10 flex justify-center gap-4 md:justify-between md:gap-0 items-center w-full" data-i18n="send_btn">
+                                        Invia <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                                    </span>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="panel-footer-legal pb-8 md:pb-0 pr-0 md:pr-8 flex justify-center md:justify-end gap-6 md:gap-8 w-full">
+                    <span class="legal-link interactive-override" onclick="legal.open('privacy')">Privacy Policy</span>
+                    <span class="legal-link interactive-override" onclick="legal.open('cookie')">Cookie Policy</span>
+                    <span class="font-mono text-[10px] opacity-30 tracking-widest">© 2025</span>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        // ------------------------------------------------------------------
+        // GDPR MANAGER
+        // ------------------------------------------------------------------
+        class GDPRManager {
+            constructor() {
+                this.wall = document.getElementById('gdpr-wall');
+                this.key = 'panosetti_gdpr_consent_v3';
+                this.init();
+            }
+            init() {
+                const status = localStorage.getItem(this.key);
+                if (status === 'granted') { this.unlockSite(); this.injectScripts(); } 
+                else if (status === 'denied') { this.unlockSite(); } 
+                else { this.wall.classList.add('active'); if(window.innerWidth > 768) document.body.style.overflow = 'hidden'; }
+            }
+            accept() { localStorage.setItem(this.key, 'granted'); this.unlockSite(); this.injectScripts(); }
+            reject() { localStorage.setItem(this.key, 'denied'); this.unlockSite(); }
+            reset() { localStorage.removeItem(this.key); location.reload(); }
+            unlockSite() {
+                this.wall.classList.remove('active');
+                if (window.innerWidth > 768) { document.body.style.overflow = 'hidden'; } 
+                else { document.body.style.overflowY = 'auto'; }
+            }
+            injectScripts() { console.log("Consent Granted: Injecting Analytics..."); }
+        }
+        const gdpr = new GDPRManager();
+
+        // ------------------------------------------------------------------
+        // LEGAL & PROJECT OVERLAYS
+        // ------------------------------------------------------------------
+        const legal = {
+            open: (type) => { const id = type === 'privacy' ? 'privacy-overlay' : 'cookie-overlay'; document.getElementById(id).classList.add('active'); },
+            close: () => { document.querySelectorAll('.legal-overlay').forEach(m => m.classList.remove('active')); }
+        };
+
+        const projectManager = {
+            modal: document.getElementById('project-modal'),
+            elements: { title: document.getElementById('m-title'), desc: document.getElementById('m-desc'), img: document.getElementById('m-img'), tags: document.getElementById('m-tags'), link: document.getElementById('m-link'), year: document.getElementById('m-year') },
+            isOpen: false,
+            init: function() { document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && this.isOpen) this.close(); }); },
+            open: function(element) {
+                const data = element.dataset;
+                this.elements.title.innerText = data.title; this.elements.desc.innerText = data.desc; this.elements.img.src = data.img;
+                this.elements.tags.innerText = data.tags; this.elements.link.href = data.link; if(data.year) this.elements.year.innerText = data.year;
+                this.modal.classList.add('active'); this.isOpen = true; document.body.style.overflow = 'hidden';
+            },
+            close: function() {
+                this.modal.classList.remove('active'); this.isOpen = false;
+                if (scrollEngine.isDesktop) document.body.style.overflow = 'hidden'; else document.body.style.overflowY = 'auto'; 
+            }
+        };
+        projectManager.init();
+
+        // ------------------------------------------------------------------
+        // LANGUAGE ENGINE
+        // ------------------------------------------------------------------
+        const TRANSLATIONS = {
+            it: {
+                nav_about: 'Chi sono', nav_work: 'Lavori', nav_contact: 'Contatti', hero_footer: 'Vivo in Italia<br>Disponibile per collaborazioni',
+                profile_label: '01 / PROFILO', approccio: "MENTE", ibrido: "IBRIDA", bio_p1: 'Ciao sono Stefano Panosetti :) <br> Sono laureato in comunicazione e specializzato in <strong class="border-b border-fg font-medium">Visual e Web Design!</strong>',
+                bio_p2: 'Attualmente studio informatica presso l\'ITS di Lanciano perchè mi piace curare anche quello che è sotto la scatola.', edu_1: 'UniTo: Laurea in Comunicazione', edu_2: 'Master Web Design', edu_3: 'Studente di ICT',
+                works_label: '02 / SELEZIONE LAVORI', recenti: 'PROGETTI', progetti: "RECENTI",  click_expand: 'Clicca per sapere di più', contact_label: '03 / CONTATTI', lets: "LA TUA", talk: "IDEA ?",
+                ph_name: 'IL TUO NOME *', ph_email: 'LA TUA EMAIL *', ph_msg: 'IL PROGETTO *', send_btn: 'Invia', visit: 'VISITA IL SITO',
+                cookie_title: 'Consenso Cookie', cookie_text: 'Noi e terze parti selezionate utilizziamo cookie o tecnologie simili per finalità tecniche e, con il tuo consenso, anche per altre finalità.',
+                accept: 'Accetta Tutti', reject: 'Rifiuta / Solo Tecnici',
+                proj_otf_desc: 'Otfzone è un brand che ho ideato io stesso per un progetto universitario. Durante il corso di WebDesign, sperimentando su Wp in particolare con Elementor ho creato questo piccolo sito che è un sito-vetrina con diverse caratteristiche. Dal portale delle prenotazioni, al login con contenuti esclusivi',
+                proj_doja_desc: 'Interfaccia utente sperimentale per una dashboard di criptovalute. Studio approfondito su data visualization e dark mode nativa OLED. Qui è stato fatto un focus sulla ux design ed è stato un progretto realizzato con taildwind e vanilla JS',
+                proj_dog_desc: 'Primo sito realizzato con Wp. Frutto del lavoro di gruppo svolto durante il corso di Wordpress.'
+            },
+            en: {
+                nav_about: 'About', nav_work: 'Work', nav_contact: 'Contact', hero_footer: 'Based in Italy<br>Remote First',
+                profile_label: '01 / PROFILE', approccio: "HYBRID", ibrido: "MIND", bio_p1: 'Hi I\'m Stefano Panosetti :) <br> I have a degree in communication and I specialize in <strong class="border-b border-fg font-medium">Visual & Web Design!</strong>',
+                bio_p2: 'I am currently studying Computer Science at ITS Lanciano because I love caring about what’s under the hood.', edu_1: 'UniTo: Communication Degree', edu_2: 'Master Web Design', edu_3: 'ICT Student',
+                works_label: '02 / SELECTED WORKS', recenti: 'RECENT', progetti: "PROJECT", click_expand: 'CLICK TO EXPAND', contact_label: '03 / CONTACT', lets: "LET'S", talk: "TALK",
+                ph_name: 'YOUR NAME *', ph_email: 'YOUR EMAIL *', ph_msg: 'THE PROJECT *', send_btn: 'Send', visit: 'VISIT WEBSITE',
+                cookie_title: 'Cookie Consent', cookie_text: 'We and selected third parties use cookies or similar technologies for technical purposes and, with your consent, for other purposes.',
+                accept: 'Accept All', reject: 'Reject / Technical Only',
+                proj_otf_desc: 'Otfzone is a brand that I created myself for a university project. During the WebDesign course, experimenting on Wp in particular with Elementor, I created this small site which is a showcase site with various features. From the booking portal, to the login with exclusive content',
+                proj_doja_desc: 'Experimental user interface for a cryptocurrency dashboard. In-depth study on data visualization and native OLED dark mode. Here there was a focus on ux design and it was a project created with taildwind and vanilla JS',
+                proj_dog_desc: 'First site created with Wp. Result of the group work carried out during the Wordpress course.'
+            }
+        };
+
+        class LanguageManager {
+            constructor() { this.lang = localStorage.getItem('lang') || 'it'; this.btn = document.getElementById('lang-btn'); this.updateDOM(); }
+            toggle() { this.lang = this.lang === 'it' ? 'en' : 'it'; localStorage.setItem('lang', this.lang); this.updateDOM(); }
+            updateDOM() {
+                this.btn.innerText = this.lang.toUpperCase();
+                document.querySelectorAll('[data-i18n]').forEach(el => { const key = el.getAttribute('data-i18n'); if(TRANSLATIONS[this.lang][key]) el.innerHTML = TRANSLATIONS[this.lang][key]; });
+                document.querySelectorAll('[data-i18n-ph]').forEach(el => { const key = el.getAttribute('data-i18n-ph'); if(TRANSLATIONS[this.lang][key]) el.placeholder = TRANSLATIONS[this.lang][key]; });
+                const otf = document.getElementById('proj-otf'); if(otf) otf.setAttribute('data-desc', TRANSLATIONS[this.lang].proj_otf_desc);
+                const doja = document.getElementById('proj-doja'); if(doja) doja.setAttribute('data-desc', TRANSLATIONS[this.lang].proj_doja_desc);
+                const dog = document.getElementById('proj-dog'); if(dog) dog.setAttribute('data-desc', TRANSLATIONS[this.lang].proj_dog_desc);
+                lucide.createIcons();
+            }
+        }
+        const languageManager = new LanguageManager();
+
+        // ------------------------------------------------------------------
+        // SCROLL ENGINE (ENHANCED WITH SKEW/JELLY EFFECT)
+        // ------------------------------------------------------------------
+        class HybridScrollEngine {
+            constructor() {
+                this.container = document.getElementById('container');
+                this.isDesktop = window.innerWidth > 768;
+                this.currentX = 0; this.targetX = 0; this.maxScroll = 0; this.ease = 0.08;
+                this.skew = 0;
+                this.init();
+                window.addEventListener('resize', this.handleResize.bind(this));
+            }
+            init() {
+                this.handleResize(); this.startLoop();
+                window.addEventListener('wheel', (e) => {
+                    if (this.isDesktop && !projectManager.isOpen && !document.getElementById('gdpr-wall').classList.contains('active')) {
+                        this.targetX += e.deltaY;
+                        this.targetX = Math.max(0, Math.min(this.targetX, this.maxScroll));
+                    }
+                });
+            }
+            handleResize() {
+                this.isDesktop = window.innerWidth > 768;
+                if (this.isDesktop) {
+                    this.maxScroll = this.container.scrollWidth - window.innerWidth;
+                    document.body.style.overflow = 'hidden'; document.body.style.height = '100vh';
+                    this.container.style.transform = `translateX(-${this.currentX}px)`;
+                } else {
+                    this.maxScroll = 0; document.body.style.overflowY = 'auto'; document.body.style.overflowX = 'hidden'; document.body.style.height = 'auto';
+                    this.container.style.transform = "none";
+                }
+            }
+            startLoop() {
+                const animate = () => {
+                    if (this.isDesktop) {
+                        this.currentX += (this.targetX - this.currentX) * this.ease;
+                        
+                        // SKEW EFFECT LOGIC
+                        let velocity = this.targetX - this.currentX;
+                        this.skew = velocity * 0.05; // Skew factor
+                        this.skew = Math.max(-5, Math.min(5, this.skew)); // Clamp skew
+                        
+                        if (Math.abs(this.targetX - this.currentX) > 0.1) {
+                            // Apply Translation + Skew
+                            this.container.style.transform = `translateX(-${this.currentX}px) skewX(${-this.skew}deg)`;
+                            parallaxEngine.update(this.currentX);
+                        } else {
+                            this.container.style.transform = `translateX(-${this.currentX}px)`;
+                        }
+                    }
+                    requestAnimationFrame(animate);
+                };
+                animate();
+            }
+            scrollToPanel(panelId) {
+                let panel = panelId === 'works' ? document.getElementById('panel-works') : document.getElementById(`panel-${panelId}`);
+                if (this.isDesktop && panel) this.targetX = panel.offsetLeft;
+                else if (panel) {
+                    const y = panel.getBoundingClientRect().top + window.pageYOffset - 80;
+                    window.scrollTo({top: y, behavior: 'smooth'});
+                }
+            }
+        }
+
+        class ParallaxImageEngine {
+            constructor() { this.triggers = document.querySelectorAll('.parallax-trigger'); this.images = document.querySelectorAll('.card-img'); }
+            update(scrollX) {
+                if(window.innerWidth <= 768) return;
+                this.triggers.forEach((trigger, index) => {
+                    const rect = trigger.getBoundingClientRect(); const viewWidth = window.innerWidth;
+                    if (rect.left < viewWidth && rect.right > 0) {
+                        const center = rect.left + rect.width / 2; const distFromCenter = center - viewWidth / 2;
+                        const offset = distFromCenter * 0.05; 
+                        if(this.images[index]) this.images[index].style.transform = `scale(1.1) translateX(${offset}px)`;
+                    }
+                });
+            }
+        }
+        const parallaxEngine = new ParallaxImageEngine();
+        const scrollEngine = new HybridScrollEngine();
+
+        // ------------------------------------------------------------------
+        // GOD MODE: WEBGL FLUID & GRAIN
+        // ------------------------------------------------------------------
+        const setupWebGL = () => {
+            const canvas = document.querySelector('#gl-canvas');
+            const scene = new THREE.Scene();
+            const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+            const renderer = new THREE.WebGLRenderer({ canvas, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+            const material = new THREE.ShaderMaterial({
+                uniforms: {
+                    uTime: { value: 0 },
+                    uMouse: { value: new THREE.Vector2(0.5, 0.5) },
+                    uResolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) }
+                },
+                vertexShader: `varying vec2 vUv; void main() { vUv = uv; gl_Position = vec4(position, 1.0); }`,
+                fragmentShader: `
+                    uniform float uTime; uniform vec2 uMouse; uniform vec2 uResolution; varying vec2 vUv;
+                    vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+                    vec2 mod289(vec2 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+                    vec3 permute(vec3 x) { return mod289(((x*34.0)+1.0)*x); }
+                    float snoise(vec2 v) {
+                        const vec4 C = vec4(0.211324865405187, 0.366025403784439, -0.577350269189626, 0.024390243902439);
+                        vec2 i  = floor(v + dot(v, C.yy) ); vec2 x0 = v - i + dot(i, C.xx);
+                        vec2 i1; i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
+                        vec4 x12 = x0.xyxy + C.xxzz; x12.xy -= i1;
+                        i = mod289(i); vec3 p = permute( permute( i.y + vec3(0.0, i1.y, 1.0 )) + i.x + vec3(0.0, i1.x, 1.0 ));
+                        vec3 m = max(0.5 - vec3(dot(x0,x0), dot(x12.xy,x12.xy), dot(x12.zw,x12.zw)), 0.0);
+                        m = m*m ; m = m*m ; vec3 x = 2.0 * fract(p * C.www) - 1.0;
+                        vec3 h = abs(x) - 0.5; vec3 ox = floor(x + 0.5); vec3 a0 = x - ox;
+                        m *= 1.79284291400159 - 0.85373472095314 * ( a0*a0 + h*h );
+                        vec3 g; g.x  = a0.x  * x0.x  + h.x  * x0.y; g.yz = a0.yz * x12.xz + h.yz * x12.yw;
+                        return 130.0 * dot(m, g);
+                    }
+                    void main() {
+                        vec2 st = gl_FragCoord.xy / uResolution.xy;
+                        float aspectRatio = uResolution.x / uResolution.y;
+                        st.x *= aspectRatio;
+                        float dist = distance(st, vec2(uMouse.x * aspectRatio, 1.0 - uMouse.y));
+                        float mouseEffect = smoothstep(0.4, 0.0, dist) * 0.5;
+                        float noise = snoise(st * 3.0 + uTime * 0.1);
+                        float liquid = snoise(st * 8.0 - uTime * 0.2 + mouseEffect);
+                        // Subtle fluid colors
+                        vec3 color = vec3(noise * 0.1 + liquid * 0.1); 
+                        gl_FragColor = vec4(color, 1.0);
+                    }
+                `
+            });
+
+            const mesh = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), material);
+            scene.add(mesh);
+
+            let mouseTarget = new THREE.Vector2(0.5, 0.5);
+            window.addEventListener('mousemove', (e) => {
+                mouseTarget.x = e.clientX / window.innerWidth;
+                mouseTarget.y = e.clientY / window.innerHeight;
+            });
+
+            const clock = new THREE.Clock();
+            const animate = () => {
+                material.uniforms.uTime.value = clock.getElapsedTime();
+                material.uniforms.uMouse.value.lerp(mouseTarget, 0.05); 
+                renderer.render(scene, camera);
+                requestAnimationFrame(animate);
+            };
+            animate();
+            window.addEventListener('resize', () => {
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                material.uniforms.uResolution.value.set(window.innerWidth, window.innerHeight);
+            });
+        };
+
+        const setupGrain = () => {
+            const canvas = document.querySelector('#grain-canvas');
+            const ctx = canvas.getContext('2d');
+            const resize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
+            window.addEventListener('resize', resize); resize();
+            const loop = () => {
+                const w = canvas.width, h = canvas.height;
+                const idata = ctx.createImageData(w, h);
+                const buffer32 = new Uint32Array(idata.data.buffer);
+                for (let i = 0; i < buffer32.length; i++) if (Math.random() < 0.1) buffer32[i] = 0xffffffff;
+                ctx.putImageData(idata, 0, 0);
+                requestAnimationFrame(loop);
+            };
+            loop();
+        };
+
+        // ------------------------------------------------------------------
+        // UTILS: THEME, CURSOR, MAGNETIC BUTTONS
+        // ------------------------------------------------------------------
+        const animWords = document.querySelectorAll('.word-anim');
+        // ENHANCED GSAP TEXT ANIMATION
+        window.addEventListener('load', () => {
+            setupWebGL();
+            setupGrain();
+            
+            // Text split logic (kept yours but animated with GSAP)
+            animWords.forEach(word => {
+                if(word.querySelector('.char')) return;
+                const text = word.textContent; word.innerHTML = '';
+                text.split('').forEach((char, index) => {
+                    const wrapper = document.createElement('span'); wrapper.className = 'char-wrapper';
+                    const span = document.createElement('span'); span.className = 'char';
+                    span.textContent = char === ' ' ? '\u00A0' : char;
+                    wrapper.appendChild(span); word.appendChild(wrapper);
+                });
+            });
+            
+            setTimeout(() => { 
+                gsap.to('.char', { y: 0, stagger: 0.05, duration: 1, ease: 'power3.out' });
+                scrollEngine.handleResize(); 
+            }, 300);
+
+            // MAGNETIC BUTTONS
+            document.querySelectorAll('.interactive-override, button, a').forEach(el => {
+                el.addEventListener('mousemove', (e) => {
+                    const rect = el.getBoundingClientRect();
+                    const x = e.clientX - rect.left - rect.width / 2;
+                    const y = e.clientY - rect.top - rect.height / 2;
+                    gsap.to(el, { x: x * 0.3, y: y * 0.3, duration: 0.3, ease: 'power2.out' });
+                });
+                el.addEventListener('mouseleave', () => {
+                    gsap.to(el, { x: 0, y: 0, duration: 0.8, ease: 'elastic.out(1, 0.3)' });
+                });
+            });
+        });
+
+        const themeBtn = document.getElementById('theme-btn');
+        const themeIcon = document.getElementById('theme-icon');
+        const html = document.documentElement;
+        const themes = ['dark', 'light', 'mono'];
+        let currentThemeIndex = localStorage.theme ? themes.indexOf(localStorage.theme) : 0;
+        if(currentThemeIndex === -1) currentThemeIndex = 0;
+        
+        function applyTheme(theme) {
+            html.classList.remove('light', 'mono'); if (theme !== 'dark') html.classList.add(theme); localStorage.theme = theme;
+            let iconName = 'circle'; 
+            themeIcon.setAttribute('data-lucide', iconName); lucide.createIcons();
+        }
+        applyTheme(themes[currentThemeIndex]);
+        themeBtn.addEventListener('click', () => { currentThemeIndex = (currentThemeIndex + 1) % themes.length; applyTheme(themes[currentThemeIndex]); });
+
+        if (window.matchMedia("(pointer: fine)").matches) {
+            const cursor = document.getElementById('cursor');
+            document.addEventListener('mousemove', e => { 
+                // GSAP smooth follow
+                gsap.to(cursor, { x: e.clientX, y: e.clientY, duration: 0.1 });
+            });
+            const interactables = 'a, button, input, .h-anim, .card-wrapper, .modal-close, .interactive-override, .lang-switch, .legal-link';
+            document.body.addEventListener('mouseover', (e) => {
+                if(e.target.closest(interactables)) document.body.classList.add('hovering');
+                else document.body.classList.remove('hovering');
+            });
+        }
+    </script>
+</body>
+</html>

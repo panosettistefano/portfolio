@@ -1,0 +1,21 @@
+/* --- CURSOR STYLES (Dal tuo HTML) --- */
+body {
+    cursor: none; /* Nascondiamo il cursore normale */
+}
+
+/* Quando passi sopra a un link */
+.cursor-hover {
+    width: 50px !important;
+    height: 50px !important;
+    background-color: rgba(239, 155, 15, 0.1);
+    border-color: transparent !important;
+    backdrop-filter: blur(2px);
+}
+
+/* Stile Glass Card (copiato dal tuo HTML) */
+.glass-card {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}

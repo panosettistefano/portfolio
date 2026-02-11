@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MINO.CLONE | Digital Architect</title>
+    <meta name="description" content="High-end brutalist portfolio experience.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+
+    <style>
+        /* -----------------------------------------------------------------
+           1. RESET & VARIABLES
+        ----------------------------------------------------------------- */
+        :root {
+            --bg-color: #060606;
+            --text-color: #EAEAEA;
+            --accent-color: #333333;
+            --grid-line: rgba(255, 255, 255, 0.08);
+            
+            --font-display: 'Syne', sans-serif;
+            --font-body: 'Inter', sans-serif;
+            
+            --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+            --ease-in-out: cubic-bezier(0.87, 0, 0.13, 1);
+
+            --container-padding: clamp(20px, 4vw, 60px);
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            width: 100%;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--font-body);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            cursor: none; /* Hiding default cursor for custom one */
+        }
+
+        /* -----------------------------------------------------------------
+           2. TYPOGRAPHY (FLUID)
+        ----------------------------------------------------------------- */
+        .t-mega {
+            font-family: var(--font-display);
+            font-size: clamp(4rem, 15vw, 14rem);
+            line-height: 0.85;
+            letter-spacing: -0.05em;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .t-h2 {
+            font-family: var(--font-display);
+            font-size: clamp(2rem, 5vw, 5rem);
+            line-height: 1;
+            letter-spacing: -0.03em;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .t-body {
+            font-size: clamp(14px, 1.5vw, 18px);
+            line-height: 1.5;
+            font-weight: 300;
+        }
+
+        .t-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-weight: 500;
+        }
+
+        /* -----------------------------------------------------------------
+           3. UI COMPONENTS & LAYOUT
+        ----------------------------------------------------------------- */
+        
+        /* Noise Overlay */
+        .noise-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 9000;
+            opacity: 0.07;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='1'/%3E%3C/svg%3E");
+            animation: noiseAnim 0.5s infinite linear;
+        }
+
+        @keyframes noiseAnim {
+            0% { transform: translate(0, 0); }
+            10% { transform: translate(-5%, -5%); }
+            20% { transform: translate(-10%, 5%); }
+            30% { transform: translate(5%, -10%); }
+            40% { transform: translate(-5%, 15%); }
+            50% { transform: translate(-10%, 5%); }
+            60% { transform: translate(15%, 0); }
+            70% { transform: translate(0, 10%); }
+            80% { transform: translate(-15%, 0); }
+            90% { transform: translate(10%, 5%); }
+            100% { transform: translate(5%, 0); }
+        }
+
+        /* Custom Cursor */
+        .cursor {
+            position: fixed;
+            top: 0; left: 0;
+            width: 12px; height: 12px;
+            background-color: var(--text-color);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 10000;
+            transform: translate(-50%, -50%);
+            mix-blend-mode: difference;
+            transition: width 0.3s var(--ease-out), height 0.3s var(--ease-out);
+        }
+        
+        .cursor.is-hovering {
+            width: 60px;
+            height: 60px;
+            background-color: white;
+            opacity: 1;
+        }
+
+        /* Loader */
+        .loader {
+            position: fixed;
+            inset: 0;
+            background-color: var(--bg-color);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform-origin: top;
+        }
+        .loader__count {
+            font-family: var(--font-display);
+            font-size: clamp(3rem, 10vw, 8rem);
+            font-weight: 700;
+        }
+
+        /* Navbar */
+        .nav {
+            position: fixed;
+            top: 0; left: 0; width: 100%;
+            padding: 2rem var(--container-padding);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            z-index: 100;
+            mix-blend-mode: difference;
+            pointer-events: none; /* Let clicks pass through empty space */
+        }
+        .nav > * { pointer-events: auto; }
+
+        /* Floating Image Ghost (The "Mino" Effect) */
+        .ghost {
+            position: fixed;
+            top: 0; left: 0;
+            width: 300px;
+            aspect-ratio: 4/5;
+            z-index: 50;
+            pointer-events: none;
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0.8);
+            overflow: hidden;
+            will-change: transform, opacity;
+        }
+        .ghost__img {
+            width: 100%;
+            height: 120%; /* Taller for parallax */
+            object-fit: cover;
+            transform: scale(1.2);
+            will-change: transform;
+        }
+
+        /* -----------------------------------------------------------------
+           4. SECTIONS
+        ----------------------------------------------------------------- */
+        
+        .main-wrapper {
+            width: 100%;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Hero */
+        .hero {
+            height: 100vh;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            padding: 0 var(--container-padding);
+            position: relative;
+            border-bottom: 1px solid var(--grid-line);
+        }
+        .hero__text-wrap {
+            overflow: hidden;
+        }
+        .hero__text {
+            display: block;
+            will-change: transform;
+        }
+
+        /* Work List */
+        .work-list {
+            padding: 10vh 0;
+            position: relative;
+            will-change: transform; /* For skewing */
+        }
+
+        .project-item {
+            position: relative;
+            padding: 3rem var(--container-padding);
+            border-top: 1px solid var(--grid-line);
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            cursor: none; /* Uses custom cursor */
+            transition: opacity 0.4s var(--ease-out);
+        }
+        .project-item:last-child {
+            border-bottom: 1px solid var(--grid-line);
+        }
+
+        /* The sibling dimming logic */
+        .work-list:hover .project-item { opacity: 0.3; }
+        .work-list:hover .project-item:hover { opacity: 1; }
+
+        .p-num {
+            font-family: var(--font-body);
+            font-size: 14px;
+            opacity: 0.5;
+            width: 50px;
+        }
+        .p-title {
+            font-family: var(--font-display);
+            font-size: clamp(2rem, 6vw, 5rem);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: -0.02em;
+            flex-grow: 1;
+            padding-left: 2rem;
+            transition: transform 0.4s var(--ease-out);
+        }
+        .project-item:hover .p-title {
+            transform: translateX(30px);
+        }
+        .p-cat {
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            opacity: 0.7;
+        }
+
+        /* Services Grid */
+        .services {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            border-top: 1px solid var(--grid-line);
+            border-bottom: 1px solid var(--grid-line);
+        }
+        .service-col {
+            padding: 4rem var(--container-padding);
+            border-right: 1px solid var(--grid-line);
+            height: 50vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .service-col:last-child { border-right: none; }
+        .service-title {
+            font-size: 2rem;
+            font-family: var(--font-display);
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+
+        /* Footer */
+        .footer {
+            height: 80vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 4rem 0;
+            overflow: hidden;
+        }
+        .marquee {
+            white-space: nowrap;
+            overflow: hidden;
+            display: flex;
+        }
+        .marquee__inner {
+            display: flex;
+            animation: marquee 20s linear infinite;
+        }
+        .marquee span {
+            font-family: var(--font-display);
+            font-size: clamp(4rem, 12vw, 10rem);
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: -0.04em;
+            padding-right: 2vw;
+            color: var(--accent-color);
+        }
+        .footer__links {
+            padding: 0 var(--container-padding);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-100%); }
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 768px) {
+            .services { grid-template-columns: 1fr; }
+            .service-col { border-right: none; border-bottom: 1px solid var(--grid-line); height: auto; }
+            .project-item { flex-direction: column; gap: 1rem; }
+            .p-title { padding-left: 0; }
+            .ghost { display: none; } /* Hide heavy physics on mobile */
+        }
+    </style>
+</head>
+<body>
+
+    <div class="noise-overlay"></div>
+
+    <div class="cursor"></div>
+
+    <div class="loader">
+        <div class="loader__count">0%</div>
+    </div>
+
+    <div class="ghost">
+        <img src="" alt="Project Preview" class="ghost__img">
+    </div>
+
+    <nav class="nav">
+        <div class="t-label logo">MINO.CLONE</div>
+        <div class="t-label time-wrap">
+            <span id="clock">00:00:00</span> / MENU
+        </div>
+    </nav>
+
+    <div class="main-wrapper">
+        
+        <section class="hero">
+            <div class="hero__text-wrap">
+                <h1 class="t-mega hero__text">DIGITAL /</h1>
+                <h1 class="t-mega hero__text" style="margin-left: 10vw;">ARCHITECT</h1>
+            </div>
+        </section>
+
+        <section class="work-list">
+            <div class="project-item" data-src="https://images.unsplash.com/photo-1600607686527-6fb886090705?q=80&w=1600&auto=format&fit=crop">
+                <span class="p-num">01</span>
+                <h2 class="p-title">Aesop Tokyo</h2>
+                <span class="p-cat">Retail / Strategy</span>
+            </div>
+
+            <div class="project-item" data-src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=1600&auto=format&fit=crop">
+                <span class="p-num">02</span>
+                <h2 class="p-title">Brutalist HQ</h2>
+                <span class="p-cat">Web / Identity</span>
+            </div>
+
+            <div class="project-item" data-src="https://images.unsplash.com/photo-1548809425-6cb314545d1d?q=80&w=1600&auto=format&fit=crop">
+                <span class="p-num">03</span>
+                <h2 class="p-title">Onyx Lab</h2>
+                <span class="p-cat">Interact / Dev</span>
+            </div>
+
+            <div class="project-item" data-src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1600&auto=format&fit=crop">
+                <span class="p-num">04</span>
+                <h2 class="p-title">Mono Type</h2>
+                <span class="p-cat">Editorial / Art</span>
+            </div>
+
+            <div class="project-item" data-src="https://images.unsplash.com/photo-1506157786151-b8491531f063?q=80&w=1600&auto=format&fit=crop">
+                <span class="p-num">05</span>
+                <h2 class="p-title">Void Walker</h2>
+                <span class="p-cat">Exp / Three.js</span>
+            </div>
+        </section>
+
+        <section class="services">
+            <div class="service-col">
+                <h3 class="service-title">Strategy</h3>
+                <p class="t-body">Brand positioning, content architecture, and digital roadmapping for the modern era.</p>
+            </div>
+            <div class="service-col">
+                <h3 class="service-title">Design</h3>
+                <p class="t-body">UI/UX, Art Direction, and Motion Design. Building visual systems that last.</p>
+            </div>
+            <div class="service-col">
+                <h3 class="service-title">Development</h3>
+                <p class="t-body">Creative coding, WebGL, and headless CMS implementations. Performance obsessed.</p>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <div class="marquee">
+                <div class="marquee__inner">
+                    <span>Let's Work Together — Let's Work Together —&nbsp;</span>
+                    <span>Let's Work Together — Let's Work Together —&nbsp;</span>
+                </div>
+            </div>
+            <div class="footer__links">
+                <a href="#" class="t-label">Hello@Mino.Clone</a>
+                <div class="t-label">
+                    <a href="#" style="margin-right: 20px;">Instagram</a>
+                    <a href="#">LinkedIn</a>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+
+    <script>
+        // --- UTILS ---
+        const lerp = (start, end, factor) => start + (end - start) * factor;
+        const clamp = (val, min, max) => Math.min(Math.max(val, min), max);
+
+        // --- STATE MANAGEMENT ---
+        const state = {
+            mouse: { x: 0, y: 0 },
+            cursor: { x: 0, y: 0 },
+            ghost: { x: 0, y: 0 },
+            scrollVelocity: 0
+        };
+
+        // --- 1. LENIS SCROLL SETUP ---
+        const lenis = new Lenis({
+            lerp: 0.1, // Inertia strength
+            smoothWheel: true,
+            orientation: 'vertical',
+        });
+
+        // Sync ScrollTrigger with Lenis
+        lenis.on('scroll', ScrollTrigger.update);
+        gsap.ticker.add((time) => {
+            lenis.raf(time * 1000);
+        });
+        gsap.ticker.lagSmoothing(0);
+
+        // --- 2. LOADER LOGIC ---
+        const initLoader = () => {
+            const counter = document.querySelector('.loader__count');
+            const loader = document.querySelector('.loader');
+            let progress = 0;
+
+            const interval = setInterval(() => {
+                progress += Math.floor(Math.random() * 5) + 2;
+                if (progress > 100) progress = 100;
+                counter.textContent = `${progress}%`;
+
+                if (progress === 100) {
+                    clearInterval(interval);
+                    
+                    // Exit Animation
+                    const tl = gsap.timeline();
+                    tl.to(loader, {
+                        yPercent: -100,
+                        duration: 1.2,
+                        ease: "power4.inOut",
+                        delay: 0.2
+                    })
+                    .from(".hero__text", {
+                        y: 200,
+                        duration: 1.5,
+                        stagger: 0.1,
+                        ease: "power4.out"
+                    }, "-=0.8");
+                }
+            }, 30);
+        };
+
+        // --- 3. MOUSE TRACKING & PHYSICS LOOP ---
+        window.addEventListener('mousemove', (e) => {
+            state.mouse.x = e.clientX;
+            state.mouse.y = e.clientY;
+        });
+
+        // Main Render Loop (The "Secret Sauce")
+        const renderLoop = () => {
+            // 1. Cursor Physics (Light weight)
+            state.cursor.x = lerp(state.cursor.x, state.mouse.x, 0.1);
+            state.cursor.y = lerp(state.cursor.y, state.mouse.y, 0.1);
+
+            const cursorEl = document.querySelector('.cursor');
+            cursorEl.style.transform = `translate(${state.cursor.x}px, ${state.cursor.y}px) translate(-50%, -50%)`;
+
+            // 2. Ghost Image Physics (Heavy weight)
+            state.ghost.x = lerp(state.ghost.x, state.mouse.x, 0.05);
+            state.ghost.y = lerp(state.ghost.y, state.mouse.y, 0.05);
+
+            const ghostEl = document.querySelector('.ghost');
+            // Move container
+            ghostEl.style.transform = `translate(${state.ghost.x}px, ${state.ghost.y}px) translate(-50%, -50%) scale(${ghostEl.dataset.active === 'true' ? 1 : 0.8})`;
+            
+            // Inner Parallax (Image moves opposite to container)
+            // Calculate distance from center of screen normalized -1 to 1
+            const xNorm = (state.mouse.x / window.innerWidth) * 2 - 1;
+            const yNorm = (state.mouse.y / window.innerHeight) * 2 - 1;
+            
+            const ghostImg = document.querySelector('.ghost__img');
+            ghostImg.style.transform = `translate(${-xNorm * 20}px, ${-yNorm * 20}px) scale(1.2)`;
+
+            // 3. Scroll Skew (Velocity based)
+            // Get velocity from Lenis
+            state.scrollVelocity = lenis.velocity;
+            const skewAmount = clamp(state.scrollVelocity * 0.1, -5, 5);
+            
+            const workList = document.querySelector('.work-list');
+            // Apply skew only to the work list for the "gelatinous" effect
+            if(workList) {
+                workList.style.transform = `skewY(${skewAmount}deg)`;
+            }
+
+            requestAnimationFrame(renderLoop);
+        };
+
+        // --- 4. PROJECT INTERACTIONS ---
+        const initProjects = () => {
+            const items = document.querySelectorAll('.project-item');
+            const ghost = document.querySelector('.ghost');
+            const ghostImg = document.querySelector('.ghost__img');
+            const cursor = document.querySelector('.cursor');
+
+            items.forEach(item => {
+                item.addEventListener('mouseenter', () => {
+                    // Update Image
+                    const src = item.dataset.src;
+                    ghostImg.src = src;
+
+                    // Fade In Ghost
+                    ghost.dataset.active = 'true';
+                    gsap.to(ghost, { opacity: 1, duration: 0.4, ease: "power2.out" });
+
+                    // Scale Cursor
+                    cursor.classList.add('is-hovering');
+                });
+
+                item.addEventListener('mouseleave', () => {
+                    // Fade Out Ghost
+                    ghost.dataset.active = 'false';
+                    gsap.to(ghost, { opacity: 0, duration: 0.4, ease: "power2.out" });
+
+                    // Reset Cursor
+                    cursor.classList.remove('is-hovering');
+                });
+            });
+        };
+
+        // --- 5. PARALLAX EFFECTS (GSAP) ---
+        const initParallax = () => {
+            // Parallax on Hero Text
+            gsap.to(".hero__text-wrap", {
+                yPercent: 50,
+                ease: "none",
+                scrollTrigger: {
+                    trigger: ".hero",
+                    start: "top top",
+                    end: "bottom top",
+                    scrub: true
+                }
+            });
+        };
+
+        // --- 6. CLOCK ---
+        const initClock = () => {
+            const clockEl = document.getElementById('clock');
+            setInterval(() => {
+                const now = new Date();
+                clockEl.textContent = now.toLocaleTimeString('en-US', { hour12: false });
+            }, 1000);
+        };
+
+        // --- INITIALIZATION ---
+        window.onload = () => {
+            initLoader();
+            initProjects();
+            initParallax();
+            initClock();
+            renderLoop(); // Start physics
+        };
+
+    </script>
+</body>
+</html>

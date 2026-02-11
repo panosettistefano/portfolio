@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="it" class="no-js">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#050505">
+    <title>Stefano Panosetti | High-End Creative Engineer</title>
+    <meta name="description" content="Portfolio avanzato di Stefano Panosetti. Visual Design & Creative Coding.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Darker+Grotesque:wght@300;400;500;600;700;800;900&family=Manrope:wght@200;300;400;500;600&family=Syncopate:wght@400;700&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <style>
+        :root {
+            /* Colors - Dark (Default) */
+            --c-bg: #050505;
+            --c-surface: #0f0f0f;
+            --c-text-main: #e1e1e1;
+            --c-text-muted: #666666;
+            --c-accent: #EB5939; 
+            --c-line: rgba(255, 255, 255, 0.08);
+            
+            /* Typography */
+            --f-display: 'Syncopate', sans-serif;
+            --f-body: 'Manrope', sans-serif;
+            --f-title: 'Darker Grotesque', sans-serif;
+            
+            --nav-height: 100px;
+            --container-width: 92vw;
+            --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        /* Light Mode Override */
+        body.light-mode {
+            --c-bg: #f0f0f0;
+            --c-surface: #ffffff;
+            --c-text-main: #121212;
+            --c-text-muted: #777777;
+            --c-line: rgba(0, 0, 0, 0.1);
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        html { 
+            font-size: 16px; 
+            background-color: var(--c-bg);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            font-family: var(--f-body);
+            color: var(--c-text-main);
+            background-color: var(--c-bg);
+            overflow-x: hidden;
+            cursor: none !important;
+            line-height: 1.6;
+            transition: background-color 0.8s var(--ease-out-expo), color 0.8s var(--ease-out-expo);
+        }
+
+        a, button, input, textarea { cursor: none !important; outline: none; text-decoration: none; color: inherit; }
+        
+        /* 3D Canvas Layer */
+        #webgl-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+            opacity: 0.4;
+        }
+
+        .wrapper { width: var(--container-width); margin: 0 auto; position: relative; z-index: 2; }
+        .section-pad { padding: 12rem 0; }
+
+        /* Typography Scale */
+        .h-hero {
+            font-family: var(--f-title);
+            font-size: clamp(5rem, 16vw, 20rem);
+            font-weight: 800;
+            line-height: 0.8;
+            letter-spacing: -0.03em;
+            text-transform: uppercase;
+        }
+        
+        .h-section {
+            font-family: var(--f-display);
+            font-size: clamp(2rem, 5vw, 6rem);
+            font-weight: 700;
+            line-height: 1;
+            text-transform: uppercase;
+        }
+
+        .text-lead {
+            font-size: clamp(1.2rem, 2vw, 2.5rem);
+            font-weight: 300;
+            line-height: 1.3;
+            max-width: 40ch;
+        }
+
+        /* CURSOR SYSTEM */
+        #cursor-system {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 999999;
+        }
+        .c-dot {
+            position: absolute; top: 0; left: 0;
+            width: 8px; height: 8px; background: var(--c-accent);
+            border-radius: 50%; transform: translate(-50%, -50%);
+            z-index: 2; box-shadow: 0 0 10px var(--c-accent);
+        }
+        .c-ring {
+            position: absolute; top: 0; left: 0;
+            width: 40px; height: 40px; border: 1px solid rgba(127,127,127,0.4);
+            border-radius: 50%; transform: translate(-50%, -50%);
+            transition: width 0.3s, height 0.3s, background-color 0.3s;
+            z-index: 1;
+        }
+        body.is-hovering .c-ring {
+            width: 80px; height: 80px;
+            background-color: rgba(235, 89, 57, 0.1);
+            border-color: var(--c-accent);
+        }
+
+        /* Components */
+        .bg-noise {
+            position: fixed; inset: 0; z-index: 0; opacity: 0.05; pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='1'/%3E%3C/svg%3E");
+        }
+        .bg-grid {
+            position: fixed; inset: 0; z-index: 0; pointer-events: none;
+            display: flex; justify-content: space-between; padding: 0 4vw;
+        }
+        .grid-line { width: 1px; height: 100%; background: var(--c-line); transition: background 0.8s; }
+
+        .nav-fixed {
+            position: fixed; top: 0; left: 0; width: 100%; height: var(--nav-height);
+            z-index: 100; display: flex; justify-content: space-between; align-items: center;
+            padding: 0 4vw; mix-blend-mode: difference;
+        }
+
+        /* Theme Toggle Button Custom */
+        .theme-toggle {
+            position: fixed; bottom: 2rem; right: 4vw; z-index: 1000;
+            width: 60px; height: 60px; border-radius: 50%;
+            border: 1px solid var(--c-line); background: var(--c-surface);
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.3s ease;
+        }
+        .theme-toggle svg { width: 24px; height: 24px; fill: none; stroke: var(--c-text-main); stroke-width: 2; }
+
+        .preloader {
+            position: fixed; inset: 0; background: #000; z-index: 10000;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+        }
+        .loader-num { font-family: var(--f-title); font-size: 10vw; color: var(--c-accent); }
+
+        /* Sections */
+        .hero-section { min-height: 100vh; padding-top: 20vh; position: relative; }
+        .hero-reveal-mask { overflow: hidden; }
+        .hero-reveal-text { transform: translateY(110%); }
+
+        .marquee-section { padding: 4rem 0; border-top: 1px solid var(--c-line); border-bottom: 1px solid var(--c-line); background: var(--c-surface); transition: background 0.8s; }
+        .marquee-track { display: flex; white-space: nowrap; }
+        .marquee-item {
+            font-family: var(--f-display); font-size: 6vw; font-weight: 700; color: transparent;
+            -webkit-text-stroke: 1px var(--c-text-muted); margin-right: 4rem;
+        }
+
+        .work-item { display: grid; grid-template-columns: 1fr 2fr; gap: 4rem; margin-bottom: 15vh; border-top: 1px solid var(--c-line); padding-top: 2rem; }
+        .work-img-container { width: 100%; aspect-ratio: 16/10; overflow: hidden; border-radius: 4px; }
+        .work-img-container img { width: 100%; height: 100%; object-fit: cover; }
+
+        .service-item { border-bottom: 1px solid var(--c-line); padding: 3rem 0; cursor: pointer; }
+        .service-title { font-family: var(--f-title); font-size: 4rem; text-transform: uppercase; transition: 0.3s; }
+        .service-desc { max-height: 0; overflow: hidden; opacity: 0; transition: 0.5s var(--ease-out-expo); }
+        .service-item.active .service-desc { max-height: 200px; opacity: 1; padding-top: 2rem; }
+
+        @media (max-width: 768px) {
+            .h-hero { font-size: 4rem; }
+            .work-item { grid-template-columns: 1fr; }
+            #cursor-system, #webgl-bg { display: none; }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="webgl-bg"></div>
+    
+    <div id="cursor-system">
+        <div class="c-dot"></div>
+        <div class="c-ring"></div>
+    </div>
+
+    <div class="preloader" id="preloader">
+        <div class="loader-num"><span id="load-count">0</span>%</div>
+        <div class="loader-bar-track" style="width:200px; height:1px; background:#333; margin-top:2rem;">
+            <div class="loader-bar-fill" id="load-bar" style="height:100%; background:#fff; width:0%;"></div>
+        </div>
+    </div>
+
+    <button class="theme-toggle magnetic-target" id="theme-btn">
+        <svg id="sun-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.07" x2="5.64" y2="17.66"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+    </button>
+
+    <div class="bg-noise"></div>
+    <div class="bg-grid">
+        <div class="grid-line"></div><div class="grid-line"></div><div class="grid-line"></div><div class="grid-line"></div>
+    </div>
+
+    <nav class="nav-fixed">
+        <div class="logo magnetic-target" style="font-family:var(--f-display); font-weight:700;">SP<span style="color:var(--c-accent)">.</span></div>
+        <div class="hidden md:flex gap-8 font-mono text-xs uppercase tracking-widest opacity-50">
+            <div>Available for 2026</div>
+            <div>Based in Italy</div>
+        </div>
+        <button class="menu-btn magnetic-target" style="border:1px solid currentColor; padding:10px 20px; border-radius:50px;">Menu</button>
+    </nav>
+
+    <main id="smooth-wrapper">
+        <div id="smooth-content">
+
+            <section class="hero-section wrapper">
+                <div class="hero-reveal-mask">
+                    <p class="font-mono text-accent uppercase tracking-widest mb-4 hero-reveal-text">Creative Engineer & Visual Designer</p>
+                </div>
+                <div class="hero-reveal-mask"><h1 class="h-hero hero-reveal-text">Digital</h1></div>
+                <div class="hero-reveal-mask"><h1 class="h-hero hero-reveal-text" style="color: transparent; -webkit-text-stroke: 2px currentColor;">Reality</h1></div>
+                <div class="hero-reveal-mask"><h1 class="h-hero hero-reveal-text ml-[10vw]">Architect</h1></div>
+
+                <div class="mt-20 grid grid-cols-1 md:grid-cols-12 gap-8 border-t border-white/10 pt-8 hero-reveal-text">
+                    <div class="col-span-12 md:col-span-6">
+                        <p class="text-lead">Creo ecosistemi digitali dove l'estetica brutale incontra la perfezione ingegneristica.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="marquee-section">
+                <div class="marquee-track" id="marquee-track">
+                    <span class="marquee-item">USER INTERFACE</span><span class="marquee-item">CREATIVE CODING</span><span class="marquee-item">WEBGL</span>
+                    <span class="marquee-item">USER INTERFACE</span><span class="marquee-item">CREATIVE CODING</span><span class="marquee-item">WEBGL</span>
+                </div>
+            </section>
+
+            <section class="section-pad wrapper">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-20">
+                    <div>
+                        <span class="text-accent font-mono uppercase">(01) — Philosophy</span>
+                        <h2 class="h-section">Code is<br>Design.</h2>
+                    </div>
+                    <p class="text-xl font-light">Non uso template. Scrivo codice semantico, accessibile e veloce. Il mio stack è scelto per durare nel tempo.</p>
+                </div>
+            </section>
+
+            <section class="section-pad wrapper">
+                <article class="work-item">
+                    <div class="work-meta">
+                        <span class="text-4xl opacity-20 font-bold">01</span>
+                        <h3 class="h-section !text-4xl my-4">Doja Crypto</h3>
+                        <p class="text-muted mb-8">Financial dashboard for professional traders.</p>
+                        <a href="#" class="magnetic-target text-accent font-bold border-b-2 border-accent pb-1">VIEW PROJECT</a>
+                    </div>
+                    <div class="work-img-container magnetic-area">
+                        <img src="https://images.unsplash.com/photo-1639762681485-074b7f938ba0?auto=format&fit=crop&w=1200" alt="Work" data-speed="0.8">
+                    </div>
+                </article>
+            </section>
+
+            <section class="section-pad bg-surface wrapper" style="border-radius: 40px 40px 0 0;">
+                <div class="mb-20 text-center">
+                    <h2 class="h-section">Services</h2>
+                </div>
+                <div class="service-item" onclick="this.classList.toggle('active')">
+                    <div class="flex justify-between items-center">
+                        <h3 class="service-title">Creative Dev</h3>
+                        <span class="text-4xl">+</span>
+                    </div>
+                    <div class="service-desc">
+                        <p class="text-xl">Sviluppo frontend all'avanguardia. Animazioni complesse a 60fps e WebGL.</p>
+                    </div>
+                </div>
+            </section>
+
+            <footer class="section-pad wrapper text-center">
+                <h2 class="h-hero magnetic-target">LET'S TALK</h2>
+                <div class="mt-20 flex justify-between opacity-50 font-mono text-xs uppercase">
+                    <div>© 2026 Stefano Panosetti</div>
+                    <div>Back to top</div>
+                </div>
+            </footer>
+
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // 1. PRELOADER
+            const loader = {
+                progress: 0,
+                init() {
+                    const int = setInterval(() => {
+                        this.progress += Math.floor(Math.random() * 7);
+                        if(this.progress >= 100) {
+                            this.progress = 100;
+                            clearInterval(int);
+                            gsap.to("#preloader", { yPercent: -100, duration: 1.2, ease: "power4.inOut", onComplete: initApp });
+                        }
+                        document.getElementById('load-count').innerText = this.progress;
+                        document.getElementById('load-bar').style.width = this.progress + "%";
+                    }, 40);
+                }
+            };
+            loader.init();
+
+            // 2. 3D BACKGROUND ENGINE (Three.js)
+            let scene, camera, renderer, mesh;
+            function init3D() {
+                scene = new THREE.Scene();
+                camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+                renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                document.getElementById('webgl-bg').appendChild(renderer.domElement);
+
+                const geometry = new THREE.TorusKnotBufferGeometry(10, 3, 100, 16);
+                const material = new THREE.MeshBasicMaterial({ 
+                    color: 0xEB5939, 
+                    wireframe: true, 
+                    transparent: true, 
+                    opacity: 0.2 
+                });
+                mesh = new THREE.Mesh(geometry, material);
+                scene.add(mesh);
+                camera.position.z = 30;
+
+                function animate() {
+                    requestAnimationFrame(animate);
+                    mesh.rotation.y += 0.005;
+                    mesh.rotation.x += 0.002;
+                    // Reazione allo scroll
+                    const scrollY = window.scrollY;
+                    mesh.position.y = scrollY * 0.01;
+                    renderer.render(scene, camera);
+                }
+                animate();
+            }
+
+            // 3. THEME ENGINE
+            const themeBtn = document.getElementById('theme-btn');
+            themeBtn.addEventListener('click', () => {
+                document.body.classList.toggle('light-mode');
+                const isLight = document.body.classList.contains('light-mode');
+                
+                // Aggiorna colore 3D
+                gsap.to(mesh.material.color, {
+                    r: isLight ? 0.1 : 0.92,
+                    g: isLight ? 0.1 : 0.35,
+                    b: isLight ? 0.1 : 0.22,
+                    duration: 1
+                });
+            });
+
+            // 4. CORE APP
+            function initApp() {
+                init3D();
+
+                const lenis = new Lenis({ duration: 1.2, smooth: true });
+                function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+                requestAnimationFrame(raf);
+
+                gsap.registerPlugin(ScrollTrigger);
+
+                // Reveal Hero
+                gsap.to('.hero-reveal-text', { y: 0, stagger: 0.1, duration: 1.5, ease: "power4.out" });
+
+                // Marquee
+                gsap.to("#marquee-track", { xPercent: -50, ease: "none", duration: 20, repeat: -1 });
+
+                // Parallax Images
+                document.querySelectorAll('[data-speed]').forEach(img => {
+                    gsap.to(img, {
+                        yPercent: 30, ease: "none",
+                        scrollTrigger: { trigger: img, scrub: true }
+                    });
+                });
+            }
+
+            // 5. CURSOR
+            const cursor = {
+                dot: document.querySelector('.c-dot'),
+                ring: document.querySelector('.c-ring'),
+                init() {
+                    window.addEventListener('mousemove', e => {
+                        gsap.to(this.dot, { x: e.clientX, y: e.clientY, duration: 0.1 });
+                        gsap.to(this.ring, { x: e.clientX, y: e.clientY, duration: 0.4 });
+                    });
+                    document.querySelectorAll('a, button, .magnetic-target').forEach(el => {
+                        el.addEventListener('mouseenter', () => document.body.classList.add('is-hovering'));
+                        el.addEventListener('mouseleave', () => document.body.classList.remove('is-hovering'));
+                    });
+                }
+            };
+            cursor.init();
+        });
+    </script>
+</body>
+</html>

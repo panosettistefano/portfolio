@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="it" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Portfolio di Stefano Panosetti. Visual Designer & Frontend Developer.">
+    <title>Stefano Panosetti | Visual Designer</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class', // Attivazione manuale dark mode
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Manrope', 'sans-serif'],
+                        display: ['Syne', 'sans-serif'],
+                    },
+                    colors: {
+                        // Colori definiti via CSS Variables per gestire il tema
+                        bg: 'var(--bg)',
+                        surface: 'var(--surface)',
+                        txt: 'var(--txt)',
+                        txtMuted: 'var(--txt-muted)',
+                        border: 'var(--border)',
+                        accent: 'var(--accent)', 
+                    },
+                    backgroundImage: {
+                        'noise': "url('data:image/svg+xml,%3Csvg viewBox=\"0 0 200 200\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cfilter id=\"noiseFilter\"%3E%3CfeTurbulence type=\"fractalNoise\" baseFrequency=\"0.65\" numOctaves=\"3\" stitchTiles=\"stitch\"/%3E%3C/filter%3E%3Crect width=\"100%25\" height=\"100%25\" filter=\"url(%23noiseFilter)\" opacity=\"0.05\"/%3E%3C/svg%3E')",
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* --------------------------------------------------------------------------
+           THEME VARIABLES (DESIGN SYSTEM)
+           -------------------------------------------------------------------------- */
+        :root {
+            /* DARK THEME (Default) */
+            --bg: #050505;
+            --surface: #111111;
+            --txt: #ffffff;
+            --txt-muted: #888888;
+            --border: rgba(255, 255, 255, 0.1);
+            --accent: #ffffff; /* Monocromatico puro */
+            
+            --nav-bg: rgba(5, 5, 5, 0.8);
+            --cursor-blend: difference;
+        }
+
+        html.light {
+            /* LIGHT THEME */
+            --bg: #F4F4F0; /* Off-white cartaceo */
+            --surface: #EAEAE5;
+            --txt: #111111;
+            --txt-muted: #666666;
+            --border: rgba(0, 0, 0, 0.1);
+            --accent: #000000;
+
+            --nav-bg: rgba(244, 244, 240, 0.85);
+            --cursor-blend: normal; /* In light mode meglio normale o multiply */
+        }
+
+        /* Base Reset */
+        body {
+            background-color: var(--bg);
+            color: var(--txt);
+            transition: background-color 0.5s cubic-bezier(0.16, 1, 0.3, 1), color 0.5s ease;
+        }
+
+        /* Typography Fluid */
+        .text-fluid-h1 { font-size: clamp(3.5rem, 11vw, 9rem); line-height: 0.9; letter-spacing: -0.04em; }
+        .text-fluid-h2 { font-size: clamp(2.5rem, 6vw, 5rem); line-height: 1; letter-spacing: -0.03em; }
+
+        /* --------------------------------------------------------------------------
+           COMPONENTS
+           -------------------------------------------------------------------------- */
+        
+        /* Navbar Blur */
+        .glass-nav {
+            background-color: var(--nav-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        /* Noise Overlay (Texture) */
+        .noise-layer {
+            position: fixed; inset: 0; pointer-events: none; z-index: 50;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='1'/%3E%3C/svg%3E");
+            opacity: 0.04; mix-blend-mode: overlay;
+        }
+
+        /* Custom Cursor (Desktop Only) */
+        @media (pointer: fine) {
+            body { cursor: none; }
+            #cursor {
+                position: fixed; top: 0; left: 0;
+                width: 16px; height: 16px;
+                background: var(--accent);
+                border-radius: 50%;
+                pointer-events: none; z-index: 9999;
+                transform: translate(-50%, -50%);
+                transition: transform 0.1s linear, width 0.3s ease, height 0.3s ease;
+                mix-blend-mode: var(--cursor-blend);
+            }
+            #cursor.active {
+                width: 60px; height: 60px;
+                background: transparent;
+                border: 1px solid var(--accent);
+                mix-blend-mode: normal;
+            }
+        }
+
+        /* Animations */
+        .reveal-y {
+            opacity: 0; transform: translateY(40px);
+            transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal-y.visible { opacity: 1; transform: translateY(0); }
+
+        /* Interactive Links */
+        .hover-underline {
+            position: relative; display: inline-block;
+        }
+        .hover-underline::after {
+            content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 1px;
+            background: currentColor;
+            transform: scaleX(0); transform-origin: right;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .hover-underline:hover::after { transform: scaleX(1); transform-origin: left; }
+
+        /* Project Preview Image */
+        #project-preview {
+            position: fixed; top: 50%; left: 50%; width: 400px; height: 500px;
+            background-color: #222; background-size: cover; background-position: center;
+            transform: translate(-50%, -50%) scale(0.8);
+            opacity: 0; pointer-events: none; z-index: 40;
+            transition: opacity 0.4s, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            filter: grayscale(100%); /* Stile bianco e nero anche per le immagini */
+        }
+        #project-preview.active { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+
+        /* Form Inputs */
+        .input-line {
+            width: 100%; background: transparent; border: none;
+            border-bottom: 1px solid var(--border);
+            padding: 1.5rem 0; font-family: 'Manrope', sans-serif; font-size: 1.125rem;
+            color: var(--txt); outline: none; transition: border-color 0.3s;
+        }
+        .input-line:focus { border-color: var(--txt); }
+        .input-line::placeholder { color: var(--txt-muted); text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.1em; }
+
+        /* Button Reset */
+        .btn-circle {
+            width: 3rem; height: 3rem; border-radius: 50%; border: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.3s; color: var(--txt);
+        }
+        .btn-circle:hover { background: var(--txt); color: var(--bg); border-color: var(--txt); }
+
+        /* Mobile Menu */
+        #mobile-menu {
+            transform: translateY(-100%); transition: transform 0.6s cubic-bezier(0.85, 0, 0.15, 1);
+        }
+        #mobile-menu.open { transform: translateY(0); }
+
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="noise-layer"></div>
+
+    <div id="cursor" class="hidden md:block"></div>
+    
+    <div id="project-preview"></div>
+
+    <nav class="fixed top-0 w-full z-50 glass-nav transition-colors duration-500">
+        <div class="max-w-[1600px] mx-auto px-6 py-5 md:px-12 flex justify-between items-center">
+            
+            <a href="#" class="font-display font-bold text-xl tracking-tighter z-50 relative hover-trigger">
+                PAN.
+            </a>
+
+            <div class="hidden md:flex gap-10 items-center">
+                <a href="#about" class="text-xs font-bold uppercase tracking-widest hover-underline hover-trigger">About</a>
+                <a href="#projects" class="text-xs font-bold uppercase tracking-widest hover-underline hover-trigger">Lavori</a>
+                <a href="#contact" class="text-xs font-bold uppercase tracking-widest hover-underline hover-trigger">Contatti</a>
+                
+                <button id="theme-toggle" class="hover-trigger ml-4 opacity-70 hover:opacity-100 transition-opacity">
+                    <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i> <i data-lucide="moon" class="w-5 h-5 block dark:hidden"></i> </button>
+            </div>
+
+            <div class="flex gap-4 items-center md:hidden z-50 relative">
+                <button id="theme-toggle-mobile" class="opacity-80">
+                    <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
+                    <i data-lucide="moon" class="w-5 h-5 block dark:hidden"></i>
+                </button>
+                <button id="menu-btn" class="text-xs font-bold uppercase tracking-widest border border-border px-3 py-2 rounded-full">
+                    Menu
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div id="mobile-menu" class="fixed inset-0 bg-bg z-40 flex flex-col justify-center items-center gap-8 md:hidden">
+        <a href="#about" class="text-4xl font-display font-bold mobile-link">ABOUT</a>
+        <a href="#projects" class="text-4xl font-display font-bold mobile-link">PROJECTS</a>
+        <a href="#contact" class="text-4xl font-display font-bold mobile-link">CONTACT</a>
+    </div>
+
+    <main class="relative z-10 pt-32">
+
+        <section class="min-h-[85vh] flex flex-col justify-center px-6 md:px-12 max-w-[1600px] mx-auto">
+            
+            <div class="reveal-y">
+                <p class="font-mono text-xs md:text-sm tracking-widest mb-6 opacity-60">PORTFOLIO 2025 • LORETO (PE) / TORINO</p>
+                
+                <h1 class="font-display font-bold text-fluid-h1 leading-none">
+                    VISUAL<br>
+                    <span class="pl-[10vw] opacity-50">DESIGNER</span><br>
+                    & DEV.
+                </h1>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-10 mt-20 md:mt-32 items-end border-t border-border pt-10 reveal-y">
+                <div class="md:col-span-5">
+                    <p class="text-lg md:text-xl font-light leading-relaxed text-txtMuted text-balance">
+                        Mi chiamo Stefano Panosetti. Unisco la <span class="text-txt font-medium">strategia comunicativa</span> accademica al codice pulito. Il design non è decorazione, è problem solving visivo.
+                    </p>
+                </div>
+                <div class="md:col-span-7 flex justify-between md:justify-end gap-12 font-mono text-xs uppercase tracking-widest text-txtMuted">
+                    <div class="space-y-2">
+                        <span class="block text-txt">Specialty</span>
+                        Brand Identity<br>Web Design
+                    </div>
+                    <div class="space-y-2">
+                        <span class="block text-txt">Contact</span>
+                        <a href="mailto:panosettistefano@gmail.com" class="hover:underline">Email Me ↗</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="about" class="py-24 px-6 md:px-12 border-t border-border">
+            <div class="max-w-[1600px] mx-auto grid grid-cols-1 md:grid-cols-12 gap-16">
+                
+                <div class="md:col-span-4 md:sticky md:top-32 h-fit">
+                    <span class="font-mono text-xs tracking-widest opacity-50 mb-4 block">01 / Profilo</span>
+                    <h2 class="font-display text-fluid-h2 font-bold mb-8">BACKGROUND.</h2>
+                    <a href="#contact" class="inline-block border-b border-txt pb-1 text-sm uppercase tracking-widest hover:opacity-50 transition-opacity">Scarica CV Completo</a>
+                </div>
+
+                <div class="md:col-span-8 space-y-20">
+                    
+                    <div class="reveal-y">
+                        <p class="text-xl md:text-2xl font-light leading-relaxed">
+                            Ho 25 anni e un approccio ibrido. La mia laurea in <strong class="font-medium text-txt">Scienze della Comunicazione</strong> (UniTo) mi ha dato le basi teoriche e sociologiche. Il corso in Web Design (250h) mi ha dato gli strumenti tecnici.
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-10 reveal-y">
+                        <div class="border-t border-border pt-6">
+                            <h3 class="font-display text-lg font-bold mb-2">Education</h3>
+                            <ul class="space-y-6">
+                                <li>
+                                    <span class="block text-xs font-mono opacity-50 mb-1">2023 - 2024</span>
+                                    <strong class="block mb-1">Laurea in Comunicazione</strong>
+                                    <p class="text-sm text-txtMuted">Università di Torino. Tesi in Personal Branding e UX Research.</p>
+                                </li>
+                                <li>
+                                    <span class="block text-xs font-mono opacity-50 mb-1">2025</span>
+                                    <strong class="block mb-1">Master Web Design</strong>
+                                    <p class="text-sm text-txtMuted">250 Ore. WordPress, Elementor, HTML5/CSS3, GDPR Compliance.</p>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="border-t border-border pt-6">
+                            <h3 class="font-display text-lg font-bold mb-2">Experience</h3>
+                            <ul class="space-y-6">
+                                <li>
+                                    <span class="block text-xs font-mono opacity-50 mb-1">2018 - 2023</span>
+                                    <strong class="block mb-1">Ristorazione & Management</strong>
+                                    <p class="text-sm text-txtMuted">Caposala e gestione clienti. Ho imparato a gestire lo stress, il team working e a capire le esigenze del cliente al volo.</p>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="reveal-y pt-8">
+                         <span class="font-mono text-xs tracking-widest opacity-50 mb-4 block">TOOLKIT</span>
+                         <div class="flex flex-wrap gap-3">
+                             <span class="px-4 py-2 border border-border rounded-full text-sm">WordPress</span>
+                             <span class="px-4 py-2 border border-border rounded-full text-sm">Elementor Pro</span>
+                             <span class="px-4 py-2 border border-border rounded-full text-sm">HTML5 / CSS3</span>
+                             <span class="px-4 py-2 border border-border rounded-full text-sm">Adobe CC</span>
+                             <span class="px-4 py-2 border border-border rounded-full text-sm">SEO Technical</span>
+                             <span class="px-4 py-2 border border-border rounded-full text-sm">Figma</span>
+                         </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <section id="projects" class="py-24 border-t border-border">
+            <div class="max-w-[1600px] mx-auto px-6 md:px-12">
+                <span class="font-mono text-xs tracking-widest opacity-50 mb-12 block">02 / Selected Works</span>
+                
+                <div class="flex flex-col">
+                    <a href="https://otfzone.altervista.org/" target="_blank" class="group py-16 border-t border-border flex flex-col md:flex-row justify-between items-baseline hover:opacity-100 opacity-80 transition-opacity project-link hover-trigger" data-img="https://images.unsplash.com/photo-1561070791-2526d30994b5?q=80&w=2000&auto=format&fit=crop">
+                        <h3 class="font-display text-4xl md:text-6xl font-bold group-hover:translate-x-4 transition-transform duration-500">Otfzone</h3>
+                        <div class="flex items-center gap-8 mt-4 md:mt-0 font-mono text-sm md:text-base">
+                            <span class="text-txtMuted">Brand Identity / Web</span>
+                            <span class="group-hover:rotate-45 transition-transform duration-300">↗</span>
+                        </div>
+                    </a>
+
+                    <a href="https://panosettistefano.github.io/Website/" target="_blank" class="group py-16 border-t border-border flex flex-col md:flex-row justify-between items-baseline hover:opacity-100 opacity-80 transition-opacity project-link hover-trigger" data-img="https://images.unsplash.com/photo-1642104704074-907c0698b98d?q=80&w=2000&auto=format&fit=crop">
+                        <h3 class="font-display text-4xl md:text-6xl font-bold group-hover:translate-x-4 transition-transform duration-500">Doja Crypto</h3>
+                        <div class="flex items-center gap-8 mt-4 md:mt-0 font-mono text-sm md:text-base">
+                            <span class="text-txtMuted">UI Design / Tailwind</span>
+                            <span class="group-hover:rotate-45 transition-transform duration-300">↗</span>
+                        </div>
+                    </a>
+
+                    <a href="https://dogtype.altervista.org/" target="_blank" class="group py-16 border-t border-y border-border flex flex-col md:flex-row justify-between items-baseline hover:opacity-100 opacity-80 transition-opacity project-link hover-trigger" data-img="https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?q=80&w=2000&auto=format&fit=crop">
+                        <h3 class="font-display text-4xl md:text-6xl font-bold group-hover:translate-x-4 transition-transform duration-500">Dogtype</h3>
+                        <div class="flex items-center gap-8 mt-4 md:mt-0 font-mono text-sm md:text-base">
+                            <span class="text-txtMuted">WordPress / Editorial</span>
+                            <span class="group-hover:rotate-45 transition-transform duration-300">↗</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="py-24 px-6 md:px-12 bg-surface">
+            <div class="max-w-[1600px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-20">
+                
+                <div>
+                    <h2 class="font-display text-5xl md:text-7xl font-bold mb-8">LET'S<br>WORK.</h2>
+                    <p class="text-txtMuted text-lg mb-12 max-w-md">
+                        Cerchi un sito che converta o una brand identity che resti impressa? Scrivimi. Rispondo entro 24h.
+                    </p>
+                    <div class="space-y-4 font-mono text-sm">
+                        <p class="text-txt">PANOSETTISTEFANO@GMAIL.COM</p>
+                        <p class="text-txt">+39 334 155 63 21</p>
+                    </div>
+                </div>
+
+                <form action="https://formsubmit.co/panosettistefano@gmail.com" method="POST" class="space-y-8 mt-8 md:mt-0">
+                    
+                    <input type="hidden" name="_captcha" value="false">
+                    <input type="hidden" name="_subject" value="Nuovo Contatto dal Sito">
+                    <input type="text" name="_honey" style="display:none">
+
+                    <div>
+                        <input type="text" name="name" class="input-line hover-trigger" placeholder="IL TUO NOME *" required>
+                    </div>
+                    <div>
+                        <input type="email" name="email" class="input-line hover-trigger" placeholder="LA TUA EMAIL *" required>
+                    </div>
+                    <div>
+                        <textarea name="message" rows="3" class="input-line hover-trigger resize-none" placeholder="IL PROGETTO *" required></textarea>
+                    </div>
+
+                    <div class="pt-6">
+                        <button type="submit" class="group relative px-10 py-4 bg-txt text-bg font-bold font-display uppercase tracking-wider overflow-hidden rounded-full hover-trigger">
+                            Invia Messaggio
+                        </button>
+                    </div>
+                </form>
+
+            </div>
+        </section>
+
+        <footer class="py-8 px-6 md:px-12 border-t border-border flex flex-col md:flex-row justify-between items-center text-xs font-mono uppercase text-txtMuted">
+            <p>&copy; 2025 Stefano Panosetti</p>
+            <div class="flex gap-6 mt-4 md:mt-0">
+                <a href="#" class="hover:text-txt">Linkedin</a>
+                <a href="#" class="hover:text-txt">Instagram</a>
+            </div>
+        </footer>
+
+    </main>
+
+    <script>
+        // Init Icons
+        lucide.createIcons();
+
+        // 1. Theme Logic (Dark/Light)
+        const html = document.documentElement;
+        const themeBtns = document.querySelectorAll('#theme-toggle, #theme-toggle-mobile');
+
+        // Check local storage or preference
+        if (localStorage.theme === 'light') {
+            html.classList.add('light');
+        } else {
+            html.classList.remove('light');
+        }
+
+        themeBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                html.classList.toggle('light');
+                localStorage.theme = html.classList.contains('light') ? 'light' : 'dark';
+            });
+        });
+
+        // 2. Mobile Menu
+        const menuBtn = document.getElementById('menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileLinks = document.querySelectorAll('.mobile-link');
+        let isMenuOpen = false;
+
+        menuBtn.addEventListener('click', () => {
+            isMenuOpen = !isMenuOpen;
+            mobileMenu.classList.toggle('open');
+            menuBtn.textContent = isMenuOpen ? 'Chiudi' : 'Menu';
+        });
+
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.remove('open');
+                isMenuOpen = false;
+                menuBtn.textContent = 'Menu';
+            });
+        });
+
+        // 3. Custom Cursor & Interactions (Desktop Only)
+        if (window.matchMedia("(pointer: fine)").matches) {
+            const cursor = document.getElementById('cursor');
+            const projectPreview = document.getElementById('project-preview');
+            const projectLinks = document.querySelectorAll('.project-link');
+            const triggers = document.querySelectorAll('.hover-trigger, a, button');
+
+            document.addEventListener('mousemove', e => {
+                cursor.style.left = e.clientX + 'px';
+                cursor.style.top = e.clientY + 'px';
+            });
+
+            triggers.forEach(el => {
+                el.addEventListener('mouseenter', () => cursor.classList.add('active'));
+                el.addEventListener('mouseleave', () => cursor.classList.remove('active'));
+            });
+
+            // Project Reveal Logic
+            projectLinks.forEach(link => {
+                link.addEventListener('mouseenter', () => {
+                    const img = link.getAttribute('data-img');
+                    projectPreview.style.backgroundImage = `url(${img})`;
+                    projectPreview.classList.add('active');
+                    cursor.style.opacity = '0'; // Hide cursor while viewing image
+                });
+                
+                link.addEventListener('mousemove', (e) => {
+                    const x = (window.innerWidth / 2 - e.clientX) * 0.05;
+                    const y = (window.innerHeight / 2 - e.clientY) * 0.05;
+                    projectPreview.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px)) scale(1)`;
+                });
+
+                link.addEventListener('mouseleave', () => {
+                    projectPreview.classList.remove('active');
+                    cursor.style.opacity = '1';
+                });
+            });
+        }
+
+        // 4. Scroll Reveal Animation
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if(entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.reveal-y').forEach(el => observer.observe(el));
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>STEFANO PANOSETTI | THE SINGULARITY</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;500;700&family=Syncopate:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --c-accent: #00f3ff;
+            --c-secondary: #ff0055;
+            --font-main: 'Syncopate', sans-serif;
+            --font-ui: 'Rajdhani', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: none; }
+
+        body {
+            background: #000; overflow: hidden; font-family: var(--font-ui); color: white; height: 100vh; width: 100vw;
+        }
+
+        /* CANVAS LAYER */
+        #gl { position: fixed; inset: 0; z-index: 1; outline: none; }
+
+        /* UI HUD LAYER */
+        .hud {
+            position: fixed; z-index: 10; pointer-events: none; width: 100%; height: 100%;
+            padding: 40px; display: flex; flex-direction: column; justify-content: space-between;
+            mix-blend-mode: exclusion;
+        }
+
+        .hud-header { display: flex; justify-content: space-between; align-items: flex-start; }
+        .hud-footer { display: flex; justify-content: space-between; align-items: flex-end; }
+
+        h1 { font-family: var(--font-main); font-weight: 700; letter-spacing: -2px; line-height: 0.8; font-size: 2rem; text-transform: uppercase; }
+        .status-dot { width: 10px; height: 10px; background: var(--c-accent); border-radius: 50%; box-shadow: 0 0 10px var(--c-accent); animation: blink 1s infinite; display: inline-block; margin-right: 10px; }
+
+        /* NAVIGATION */
+        .nav-system {
+            position: fixed; right: 40px; top: 50%; transform: translateY(-50%); z-index: 20;
+            display: flex; flex-direction: column; gap: 20px; pointer-events: auto;
+        }
+        .nav-btn {
+            width: 12px; height: 12px; border: 1px solid rgba(255,255,255,0.3); transform: rotate(45deg);
+            transition: 0.4s; position: relative; cursor: none;
+        }
+        .nav-btn::before {
+            content: ''; position: absolute; inset: 2px; background: var(--c-accent); opacity: 0; transition: 0.4s;
+        }
+        .nav-btn.active { border-color: var(--c-accent); transform: rotate(225deg) scale(1.5); }
+        .nav-btn.active::before { opacity: 1; }
+        .nav-label {
+            position: absolute; right: 30px; top: -5px; font-family: var(--font-main); font-size: 10px;
+            color: var(--c-accent); opacity: 0; transform: translateX(20px); transition: 0.4s; white-space: nowrap;
+        }
+        .nav-btn:hover .nav-label { opacity: 1; transform: translateX(0); }
+
+        /* CONTENT OVERLAY (Dynamic) */
+        .content-layer {
+            position: fixed; top: 50%; left: 10vw; transform: translateY(-50%); z-index: 15;
+            pointer-events: none; mix-blend-mode: difference;
+        }
+        .slide-content {
+            position: absolute; opacity: 0; transform: translateY(50px) scale(0.9); filter: blur(10px);
+            transition: 1s cubic-bezier(0.16, 1, 0.3, 1); width: 40vw;
+        }
+        .slide-content.active { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+        
+        .big-text {
+            font-family: var(--font-main); font-size: 6vw; font-weight: 700; color: transparent;
+            -webkit-text-stroke: 2px white; line-height: 0.9; margin-bottom: 2rem; display: block;
+        }
+        .big-text span { color: white; -webkit-text-stroke: 0; }
+        
+        .desc-text {
+            font-size: 1.2rem; line-height: 1.6; max-width: 600px; border-left: 2px solid var(--c-accent); padding-left: 20px;
+            background: linear-gradient(90deg, rgba(0,243,255,0.1), transparent);
+        }
+
+        /* CUSTOM CURSOR */
+        #cursor {
+            position: fixed; width: 40px; height: 40px; border: 1px dashed var(--c-accent); border-radius: 50%;
+            transform: translate(-50%, -50%); z-index: 9999; pointer-events: none; transition: width 0.3s, height 0.3s;
+            mix-blend-mode: difference;
+        }
+        #cursor-dot {
+            position: fixed; width: 6px; height: 6px; background: white; border-radius: 50%;
+            transform: translate(-50%, -50%); z-index: 9999; pointer-events: none;
+        }
+
+        /* LOADER */
+        .loader-screen {
+            position: fixed; inset: 0; background: #000; z-index: 10000; display: flex; align-items: center; justify-content: center;
+        }
+        .scan-bar {
+            width: 0%; height: 2px; background: var(--c-accent); box-shadow: 0 0 30px var(--c-accent);
+            animation: load 2s cubic-bezier(0.8, 0, 0.2, 1) forwards;
+        }
+
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+        @keyframes load { to { width: 50vw; } }
+        @keyframes glitch { 0% { transform: translate(0) } 20% { transform: translate(-5px, 5px) } 40% { transform: translate(-5px, -5px) } 60% { transform: translate(5px, 5px) } 80% { transform: translate(5px, -5px) } 100% { transform: translate(0) } }
+
+        /* MOBILE OPTIMIZATION */
+        @media (max-width: 768px) {
+            .big-text { font-size: 12vw; }
+            .content-layer { left: 5vw; width: 90vw; }
+            .slide-content { width: 100%; }
+            .nav-system { bottom: 40px; top: auto; right: 50%; transform: translateX(50%); flex-direction: row; }
+            .nav-btn { transform: rotate(0); }
+            .nav-btn.active { transform: scale(1.5); }
+        }
+    </style>
+
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+</head>
+<body>
+
+    <div class="loader-screen" id="loader"><div class="scan-bar"></div></div>
+
+    <div id="cursor"></div>
+    <div id="cursor-dot"></div>
+
+    <div class="hud">
+        <div class="hud-header">
+            <div>
+                <div class="status-dot"></div><span style="font-size: 10px; letter-spacing: 2px;">SYSTEM.ONLINE</span>
+            </div>
+            <div style="text-align: right; font-size: 10px; opacity: 0.7;">
+                FPS: <span id="fps">60</span><br>
+                OBJ: <span id="obj-count">15,000</span>
+            </div>
+        </div>
+        <div class="hud-footer">
+            <div style="font-family: var(--font-main);">STEFANO PANOSETTI <span style="color:var(--c-accent)">//</span> DEV</div>
+            <div style="font-size: 10px; opacity: 0.5;">SCROLL TO INITIATE WARP</div>
+        </div>
+    </div>
+
+    <div class="nav-system">
+        <div class="nav-btn active" data-idx="0"><span class="nav-label">HOME_BASE</span></div>
+        <div class="nav-btn" data-idx="1"><span class="nav-label">ARCHIVE_WORKS</span></div>
+        <div class="nav-btn" data-idx="2"><span class="nav-label">CAPABILITIES</span></div>
+        <div class="nav-btn" data-idx="3"><span class="nav-label">TRANSMISSION</span></div>
+    </div>
+
+    <div class="content-layer">
+        <div class="slide-content active" id="slide-0">
+            <h1 class="big-text">DIGITAL<br><span>SINGULARITY</span></h1>
+            <p class="desc-text">Ingegnere Creativo. Fondo matematica e arte per costruire esperienze web che vivono, respirano e reagiscono.</p>
+        </div>
+        <div class="slide-content" id="slide-1">
+            <h1 class="big-text">PROJECT<br><span>NEXUS</span></h1>
+            <p class="desc-text">Esplora l'archivio. WebGL Avanzato, E-commerce immersivi e Dashboard finanziarie in tempo reale.</p>
+            <br>
+            <div style="display:flex; gap:20px;">
+                <div style="border:1px solid rgba(255,255,255,0.3); padding:10px 20px; font-size:12px;">CYBER.FINANCE</div>
+                <div style="border:1px solid rgba(255,255,255,0.3); padding:10px 20px; font-size:12px;">AURA.FASHION</div>
+            </div>
+        </div>
+        <div class="slide-content" id="slide-2">
+            <h1 class="big-text">CORE<br><span>SYSTEMS</span></h1>
+            <p class="desc-text">Stack Tecnologico: GLSL Shaders, React Fiber, WebGPU Ready. Performance estreme per design senza compromessi.</p>
+        </div>
+        <div class="slide-content" id="slide-3">
+            <h1 class="big-text">INITIATE<br><span>CONTACT</span></h1>
+            <p class="desc-text">Pronto per il salto nell'iperspazio? Iniziamo la collaborazione.</p>
+            <br>
+            <a href="mailto:stefano@dev.com" style="color:var(--c-accent); font-family:var(--font-main); font-size:1.5rem; text-decoration:none;">HELLO@PANOSETTI.DEV</a>
+        </div>
+    </div>
+
+    <canvas id="gl"></canvas>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+        import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+        import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+        import { FilmPass } from 'three/addons/postprocessing/FilmPass.js';
+        import { FontLoader } from 'three/addons/loaders/FontLoader.js';
+        import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
+        import gsap from 'https://unpkg.com/gsap@3.12.5/index.js';
+
+        // --- 1. SETUP ENGINE ---
+        const canvas = document.querySelector('#gl');
+        const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, powerPreference: "high-performance" });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.toneMapping = THREE.ReinhardToneMapping;
+
+        const scene = new THREE.Scene();
+        scene.fog = new THREE.FogExp2(0x000000, 0.0015); // Deep fog
+
+        const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 1000);
+        camera.position.set(0, 0, 8);
+
+        // --- 2. POST PROCESSING (THE MOVIE LOOK) ---
+        const renderScene = new RenderPass(scene, camera);
+        
+        // BLOOM: Questo crea l'effetto neon luminoso
+        const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85);
+        bloomPass.threshold = 0;
+        bloomPass.strength = 1.2; // Intensità luce
+        bloomPass.radius = 0.5;
+
+        // FILM GRAIN: Effetto cinematografico
+        const filmPass = new FilmPass(0.35, 0.025, 648, false);
+
+        const composer = new EffectComposer(renderer);
+        composer.addPass(renderScene);
+        composer.addPass(bloomPass);
+        composer.addPass(filmPass);
+
+        // --- 3. CREAZIONE MONDO (INSTANCED MESH) ---
+        // Invece di creare 1000 oggetti separati, ne creiamo UNO e lo cloniamo sulla GPU. Performance x100.
+        
+        const count = 4000; // Numero particelle
+        const dummy = new THREE.Object3D();
+        
+        // Geometria Icosaedro (cristalli)
+        const geometry = new THREE.IcosahedronGeometry(0.1, 0);
+        const material = new THREE.MeshBasicMaterial({ 
+            color: 0x00f3ff, 
+            wireframe: true 
+        });
+        
+        const mesh = new THREE.InstancedMesh(geometry, material, count);
+        scene.add(mesh);
+
+        // Geometria Cubi solidi (dati)
+        const geometry2 = new THREE.BoxGeometry(0.1, 0.1, 0.1);
+        const material2 = new THREE.MeshBasicMaterial({ color: 0xff0055 });
+        const mesh2 = new THREE.InstancedMesh(geometry2, material2, count/2);
+        scene.add(mesh2);
+
+        // Posizionamento iniziale casuale in una nuvola
+        const particlesData = [];
+
+        function initParticles(instancedMesh, particleCount, spread) {
+            for(let i = 0; i < particleCount; i++) {
+                const x = (Math.random() - 0.5) * spread;
+                const y = (Math.random() - 0.5) * spread;
+                const z = (Math.random() - 0.5) * spread;
+                
+                dummy.position.set(x, y, z);
+                dummy.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, 0);
+                dummy.updateMatrix();
+                instancedMesh.setMatrixAt(i, dummy.matrix);
+
+                // Salviamo i dati originali per animazioni
+                particlesData.push({
+                    mesh: instancedMesh,
+                    index: i,
+                    x: x, y: y, z: z,
+                    speed: Math.random() * 0.5 + 0.1,
+                    angle: Math.random() * Math.PI * 2
+                });
+            }
+        }
+
+        initParticles(mesh, count, 60);
+        initParticles(mesh2, count/2, 40);
+
+        // --- 4. THE CORE (Il "Sole" centrale) ---
+        const coreGeo = new THREE.SphereGeometry(1, 64, 64);
+        // Shader personalizzato per il nucleo instabile
+        const coreMat = new THREE.ShaderMaterial({
+            uniforms: {
+                uTime: { value: 0 },
+                uColor1: { value: new THREE.Color(0x00f3ff) },
+                uColor2: { value: new THREE.Color(0xff0055) }
+            },
+            vertexShader: `
+                uniform float uTime;
+                varying vec2 vUv;
+                varying float vDisplace;
+                
+                // Classic Perlin Noise 3D function... (simplified for brevity)
+                vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+                vec4 mod289(vec4 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+                vec4 permute(vec4 x) { return mod289(((x*34.0)+1.0)*x); }
+                vec4 taylorInvSqrt(vec4 r) { return 1.79284291400159 - 0.85373472095314 * r; }
+                float snoise(vec3 v) {
+                    const vec2  C = vec2(1.0/6.0, 1.0/3.0) ;
+                    const vec4  D = vec4(0.0, 0.5, 1.0, 2.0);
+                    vec3 i  = floor(v + dot(v, C.yyy) );
+                    vec3 x0 = v - i + dot(i, C.xxx) ;
+                    vec3 g = step(x0.yzx, x0.xyz);
+                    vec3 l = 1.0 - g;
+                    vec3 i1 = min( g.xyz, l.zxy );
+                    vec3 i2 = max( g.xyz, l.zxy );
+                    vec3 x1 = x0 - i1 + C.xxx;
+                    vec3 x2 = x0 - i2 + C.yyy;
+                    vec3 x3 = x0 - D.yyy;
+                    i = mod289(i);
+                    vec4 p = permute( permute( permute(
+                                i.z + vec4(0.0, i1.z, i2.z, 1.0 ))
+                            + i.y + vec4(0.0, i1.y, i2.y, 1.0 ))
+                            + i.x + vec4(0.0, i1.x, i2.x, 1.0 ));
+                    float n_ = 0.142857142857;
+                    vec3  ns = n_ * D.wyz - D.xzx;
+                    vec4 j = p - 49.0 * floor(p * ns.z * ns.z);
+                    vec4 x_ = floor(j * ns.z);
+                    vec4 y_ = floor(j - 7.0 * x_ );
+                    vec4 x = x_ *ns.x + ns.yyyy;
+                    vec4 y = y_ *ns.x + ns.yyyy;
+                    vec4 h = 1.0 - abs(x) - abs(y);
+                    vec4 b0 = vec4( x.xy, y.xy );
+                    vec4 b1 = vec4( x.zw, y.zw );
+                    vec4 s0 = floor(b0)*2.0 + 1.0;
+                    vec4 s1 = floor(b1)*2.0 + 1.0;
+                    vec4 sh = -step(h, vec4(0.0));
+                    vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy ;
+                    vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww ;
+                    vec3 p0 = vec3(a0.xy,h.x);
+                    vec3 p1 = vec3(a0.zw,h.y);
+                    vec3 p2 = vec3(a1.xy,h.z);
+                    vec3 p3 = vec3(a1.zw,h.w);
+                    vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2, p2), dot(p3,p3)));
+                    p0 *= norm.x; p1 *= norm.y; p2 *= norm.z; p3 *= norm.w;
+                    vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);
+                    m = m * m;
+                    return 42.0 * dot( m*m, vec4( dot(p0,x0), dot(p1,x1), dot(p2,x2), dot(p3,x3) ) );
+                }
+
+                void main() {
+                    vUv = uv;
+                    // Displace position based on noise and time
+                    float noise = snoise(position * 2.0 + uTime * 0.5);
+                    vDisplace = noise;
+                    vec3 newPos = position + normal * noise * 0.3;
+                    gl_Position = projectionMatrix * modelViewMatrix * vec4(newPos, 1.0);
+                }
+            `,
+            fragmentShader: `
+                uniform vec3 uColor1;
+                uniform vec3 uColor2;
+                varying float vDisplace;
+
+                void main() {
+                    // Mix colors based on displacement
+                    vec3 color = mix(uColor1, uColor2, vDisplace * 0.5 + 0.5);
+                    
+                    // Add glowing ring effect
+                    float strength = 0.5 + vDisplace;
+                    gl_FragColor = vec4(color * strength * 2.0, 1.0);
+                }
+            `,
+            wireframe: true,
+            transparent: true,
+            blending: THREE.AdditiveBlending
+        });
+
+        const core = new THREE.Mesh(coreGeo, coreMat);
+        scene.add(core);
+
+
+        // --- 5. INTERAZIONE MOUSE (RAYCASTING) ---
+        const mouse = new THREE.Vector2();
+        const targetMouse = new THREE.Vector2();
+        const windowHalf = new THREE.Vector2( window.innerWidth / 2, window.innerHeight / 2 );
+
+        document.addEventListener('mousemove', (event) => {
+            targetMouse.x = (event.clientX - windowHalf.x) * 0.001;
+            targetMouse.y = (event.clientY - windowHalf.y) * 0.001;
+
+            // Update Custom Cursor
+            gsap.to('#cursor', { x: event.clientX, y: event.clientY, duration: 0.1 });
+            gsap.to('#cursor-dot', { x: event.clientX, y: event.clientY, duration: 0.05 });
+        });
+
+        // --- 6. LOGICA DI NAVIGAZIONE (WARP SPEED) ---
+        let currentSection = 0;
+        const totalSections = 4;
+        let isAnimating = false;
+
+        // Coordinate della telecamera per ogni sezione
+        const positions = [
+            { x: 0, y: 0, z: 8, rx: 0, ry: 0 },         // Home
+            { x: 10, y: 5, z: 5, rx: 0, ry: -0.5 },    // Works
+            { x: -5, y: -10, z: 2, rx: 0.5, ry: 0.5 }, // Skills
+            { x: 0, y: 0, z: -2, rx: 0, ry: Math.PI }  // Contact (Inside the core)
+        ];
+
+        function warpTo(index) {
+            if(isAnimating || index === currentSection) return;
+            isAnimating = true;
+            
+            // UI Update
+            document.querySelectorAll('.slide-content').forEach(el => el.classList.remove('active'));
+            document.querySelector(`#slide-${index}`).classList.add('active');
+            
+            document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+            document.querySelector(`.nav-btn[data-idx="${index}"]`).classList.add('active');
+
+            // Warp Effect: Bloom Explosion
+            gsap.to(bloomPass, { strength: 3.5, radius: 1.0, duration: 0.5, yoyo: true, repeat: 1 });
+            gsap.to(filmPass.uniforms.nIntensity, { value: 2.0, duration: 0.3, yoyo: true, repeat: 1 }); // Noise spike
+
+            // Camera Move
+            const pos = positions[index];
+            gsap.to(camera.position, { 
+                x: pos.x, y: pos.y, z: pos.z, 
+                duration: 2, 
+                ease: "power4.inOut" 
+            });
+            gsap.to(camera.rotation, { 
+                x: pos.rx, y: pos.ry, 
+                duration: 2, 
+                ease: "power4.inOut",
+                onComplete: () => {
+                    isAnimating = false;
+                    currentSection = index;
+                }
+            });
+        }
+
+        // Scroll / Wheel Event
+        window.addEventListener('wheel', (e) => {
+            if(isAnimating) return;
+            if(e.deltaY > 0) {
+                const next = (currentSection + 1) % totalSections;
+                warpTo(next);
+            } else {
+                const prev = (currentSection - 1 + totalSections) % totalSections;
+                warpTo(prev);
+            }
+        });
+
+        // Click nav
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const idx = parseInt(btn.dataset.idx);
+                warpTo(idx);
+            });
+        });
+
+        // --- 7. ANIMATION LOOP ---
+        const clock = new THREE.Clock();
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            const time = clock.getElapsedTime();
+            const delta = clock.getDelta();
+
+            // FPS Counter simulation
+            document.getElementById('fps').innerText = Math.round(1 / (1/60 + Math.random()*0.005));
+
+            // Ruota nucleo
+            coreMat.uniforms.uTime.value = time;
+            core.rotation.y = time * 0.1;
+
+            // Mouse Lerp
+            mouse.x += (targetMouse.x - mouse.x) * 0.05;
+            mouse.y += (targetMouse.y - mouse.y) * 0.05;
+
+            // Camera drift based on mouse
+            camera.position.x += (mouse.x * 2 - camera.position.x) * 0.02;
+            camera.position.y += (-mouse.y * 2 - camera.position.y) * 0.02;
+            camera.lookAt(scene.position);
+
+            // Anima particelle
+            let i = 0; 
+            const offset = 0;
+            
+            // Instanced Mesh updates require looping through matrix
+            // Per ottimizzazione, aggiorniamo solo una parte o facciamo un movimento d'insieme
+            mesh.rotation.y = time * 0.05;
+            mesh2.rotation.y = time * 0.03;
+            mesh2.rotation.z = time * 0.01;
+
+            // Render with Post Processing
+            composer.render();
+        }
+
+        // Init Animation
+        setTimeout(() => {
+            document.getElementById('loader').style.display = 'none';
+            animate();
+            gsap.from('.hud', { opacity: 0, duration: 1 });
+            gsap.from('.content-layer', { opacity: 0, delay: 0.5, duration: 1 });
+        }, 2000); // Fake load time
+
+        // Resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            composer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+    </script>
+</body>
+</html>

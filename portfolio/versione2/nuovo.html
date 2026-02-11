@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="it" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stefano Panosetti | Visual Designer</title>
+    <meta name="description" content="Portfolio di Stefano Panosetti. Visual Designer, Web Designer e Comunicatore.">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                    },
+                    colors: {
+                        dark: '#0a0a0a',
+                        light: '#f4f4f0', /* Un bianco "carta" più elegante */
+                        brand: 'var(--brand-color)',
+                    },
+                    spacing: {
+                        '128': '32rem',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            --brand-color: #EB5939; /* International Orange - Molto Design */
+            --cursor-size: 20px;
+        }
+
+        html.dark {
+            --brand-color: #DFFF00; /* Acid Lime per la dark mode */
+        }
+
+        body {
+            background-color: var(--light-bg);
+            transition: background-color 0.5s ease, color 0.5s ease;
+        }
+
+        /* Smooth Scroll Behavior */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Custom Selection */
+        ::selection {
+            background-color: var(--brand-color);
+            color: black;
+        }
+
+        /* Typography Utility */
+        .fluid-type {
+            font-size: clamp(3rem, 8vw, 9rem);
+            line-height: 0.9;
+        }
+
+        /* Custom Cursor */
+        #cursor {
+            position: fixed;
+            top: 0; left: 0;
+            width: var(--cursor-size); height: var(--cursor-size);
+            border: 1px solid currentColor;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: width 0.3s, height 0.3s, background-color 0.3s;
+            mix-blend-mode: difference;
+            color: #fff;
+        }
+        
+        #cursor.hovered {
+            width: 80px; height: 80px;
+            background-color: var(--brand-color);
+            border-color: transparent;
+            mix-blend-mode: normal;
+            opacity: 0.5;
+        }
+
+        /* Reveal Animations */
+        .reveal-text {
+            transform: translateY(100%);
+            opacity: 0;
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal-text.visible {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* Image Hover Reveal */
+        .project-preview {
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            width: 400px; height: 300px;
+            background-size: cover;
+            background-position: center;
+            z-index: 10;
+            pointer-events: none;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            opacity: 0;
+            border-radius: 8px;
+        }
+        .project-preview.active {
+            transform: translate(-50%, -50%) scale(1) rotate(-2deg);
+            opacity: 1;
+        }
+
+        /* Loader */
+        .loader-overlay {
+            position: fixed; inset: 0; z-index: 10000;
+            background: #0a0a0a; color: white;
+            display: flex; justify-content: space-between; align-items: flex-end;
+            padding: 2rem;
+            transition: transform 0.8s ease-in-out;
+        }
+        .loader-hide { transform: translateY(-100%); }
+
+    </style>
+</head>
+<body class="bg-light text-dark dark:bg-dark dark:text-light transition-colors duration-500 cursor-none">
+
+    <div id="cursor" class="hidden md:block"></div>
+    
+    <div id="project-preview" class="project-preview"></div>
+
+    <div id="loader" class="loader-overlay font-display">
+        <div class="text-4xl md:text-6xl font-bold">PAN.</div>
+        <div class="text-xl md:text-2xl" id="loader-percent">0%</div>
+    </div>
+
+    <nav class="fixed top-0 w-full p-6 md:p-8 flex justify-between items-center z-50 mix-blend-difference text-white">
+        <a href="#" class="font-display font-bold text-xl tracking-tighter hover-trigger" data-hover-text="Home">STEFANO PANOSETTI</a>
+        
+        <div class="hidden md:flex gap-8 text-sm uppercase tracking-widest font-medium">
+            <a href="#about" class="hover:opacity-50 transition-opacity hover-trigger">Info</a>
+            <a href="#skills" class="hover:opacity-50 transition-opacity hover-trigger">Competenze</a>
+            <a href="#work" class="hover:opacity-50 transition-opacity hover-trigger">Progetti</a>
+        </div>
+
+        <button id="theme-toggle" class="hover-trigger w-8 h-8 rounded-full border border-white flex items-center justify-center">
+            <div class="w-3 h-3 bg-white rounded-full"></div>
+        </button>
+    </nav>
+
+    <main class="w-full relative">
+
+        <section class="min-h-screen flex flex-col justify-end px-6 md:px-12 pb-20 pt-32 border-b border-black/10 dark:border-white/10">
+            <div class="overflow-hidden">
+                <p class="reveal-text font-mono text-sm mb-4 text-brand uppercase tracking-widest">[ Portfolio 2025 ]</p>
+            </div>
+            
+            <div class="overflow-hidden">
+                <h1 class="reveal-text fluid-type font-display font-medium tracking-tighter leading-none">
+                    VISUAL
+                </h1>
+            </div>
+            <div class="overflow-hidden">
+                <h1 class="reveal-text fluid-type font-display font-medium tracking-tighter leading-none ml-[5vw] md:ml-[10vw] italic text-gray-400 dark:text-gray-600">
+                    DESIGNER
+                </h1>
+            </div>
+            <div class="overflow-hidden">
+                <h1 class="reveal-text fluid-type font-display font-medium tracking-tighter leading-none text-right">
+                    & DEV.
+                </h1>
+            </div>
+
+            <div class="mt-12 flex flex-col md:flex-row justify-between items-end">
+                <div class="max-w-md reveal-text delay-200">
+                    <p class="text-lg md:text-xl font-light leading-relaxed">
+                        Creo identità digitali e sistemi visivi che funzionano.
+                        Unisco la <span class="text-brand font-medium">comunicazione strategica</span> con il design tecnico.
+                    </p>
+                </div>
+                <div class="mt-8 md:mt-0 font-mono text-xs md:text-sm text-right reveal-text delay-300">
+                    <p>BASED IN LORETO APRUTINO / TORINO</p>
+                    <p>SCROLL TO EXPLORE ↓</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="about" class="py-24 px-6 md:px-12 grid grid-cols-1 md:grid-cols-12 gap-12 border-b border-black/10 dark:border-white/10">
+            <div class="md:col-span-4">
+                <h2 class="font-display text-3xl font-bold uppercase mb-2">Biografia</h2>
+                <div class="h-1 w-12 bg-brand"></div>
+            </div>
+            <div class="md:col-span-8 space-y-8 text-lg md:text-xl font-light">
+                <p class="reveal-scroll">
+                    Sono Stefano, 25 anni. Mi sono laureato in <strong class="font-medium text-brand">Scienze della Comunicazione</strong> all'Università di Torino, dove ho imparato che il design non è solo estetica, ma struttura e messaggio.
+                </p>
+                <p class="reveal-scroll">
+                    La mia tesi sulla creazione di un personal brand è stata il punto di partenza. Oggi mi occupo di tradurre visioni complesse in interfacce semplici, unendo il background umanistico alle competenze tecniche in <strong class="font-medium">Web Design</strong>.
+                </p>
+                
+                <div class="grid grid-cols-2 gap-8 mt-12 pt-12 border-t border-dashed border-gray-300 dark:border-gray-700">
+                    <div>
+                        <h3 class="font-mono text-xs uppercase tracking-widest mb-4 opacity-60">Education</h3>
+                        <ul class="space-y-2 text-base">
+                            <li>Laurea in Comunicazione (UniTo)</li>
+                            <li>Corso Web Design (250h - 2025)</li>
+                            <li>ITC Marconi (S.I.A.)</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="font-mono text-xs uppercase tracking-widest mb-4 opacity-60">Soft Skills</h3>
+                        <p class="text-base">Background in ristorazione e gestione sala: conosco il valore del lavoro di squadra e della gestione dello stress.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="skills" class="py-24 px-6 md:px-12 bg-gray-100 dark:bg-[#0f0f0f]">
+            <h2 class="font-display text-[12vw] leading-none font-bold opacity-5 dark:opacity-10 absolute left-0 pointer-events-none">SKILLS</h2>
+            
+            <div class="relative z-10 grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
+                <div class="p-8 border border-gray-300 dark:border-gray-700 hover:border-brand dark:hover:border-brand transition-colors group bg-light dark:bg-dark hover-trigger">
+                    <span class="font-mono text-xs text-brand mb-4 block">01.</span>
+                    <h3 class="font-display text-2xl font-bold mb-6">Visual & Brand</h3>
+                    <ul class="space-y-3 font-mono text-sm text-gray-600 dark:text-gray-400">
+                        <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-current"></span>Logo Design</li>
+                        <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-current"></span>Graphic Design</li>
+                        <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-current"></span>Adobe Ps, Ai, Id</li>
+                        <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-current"></span>Photo Editing</li>
+                    </ul>
+                </div>
+
+                <div class="p-8 border border-gray-300 dark:border-gray-700 hover:border-brand dark:hover:border-brand transition-colors group bg-light dark:bg-dark hover-trigger">
+                    <span class="font-mono text-xs text-brand mb-4 block">02.</span>
+                    <h3 class="font-display text-2xl font-bold mb-6">Web & Tech</h3>
+                    <ul class="space-y-3 font-mono text-sm text-gray-600 dark:text-gray-400">
+                        <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-current"></span>WordPress / Elementor</li>
+                        <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-current"></span>HTML5 & CSS3</li>
+                        <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-current"></span>UX/UI Design (Figma)</li>
+                        <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-current"></span>Basi SQL & PHP</li>
+                    </ul>
+                </div>
+
+                <div class="p-8 border border-gray-300 dark:border-gray-700 hover:border-brand dark:hover:border-brand transition-colors group bg-light dark:bg-dark hover-trigger">
+                    <span class="font-mono text-xs text-brand mb-4 block">03.</span>
+                    <h3 class="font-display text-2xl font-bold mb-6">Strategy</h3>
+                    <ul class="space-y-3 font-mono text-sm text-gray-600 dark:text-gray-400">
+                        <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-current"></span>SEO Optimization</li>
+                        <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-current"></span>Copywriting</li>
+                        <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-current"></span>Social Media Marketing</li>
+                        <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-current"></span>UX Research</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="work" class="py-32 px-6 md:px-12">
+            <div class="flex items-end justify-between mb-20">
+                <h2 class="font-display text-5xl md:text-7xl font-bold tracking-tighter">SELECTED<br>WORKS</h2>
+                <span class="font-mono text-sm hidden md:block">HOVER TO PREVIEW</span>
+            </div>
+
+            <div class="flex flex-col border-t border-black dark:border-white">
+                
+                <a href="https://otfzone.altervista.org/" target="_blank" class="project-item group py-12 border-b border-black/20 dark:border-white/20 flex justify-between items-center hover-trigger" data-image="https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=2070&auto=format&fit=crop">
+                    <div>
+                        <h3 class="font-display text-3xl md:text-5xl font-bold group-hover:translate-x-4 transition-transform duration-300">Otfzone</h3>
+                        <p class="font-mono text-xs md:text-sm mt-2 text-gray-500 group-hover:translate-x-4 transition-transform duration-300 delay-75">BRAND IDENTITY / ELEMENTOR</p>
+                    </div>
+                    <span class="text-4xl group-hover:rotate-45 transition-transform duration-300">↗</span>
+                </a>
+
+                <a href="https://panosettistefano.github.io/Website/" target="_blank" class="project-item group py-12 border-b border-black/20 dark:border-white/20 flex justify-between items-center hover-trigger" data-image="https://images.unsplash.com/photo-1639762681485-074b7f938ba0?q=80&w=2832&auto=format&fit=crop">
+                    <div>
+                        <h3 class="font-display text-3xl md:text-5xl font-bold group-hover:translate-x-4 transition-transform duration-300">Doja Crypto</h3>
+                        <p class="font-mono text-xs md:text-sm mt-2 text-gray-500 group-hover:translate-x-4 transition-transform duration-300 delay-75">UI DESIGN / TAILWIND CSS</p>
+                    </div>
+                    <span class="text-4xl group-hover:rotate-45 transition-transform duration-300">↗</span>
+                </a>
+
+                <a href="https://dogtype.altervista.org/" target="_blank" class="project-item group py-12 border-b border-black/20 dark:border-white/20 flex justify-between items-center hover-trigger" data-image="https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?q=80&w=2069&auto=format&fit=crop">
+                    <div>
+                        <h3 class="font-display text-3xl md:text-5xl font-bold group-hover:translate-x-4 transition-transform duration-300">Dogtype</h3>
+                        <p class="font-mono text-xs md:text-sm mt-2 text-gray-500 group-hover:translate-x-4 transition-transform duration-300 delay-75">WORDPRESS / EDITORIAL</p>
+                    </div>
+                    <span class="text-4xl group-hover:rotate-45 transition-transform duration-300">↗</span>
+                </a>
+
+            </div>
+        </section>
+
+        <footer class="bg-black text-white px-6 md:px-12 py-20">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                <div>
+                    <h2 class="font-display text-4xl md:text-6xl font-bold mb-8 leading-tight">LET'S START A<br>NEW PROJECT.</h2>
+                    <a href="mailto:panosettistefano@gmail.com" class="hover-trigger inline-block border border-white px-8 py-4 rounded-full font-mono text-sm hover:bg-white hover:text-black transition-colors">
+                        PANOSETTISTEFANO@GMAIL.COM
+                    </a>
+                    <p class="mt-6 font-mono text-sm text-gray-400">+39 334 155 63 21</p>
+                </div>
+                <div class="flex flex-col justify-between items-start md:items-end">
+                    <div class="flex gap-6 font-mono text-sm">
+                        <a href="https://www.linkedin.com/in/stefano-panosetti-51b65b1b0/" target="_blank" class="hover:text-brand hover-trigger">LINKEDIN</a>
+                        <a href="#" class="hover:text-brand hover-trigger">INSTAGRAM</a>
+                    </div>
+                    <div class="mt-12 text-right">
+                        <p class="text-gray-500 text-xs font-mono">© 2025 STEFANO PANOSETTI</p>
+                        <p class="text-gray-500 text-xs font-mono">CODED WITH TAILWIND & LOVE</p>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+    </main>
+
+    <script>
+        // --- 1. LOADER ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('loader');
+            const percent = document.getElementById('loader-percent');
+            let count = 0;
+            
+            const interval = setInterval(() => {
+                count += Math.floor(Math.random() * 10) + 5;
+                if(count > 100) count = 100;
+                percent.textContent = count + '%';
+                
+                if(count === 100) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        loader.classList.add('loader-hide');
+                        revealContent();
+                    }, 500);
+                }
+            }, 100);
+        });
+
+        function revealContent() {
+            const texts = document.querySelectorAll('.reveal-text');
+            texts.forEach((el, index) => {
+                setTimeout(() => {
+                    el.classList.add('visible');
+                }, index * 100);
+            });
+        }
+
+        // --- 2. CUSTOM CURSOR ---
+        const cursor = document.getElementById('cursor');
+        const triggers = document.querySelectorAll('.hover-trigger');
+
+        if(window.matchMedia("(pointer: fine)").matches) {
+            document.addEventListener('mousemove', (e) => {
+                cursor.style.left = e.clientX + 'px';
+                cursor.style.top = e.clientY + 'px';
+            });
+
+            triggers.forEach(trigger => {
+                trigger.addEventListener('mouseenter', () => cursor.classList.add('hovered'));
+                trigger.addEventListener('mouseleave', () => cursor.classList.remove('hovered'));
+            });
+        }
+
+        // --- 3. PROJECT PREVIEW REVEAL (The "Senior" Touch) ---
+        const projectLinks = document.querySelectorAll('.project-item');
+        const preview = document.getElementById('project-preview');
+
+        projectLinks.forEach(link => {
+            link.addEventListener('mouseenter', (e) => {
+                const img = link.getAttribute('data-image');
+                preview.style.backgroundImage = `url(${img})`;
+                preview.classList.add('active');
+            });
+
+            link.addEventListener('mousemove', (e) => {
+                // Parallax leggero sull'immagine
+                const x = e.clientX;
+                const y = e.clientY;
+                
+                // Mantiene l'immagine al centro dello schermo ma la muove leggermente
+                const xOffset = (window.innerWidth / 2 - x) * 0.1;
+                const yOffset = (window.innerHeight / 2 - y) * 0.1;
+
+                preview.style.transform = `translate(calc(-50% + ${xOffset}px), calc(-50% + ${yOffset}px)) scale(1) rotate(-2deg)`;
+            });
+
+            link.addEventListener('mouseleave', () => {
+                preview.classList.remove('active');
+                preview.style.transform = `translate(-50%, -50%) scale(0)`;
+            });
+        });
+
+        // --- 4. THEME TOGGLE ---
+        const themeBtn = document.getElementById('theme-toggle');
+        const html = document.documentElement;
+
+        // Check preference
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            html.classList.add('dark');
+        }
+
+        themeBtn.addEventListener('click', () => {
+            html.classList.toggle('dark');
+            localStorage.theme = html.classList.contains('dark') ? 'dark' : 'light';
+        });
+
+        // --- 5. SCROLL ANIMATION (Intersection Observer) ---
+        const observerOptions = { threshold: 0.1 };
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if(entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal-scroll').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="it" class="antialiased">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Stefano Panosetti | Creative Developer</title>
+    <meta name="description" content="Portfolio Senior Creative Developer.">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Manrope', 'sans-serif'],
+                        display: ['Syne', 'sans-serif'],
+                    },
+                    colors: {
+                        bg: 'var(--bg)',
+                        fg: 'var(--fg)',
+                        border: 'var(--border)',
+                    },
+                    transitionTimingFunction: {
+                        'expo': 'cubic-bezier(0.16, 1, 0.3, 1)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* =========================================
+           DESIGN SYSTEM VARIABLES
+           ========================================= */
+        :root {
+            /* OKOK DARK THEME (DEFAULT) */
+            --bg: #030303;
+            --fg: #e2e2e2;
+            --border: rgba(255, 255, 255, 0.08);
+            --glass: rgba(20, 20, 20, 0.6);
+            --accent: #4f46e5;
+            --blob-1: #4338ca; --blob-2: #be185d; --blob-3: #0e7490;
+            --radius: 12px;
+            
+            --modal-bg: #0a0a0a;
+            --img-opacity: 0.3;
+        }
+
+        html.light {
+            /* LIGHT THEME */
+            --bg: #f4f4f5;
+            --fg: #18181b;
+            --border: rgba(0, 0, 0, 0.06);
+            --glass: rgba(255, 255, 255, 0.8);
+            --accent: #2563eb;
+            --blob-1: #bfdbfe; --blob-2: #fbcfe8; --blob-3: #99f6e4;
+            --modal-bg: #ffffff;
+            --img-opacity: 0.15;
+        }
+
+        html.mono {
+            /* INDEX BRUTALIST THEME */
+            --bg: #ffffff;
+            --fg: #000000;
+            --border: #000000;
+            --glass: #ffffff;
+            --accent: #000000;
+            --blob-1: transparent; --blob-2: transparent; --blob-3: transparent;
+            --radius: 0px;
+            --modal-bg: #ffffff;
+            --img-opacity: 0;
+        }
+
+        /* RESET & UTILS */
+        body {
+            background-color: var(--bg); color: var(--fg);
+            margin: 0; overflow: hidden; /* Gestito via JS */
+            transition: background-color 0.8s cubic-bezier(0.16, 1, 0.3, 1), color 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        /* MONO SPECIFICS (Override brutale per stile Index) */
+        html.mono .nav-bar { border: 2px solid black; background: white; border-radius: 0; }
+        html.mono .work-card { border: 2px solid black; border-radius: 0; filter: grayscale(100%); }
+        html.mono .work-card:hover { transform: translate(-4px, -4px); box-shadow: 6px 6px 0 black; }
+        html.mono .btn-primary { background: black; color: white; border-radius: 0; }
+        html.mono .btn-primary:hover { background: transparent; color: black; border: 1px solid black; }
+        html.mono .blob-layer { display: none; }
+        html.mono input, html.mono textarea { border-bottom: 2px solid black; border-radius: 0; }
+
+        /* =========================================
+           VIRTUAL SCROLL ENGINE CSS
+           ========================================= */
+        .viewport {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            overflow: hidden; z-index: 10;
+        }
+        .scroll-content {
+            display: flex; height: 100%; width: max-content;
+            will-change: transform;
+        }
+        .panel {
+            width: 100vw; height: 100vh; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            position: relative; padding: 0 10vw;
+            box-sizing: border-box;
+        }
+
+        /* MOBILE OVERRIDES */
+        @media (max-width: 768px) {
+            body { overflow-y: auto; overflow-x: hidden; }
+            .viewport { position: relative; height: auto; overflow: visible; }
+            .scroll-content { flex-direction: column; width: 100%; height: auto; transform: none !important; }
+            .panel { width: 100%; min-height: 90vh; height: auto; padding: 6rem 1.5rem; }
+        }
+
+        /* =========================================
+           COMPONENTS
+           ========================================= */
+        .blob-layer {
+            position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: 0.6;
+            filter: blur(80px);
+        }
+        .blob {
+            position: absolute; border-radius: 50%;
+            animation: float 20s infinite alternate ease-in-out;
+        }
+        @keyframes float { 0% { transform: translate(0,0) rotate(0deg); } 100% { transform: translate(50px, -50px) rotate(20deg); } }
+
+        .nav-bar {
+            position: fixed; top: 2rem; left: 50%; transform: translateX(-50%);
+            z-index: 100; display: flex; align-items: center; gap: 2rem;
+            padding: 0.8rem 2rem; border-radius: 99px;
+            background: var(--glass); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--border);
+            transition: all 0.5s ease;
+        }
+
+        .work-card {
+            position: relative; width: 28vw; height: 65vh;
+            overflow: hidden; border-radius: var(--radius);
+            border: 1px solid var(--border); cursor: none; /* Custom cursor handles this */
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .work-card img {
+            width: 100%; height: 100%; object-fit: cover;
+            transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+            filter: grayscale(20%);
+        }
+        .work-card:hover img { transform: scale(1.05); filter: grayscale(0%); }
+        .work-card:hover { transform: scale(0.98); }
+
+        @media (max-width: 768px) { .work-card { width: 100%; height: 50vh; margin-bottom: 2rem; } }
+
+        /* MODALS (Full Screen Overlay) */
+        .fs-modal {
+            position: fixed; inset: 0; z-index: 9000;
+            background: var(--modal-bg);
+            transform: translateY(100%); transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            overflow-y: auto; display: flex; flex-direction: column;
+        }
+        .fs-modal.active { transform: translateY(0); }
+        
+        .clean-input {
+            width: 100%; background: transparent; border: none;
+            border-bottom: 1px solid var(--border); padding: 1.5rem 0;
+            font-family: 'Manrope'; font-size: 1.2rem; outline: none;
+            color: var(--fg); transition: border-color 0.3s;
+        }
+        .clean-input:focus { border-color: var(--accent); }
+
+        /* CUSTOM CURSOR */
+        #cursor {
+            pointer-events: none; position: fixed; z-index: 9999;
+            width: 12px; height: 12px; background: var(--fg); border-radius: 50%;
+            mix-blend-mode: difference; transition: transform 0.1s linear, width 0.3s, height 0.3s;
+        }
+        #cursor.hovered { transform: translate(-50%, -50%) scale(5); background: transparent; border: 1px solid var(--fg); }
+    </style>
+</head>
+<body>
+
+    <div id="loader" class="fixed inset-0 z-[10000] bg-black flex items-center justify-center transition-opacity duration-1000 pointer-events-none">
+        <span class="font-display font-bold text-white text-2xl animate-pulse tracking-widest">LOADING</span>
+    </div>
+
+    <div id="cursor" class="hidden md:block"></div>
+
+    <div class="blob-layer">
+        <div class="blob" style="top: -10%; left: -10%; width: 50vw; height: 50vw; background: var(--blob-1);"></div>
+        <div class="blob" style="bottom: -10%; right: -10%; width: 40vw; height: 40vw; background: var(--blob-2); animation-delay: -5s;"></div>
+    </div>
+    <div class="fixed inset-0 opacity-[var(--img-opacity)] pointer-events-none z-0" style="background-image: url('https://grainy-gradients.vercel.app/noise.svg');"></div>
+
+    <nav class="nav-bar">
+        <div class="font-display font-bold text-xl tracking-tighter cursor-pointer hover-trigger" onclick="scroller.scrollTo(0)">SP<span class="text-[var(--accent)]">.</span></div>
+        
+        <div class="hidden md:flex items-center gap-8 text-sm font-medium tracking-wide">
+            <button onclick="scroller.scrollTo(1)" class="hover:text-[var(--accent)] transition-colors hover-trigger" data-i18n="nav_work">Lavori</button>
+            <button onclick="scroller.scrollTo(2)" class="hover:text-[var(--accent)] transition-colors hover-trigger" data-i18n="nav_about">About</button>
+            <button onclick="scroller.scrollTo(3)" class="hover:text-[var(--accent)] transition-colors hover-trigger" data-i18n="nav_contact">Contatti</button>
+        </div>
+
+        <div class="flex items-center gap-4 pl-6 border-l border-[var(--border)] h-5">
+            <button id="theme-toggle" class="hover-trigger hover:rotate-12 transition-transform"><i data-lucide="sun" class="w-4 h-4"></i></button>
+            <button id="lang-toggle" class="text-xs font-mono font-bold hover-trigger w-6">IT</button>
+        </div>
+    </nav>
+
+    <div id="gdpr-wall" class="fixed bottom-0 left-0 w-full p-6 z-[8000] flex justify-center items-end pointer-events-none opacity-0 transition-all duration-700 translate-y-10">
+        <div class="bg-[var(--bg)] border border-[var(--border)] p-6 rounded-[var(--radius)] shadow-2xl max-w-lg w-full pointer-events-auto flex flex-col gap-4">
+            <div class="flex justify-between items-center">
+                <h4 class="font-display font-bold text-lg" data-i18n="gdpr_title">Privacy & Cookies</h4>
+                <i data-lucide="shield-check" class="w-5 h-5 text-[var(--accent)]"></i>
+            </div>
+            <p class="text-xs opacity-70 leading-relaxed font-mono" data-i18n="gdpr_text">
+                Utilizziamo cookie tecnici e analitici anonimizzati secondo il GDPR 2025.
+            </p>
+            <div class="grid grid-cols-2 gap-3">
+                <button onclick="Privacy.accept()" class="btn-primary py-3 bg-[var(--fg)] text-[var(--bg)] font-bold uppercase text-[10px] tracking-widest rounded-md hover:scale-[1.02] transition-transform">Accetta</button>
+                <button onclick="Privacy.reject()" class="py-3 border border-[var(--border)] font-bold uppercase text-[10px] tracking-widest rounded-md hover:bg-red-500/10 transition-colors">Rifiuta</button>
+            </div>
+        </div>
+    </div>
+
+    <main class="viewport">
+        <div class="scroll-content" id="scroll-track">
+            
+            <section class="panel">
+                <div class="max-w-7xl w-full mx-auto relative z-10">
+                    <div class="overflow-hidden mb-2">
+                        <p class="font-mono text-xs uppercase tracking-[0.2em] opacity-60 flex items-center gap-2 animate-pulse">
+                            <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+                            <span data-i18n="hero_status">Available for Freelance</span>
+                        </p>
+                    </div>
+                    
+                    <h1 class="font-display font-bold text-[13vw] leading-[0.8] tracking-[-0.04em] mix-blend-difference">
+                        VISUAL<br>
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-[var(--fg)] to-[var(--blob-2)]">DESIGNER</span>
+                    </h1>
+                    
+                    <div class="mt-12 md:ml-[50%] max-w-lg border-l border-[var(--border)] pl-8">
+                        <p class="text-xl md:text-2xl font-light leading-relaxed" data-i18n="hero_bio">
+                            Creo esperienze digitali che combinano <span class="text-[var(--accent)] font-medium">estetica editoriale</span> e ingegneria del codice.
+                        </p>
+                    </div>
+
+                    <div class="absolute bottom-12 left-10 md:left-auto md:right-10 animate-bounce">
+                        <i data-lucide="arrow-down" class="w-6 h-6 opacity-50"></i>
+                    </div>
+                </div>
+            </section>
+
+            <section class="panel">
+                <div class="flex flex-col md:flex-row gap-12 md:gap-24 items-center h-full px-4">
+                    
+                    <div class="md:w-64 shrink-0 self-start md:self-center">
+                        <h2 class="font-display text-5xl md:text-7xl font-bold leading-none mb-6" data-i18n="works_header">Selected<br>Works</h2>
+                        <div class="h-[1px] w-12 bg-[var(--fg)] mb-6"></div>
+                        <p class="text-sm opacity-60 font-mono leading-relaxed" data-i18n="works_sub">
+                            2023 — 2025<br>Art Direction & Dev
+                        </p>
+                    </div>
+
+                    <div class="work-card group hover-trigger" onclick="Modal.open('kinetix')">
+                        <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000&auto=format&fit=crop" alt="Abstract 3D">
+                        <div class="absolute bottom-0 left-0 w-full p-8 bg-gradient-to-t from-black/90 to-transparent transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
+                            <h3 class="font-display text-3xl font-bold text-white">KINETIX</h3>
+                            <p class="font-mono text-xs text-gray-400 uppercase tracking-widest mt-1">Rebranding / WebGL</p>
+                        </div>
+                    </div>
+
+                    <div class="work-card group hover-trigger" onclick="Modal.open('mono')">
+                        <img src="https://images.unsplash.com/photo-1486718448742-163732cd1544?q=80&w=1000&auto=format&fit=crop" alt="Architecture">
+                         <div class="absolute bottom-0 left-0 w-full p-8 bg-gradient-to-t from-black/90 to-transparent transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
+                            <h3 class="font-display text-3xl font-bold text-white">MONO ARC</h3>
+                            <p class="font-mono text-xs text-gray-400 uppercase tracking-widest mt-1">Architecture / Minimal</p>
+                        </div>
+                    </div>
+
+                    <div class="work-card group hover-trigger" onclick="Modal.open('flux')">
+                        <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=1000&auto=format&fit=crop" alt="Tech">
+                         <div class="absolute bottom-0 left-0 w-full p-8 bg-gradient-to-t from-black/90 to-transparent transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
+                            <h3 class="font-display text-3xl font-bold text-white">FLUX OS</h3>
+                            <p class="font-mono text-xs text-gray-400 uppercase tracking-widest mt-1">Dashboard / React</p>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <section class="panel">
+                <div class="w-full max-w-6xl grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+                    <div class="relative">
+                        <div class="aspect-[3/4] overflow-hidden rounded-[var(--radius)]">
+                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80" alt="Profile" class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700">
+                        </div>
+                        <div class="absolute -bottom-6 -right-6 bg-[var(--bg)] border border-[var(--border)] p-6 rounded-[var(--radius)]">
+                            <p class="font-display font-bold text-4xl">5+</p>
+                            <p class="font-mono text-xs uppercase opacity-60">Years Exp.</p>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <span class="font-mono text-xs text-[var(--accent)] uppercase tracking-widest mb-4 block" data-i18n="about_intro">The Philosophy</span>
+                        <h2 class="font-display text-4xl md:text-5xl font-bold leading-tight mb-8">
+                            <span class="opacity-30">Non scrivo solo codice.</span><br>
+                            Costruisco narrazioni digitali attraverso il movimento.
+                        </h2>
+                        <div class="space-y-6 text-lg font-light opacity-80 leading-relaxed">
+                            <p data-i18n="about_p1">
+                                Il mio approccio fonde il design minimalista svizzero con le moderne interazioni WebGL. Ogni scroll, ogni click deve restituire un feedback fisico.
+                            </p>
+                            <p data-i18n="about_p2">
+                                Specializzato in React, Three.js e Typography Design. Lavoro con brand che vogliono distinguersi dal rumore bianco del web standard.
+                            </p>
+                        </div>
+                        
+                        <div class="mt-12 grid grid-cols-2 gap-8 border-t border-[var(--border)] pt-8">
+                            <div>
+                                <h4 class="font-display font-bold mb-2">Tech Stack</h4>
+                                <ul class="text-sm font-mono opacity-60 space-y-1">
+                                    <li>Javascript (ES6+)</li>
+                                    <li>React / Next.js</li>
+                                    <li>WebGL / Three.js</li>
+                                    <li>Tailwind CSS</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 class="font-display font-bold mb-2">Services</h4>
+                                <ul class="text-sm font-mono opacity-60 space-y-1">
+                                    <li>Art Direction</li>
+                                    <li>UI/UX Design</li>
+                                    <li>Frontend Dev</li>
+                                    <li>Motion</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="panel">
+                <div class="w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 gap-16 md:gap-32 items-center">
+                    <div>
+                        <h2 class="font-display text-6xl md:text-8xl font-bold mb-8">Let's<br>Talk.</h2>
+                        <a href="mailto:ciao@stefano.dev" class="text-2xl md:text-3xl font-light hover:text-[var(--accent)] transition-colors hover-trigger">ciao@stefano.dev</a>
+                        
+                        <div class="mt-12 flex gap-6">
+                            <a href="#" class="w-12 h-12 border border-[var(--border)] rounded-full flex items-center justify-center hover:bg-[var(--fg)] hover:text-[var(--bg)] transition-colors hover-trigger"><i data-lucide="instagram"></i></a>
+                            <a href="#" class="w-12 h-12 border border-[var(--border)] rounded-full flex items-center justify-center hover:bg-[var(--fg)] hover:text-[var(--bg)] transition-colors hover-trigger"><i data-lucide="linkedin"></i></a>
+                            <a href="#" class="w-12 h-12 border border-[var(--border)] rounded-full flex items-center justify-center hover:bg-[var(--fg)] hover:text-[var(--bg)] transition-colors hover-trigger"><i data-lucide="github"></i></a>
+                        </div>
+                    </div>
+
+                    <form class="space-y-8" onsubmit="event.preventDefault(); alert('Grazie per il messaggio.');">
+                        <div class="relative group">
+                            <input type="text" class="clean-input peer" placeholder=" " required>
+                            <label class="absolute left-0 top-6 text-sm opacity-50 transition-all peer-focus:-top-2 peer-focus:text-xs peer-focus:opacity-100 peer-not-placeholder-shown:-top-2 peer-not-placeholder-shown:text-xs peer-not-placeholder-shown:opacity-100" data-i18n="form_name">NOME / AZIENDA</label>
+                        </div>
+                        <div class="relative group">
+                            <input type="email" class="clean-input peer" placeholder=" " required>
+                            <label class="absolute left-0 top-6 text-sm opacity-50 transition-all peer-focus:-top-2 peer-focus:text-xs peer-focus:opacity-100 peer-not-placeholder-shown:-top-2 peer-not-placeholder-shown:text-xs peer-not-placeholder-shown:opacity-100" data-i18n="form_email">EMAIL</label>
+                        </div>
+                        <div class="relative group">
+                            <textarea rows="2" class="clean-input resize-none peer" placeholder=" " required></textarea>
+                            <label class="absolute left-0 top-6 text-sm opacity-50 transition-all peer-focus:-top-2 peer-focus:text-xs peer-focus:opacity-100 peer-not-placeholder-shown:-top-2 peer-not-placeholder-shown:text-xs peer-not-placeholder-shown:opacity-100" data-i18n="form_msg">PARLAMI DEL PROGETTO</label>
+                        </div>
+
+                        <button type="submit" class="mt-8 px-10 py-5 bg-[var(--fg)] text-[var(--bg)] rounded-full font-bold font-display tracking-widest uppercase hover:scale-105 transition-transform hover-trigger w-full md:w-auto" data-i18n="form_btn">
+                            Invia Messaggio
+                        </button>
+                    </form>
+                </div>
+                
+                <div class="absolute bottom-4 w-full text-center">
+                    <button onclick="Legal.open('privacy')" class="text-[10px] uppercase tracking-widest opacity-30 hover:opacity-100 hover-trigger">Privacy & Policy</button>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <div id="project-modal" class="fs-modal">
+        <button class="fixed top-8 right-8 z-50 w-12 h-12 border border-[var(--border)] rounded-full flex items-center justify-center bg-[var(--bg)] hover-trigger" onclick="Modal.close()">
+            <i data-lucide="x"></i>
+        </button>
+        
+        <div class="w-full h-[60vh] relative">
+            <img id="m-img" src="" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-black/50"></div>
+            <div class="absolute bottom-0 left-0 p-8 md:p-20">
+                <h1 id="m-title" class="text-6xl md:text-9xl font-display font-bold text-white mb-2">TITLE</h1>
+                <p id="m-cat" class="text-xl font-mono text-white/70 tracking-widest uppercase">Category</p>
+            </div>
+        </div>
+        
+        <div class="max-w-4xl mx-auto p-8 md:p-20 pb-40">
+            <div class="flex flex-col md:flex-row gap-12 text-lg leading-relaxed font-light opacity-80">
+                <div class="flex-1">
+                    <p id="m-desc">Description placeholder.</p>
+                </div>
+                <div class="w-full md:w-64 shrink-0 space-y-4 font-mono text-sm opacity-100">
+                    <div class="border-b border-[var(--border)] pb-2 flex justify-between"><span>Year</span> <span>2024</span></div>
+                    <div class="border-b border-[var(--border)] pb-2 flex justify-between"><span>Client</span> <span id="m-client">Client</span></div>
+                    <div class="border-b border-[var(--border)] pb-2 flex justify-between"><span>Role</span> <span>Design & Dev</span></div>
+                </div>
+            </div>
+            
+            <div class="mt-20 space-y-8">
+                <div class="w-full h-[50vh] bg-gray-800 animate-pulse rounded-lg"></div>
+                <div class="grid grid-cols-2 gap-8">
+                     <div class="w-full h-[40vh] bg-gray-800 animate-pulse rounded-lg"></div>
+                     <div class="w-full h-[40vh] bg-gray-800 animate-pulse rounded-lg"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="legal-modal" class="fs-modal p-8 md:p-20">
+        <button class="fixed top-8 right-8 z-50 hover-trigger" onclick="Legal.close()"><i data-lucide="x" class="w-8 h-8"></i></button>
+        <div class="max-w-3xl mx-auto mt-20">
+            <h1 class="font-display text-5xl font-bold mb-12">Legal Information</h1>
+            <div class="prose prose-invert prose-lg">
+                <h3 class="text-2xl font-bold mb-4">Privacy Policy (GDPR 2025)</h3>
+                <p class="mb-8 opacity-70">
+                    Il trattamento dei dati personali avviene nel rispetto del Regolamento UE 2016/679. 
+                    Il titolare del trattamento è Stefano Panosetti. I dati raccolti (nome, email) servono esclusivamente per il contatto commerciale richiesto dall'utente.
+                    Nessun dato viene ceduto a terzi.
+                </p>
+                <h3 class="text-2xl font-bold mb-4">Cookie Policy</h3>
+                <p class="mb-8 opacity-70">
+                    Usiamo solo cookie tecnici essenziali e Google Analytics 4 con IP anonimizzato. 
+                    Puoi revocare il consenso in qualsiasi momento cancellando la cache del browser.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        // 1. DATA & I18N
+        const LANG = {
+            it: {
+                nav_work: "Lavori", nav_about: "About", nav_contact: "Contatti",
+                hero_status: "Disponibile per Freelance",
+                hero_bio: `Creo esperienze digitali che combinano <span class="text-[var(--accent)] font-medium">estetica editoriale</span> e ingegneria del codice.`,
+                works_header: "Lavori<br>Selezionati",
+                works_sub: "2023 — 2025<br>Art Direction & Dev",
+                about_intro: "La Filosofia",
+                about_p1: "Il mio approccio fonde il design minimalista svizzero con le moderne interazioni WebGL. Ogni scroll, ogni click deve restituire un feedback fisico.",
+                about_p2: "Specializzato in React, Three.js e Typography Design. Lavoro con brand che vogliono distinguersi.",
+                form_name: "NOME / AZIENDA", form_email: "EMAIL", form_msg: "PARLAMI DEL PROGETTO", form_btn: "INVIA MESSAGGIO",
+                gdpr_title: "Privacy & Cookie", gdpr_text: "Utilizziamo cookie tecnici e analitici anonimizzati secondo il GDPR 2025."
+            },
+            en: {
+                nav_work: "Works", nav_about: "About", nav_contact: "Contact",
+                hero_status: "Available for Freelance",
+                hero_bio: `Crafting digital experiences merging <span class="text-[var(--accent)] font-medium">editorial aesthetics</span> with code engineering.`,
+                works_header: "Selected<br>Works",
+                works_sub: "2023 — 2025<br>Art Direction & Dev",
+                about_intro: "The Philosophy",
+                about_p1: "My approach blends Swiss minimalist design with modern WebGL interactions. Every scroll, every click must return physical feedback.",
+                about_p2: "Specialized in React, Three.js and Typography Design. I work with brands that want to stand out.",
+                form_name: "NAME / COMPANY", form_email: "EMAIL", form_msg: "TELL ME ABOUT THE PROJECT", form_btn: "SEND MESSAGE",
+                gdpr_title: "Privacy & Cookies", gdpr_text: "We use technical and anonymized analytical cookies per GDPR 2025."
+            }
+        };
+
+        const PROJECTS = {
+            kinetix: { title: "KINETIX", cat: "Rebranding", client: "Kinetix Labs", img: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1200", desc: "A comprehensive rebranding for a motion-tech startup. The challenge was to visualize sound waves using WebGL shaders in real-time." },
+            mono: { title: "MONO ARC", cat: "Architecture", client: "Studio Arc", img: "https://images.unsplash.com/photo-1486718448742-163732cd1544?q=80&w=1200", desc: "Minimalist portfolio for an award-winning architecture firm. Whitespace and typography are the main protagonists." },
+            flux: { title: "FLUX OS", cat: "Product", client: "Flux Inc", img: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=1200", desc: "Dashboard UI kit for IoT devices. Designed with high contrast mode and accessibility in mind." }
+        };
+
+        // 2. STATE MANAGER
+        const State = {
+            lang: localStorage.lang || 'it',
+            theme: localStorage.theme || 'dark', // dark, light, mono
+            
+            init() {
+                this.setLang(this.lang);
+                this.setTheme(this.theme);
+                
+                // Bindings
+                document.getElementById('lang-toggle').onclick = () => this.toggleLang();
+                document.getElementById('theme-toggle').onclick = () => this.cycleTheme();
+            },
+            
+            setLang(l) {
+                this.lang = l;
+                localStorage.lang = l;
+                document.getElementById('lang-toggle').innerText = l.toUpperCase();
+                document.querySelectorAll('[data-i18n]').forEach(el => {
+                    const key = el.dataset.i18n;
+                    if(LANG[l][key]) el.innerHTML = LANG[l][key];
+                });
+            },
+            
+            toggleLang() { this.setLang(this.lang === 'it' ? 'en' : 'it'); },
+            
+            setTheme(t) {
+                document.documentElement.className = ''; // reset
+                document.documentElement.classList.add('antialiased');
+                if(t !== 'dark') document.documentElement.classList.add(t);
+                this.theme = t;
+                localStorage.theme = t;
+                
+                const icon = document.getElementById('theme-toggle').querySelector('i');
+                if(t === 'dark') icon.setAttribute('data-lucide', 'sun');
+                else if(t === 'light') icon.setAttribute('data-lucide', 'moon');
+                else icon.setAttribute('data-lucide', 'box');
+                lucide.createIcons();
+            },
+            
+            cycleTheme() {
+                const map = { 'dark': 'light', 'light': 'mono', 'mono': 'dark' };
+                this.setTheme(map[this.theme]);
+            }
+        };
+
+        // 3. VIRTUAL SCROLL ENGINE (The "Heavy" Feel)
+        class VirtualScroll {
+            constructor() {
+                this.track = document.getElementById('scroll-track');
+                this.panels = document.querySelectorAll('.panel');
+                this.current = 0;
+                this.target = 0;
+                this.ease = 0.08; // Lower = Heavier feel
+                this.isMobile = window.innerWidth <= 768;
+                this.maxScroll = 0;
+                
+                this.resize();
+                window.addEventListener('resize', () => this.resize());
+                
+                if (!this.isMobile) {
+                    window.addEventListener('wheel', (e) => this.onWheel(e), { passive: false });
+                    this.raf();
+                }
+            }
+            
+            resize() {
+                this.isMobile = window.innerWidth <= 768;
+                this.maxScroll = this.track.scrollWidth - window.innerWidth;
+            }
+            
+            onWheel(e) {
+                // Ignore if modal is open
+                if(document.querySelector('.fs-modal.active')) return;
+                
+                e.preventDefault();
+                this.target += e.deltaY;
+                this.target = Math.max(0, Math.min(this.target, this.maxScroll));
+            }
+            
+            scrollTo(index) {
+                if(this.isMobile) {
+                    this.panels[index].scrollIntoView({behavior: 'smooth'});
+                } else {
+                    this.target = window.innerWidth * index;
+                }
+            }
+            
+            raf() {
+                if(!this.isMobile) {
+                    // Linear Interpolation
+                    this.current += (this.target - this.current) * this.ease;
+                    // Apply Transform
+                    this.track.style.transform = `translateX(${-this.current}px)`;
+                    requestAnimationFrame(() => this.raf());
+                }
+            }
+        }
+
+        // 4. MODALS LOGIC
+        const Modal = {
+            el: document.getElementById('project-modal'),
+            open(id) {
+                const p = PROJECTS[id];
+                document.getElementById('m-title').innerText = p.title;
+                document.getElementById('m-cat').innerText = p.cat;
+                document.getElementById('m-client').innerText = p.client;
+                document.getElementById('m-desc').innerText = p.desc;
+                document.getElementById('m-img').src = p.img;
+                this.el.classList.add('active');
+            },
+            close() { this.el.classList.remove('active'); }
+        };
+
+        const Legal = {
+            el: document.getElementById('legal-modal'),
+            open() { this.el.classList.add('active'); },
+            close() { this.el.classList.remove('active'); }
+        };
+
+        const Privacy = {
+            el: document.getElementById('gdpr-wall'),
+            init() {
+                if(!localStorage.privacy) {
+                    setTimeout(() => {
+                        this.el.classList.remove('opacity-0', 'translate-y-10');
+                    }, 2000);
+                }
+            },
+            accept() { localStorage.privacy = 'true'; this.close(); },
+            reject() { localStorage.privacy = 'false'; this.close(); },
+            close() { this.el.classList.add('opacity-0', 'translate-y-10'); setTimeout(()=>this.el.style.display='none', 700); }
+        };
+
+        // 5. CUSTOM CURSOR & INIT
+        const scroller = new VirtualScroll(); // Global for nav clicks
+        
+        window.onload = () => {
+            // Remove Loader
+            const loader = document.getElementById('loader');
+            loader.style.opacity = '0';
+            setTimeout(() => loader.style.display = 'none', 1000);
+            
+            State.init();
+            Privacy.init();
+            
+            // Cursor Logic
+            if (!scroller.isMobile) {
+                const cursor = document.getElementById('cursor');
+                document.addEventListener('mousemove', e => {
+                    cursor.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
+                });
+                
+                // Hover Effects
+                document.querySelectorAll('.hover-trigger, a, button, input').forEach(el => {
+                    el.addEventListener('mouseenter', () => cursor.classList.add('hovered'));
+                    el.addEventListener('mouseleave', () => cursor.classList.remove('hovered'));
+                });
+            }
+        };
+
+    </script>
+</body>
+</html>

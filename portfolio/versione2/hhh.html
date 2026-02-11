@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="it" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stefano Panosetti | Visual Designer</title>
+    <meta name="description" content="Portfolio di Stefano Panosetti. Visual Designer & Frontend Developer.">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Manrope', 'sans-serif'],
+                        display: ['Syne', 'sans-serif'],
+                    },
+                    colors: {
+                        bg: 'var(--bg)',
+                        fg: 'var(--fg)',
+                        surface: 'var(--surface)',
+                        border: 'var(--border)',
+                        accent: 'var(--accent)',
+                        subtle: 'var(--subtle)',
+                    },
+                    animation: {
+                        'marquee': 'marquee 30s linear infinite',
+                        'fade-in': 'fadeIn 0.5s ease-out forwards',
+                    },
+                    keyframes: {
+                        marquee: {
+                            '0%': { transform: 'translateX(0%)' },
+                            '100%': { transform: 'translateX(-50%)' },
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'translateY(10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* --- DESIGN TOKENS --- */
+        :root {
+            --bg: #0a0a0a;
+            --fg: #ededed;
+            --subtle: #888888;
+            --surface: #121212;
+            --border: rgba(255, 255, 255, 0.1);
+            --accent: #ffffff;
+            --cursor-mode: difference;
+        }
+
+        html.light {
+            --bg: #f4f4f2; /* Warm sophisticated white */
+            --fg: #111111;
+            --subtle: #666666;
+            --surface: #e8e8e6;
+            --border: rgba(0, 0, 0, 0.08);
+            --accent: #000000;
+            --cursor-mode: normal;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--fg);
+            transition: background-color 0.5s cubic-bezier(0.25, 1, 0.5, 1), color 0.5s ease;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* --- TYPOGRAPHY --- */
+        .text-balance { text-wrap: balance; }
+        
+        .h-hero {
+            font-size: clamp(3.2rem, 11vw, 9.5rem);
+            line-height: 0.9;
+            letter-spacing: -0.04em;
+        }
+        .h-section {
+            font-size: clamp(2.5rem, 5vw, 4.5rem);
+            line-height: 1;
+            letter-spacing: -0.03em;
+        }
+
+        /* --- UI ELEMENTS --- */
+        .noise {
+            position: fixed; inset: 0; pointer-events: none; z-index: 40;
+            opacity: 0.04;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='1'/%3E%3C/svg%3E");
+        }
+
+        /* Menu Overlay Backdrop */
+        .backdrop-blur-md {
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        /* Custom Cursor */
+        @media (pointer: fine) {
+            body { cursor: none; }
+            #cursor {
+                position: fixed; top: 0; left: 0;
+                width: 14px; height: 14px;
+                background: var(--accent);
+                border-radius: 50%;
+                pointer-events: none; z-index: 9999;
+                transform: translate(-50%, -50%);
+                transition: transform 0.15s, width 0.3s, height 0.3s;
+                mix-blend-mode: var(--cursor-mode);
+            }
+            #cursor.hovered {
+                width: 64px; height: 64px;
+                background: transparent;
+                border: 1px solid var(--accent);
+                mix-blend-mode: normal;
+            }
+        }
+
+        /* Project Preview Image */
+        #preview-img {
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9);
+            width: 450px; height: 320px; z-index: 30; pointer-events: none;
+            background-size: cover; background-position: center; border-radius: 4px;
+            opacity: 0; transition: opacity 0.3s, transform 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+            filter: grayscale(100%);
+        }
+        #preview-img.active { opacity: 1; transform: translate(-50%, -50%) scale(1) rotate(-2deg); }
+
+        /* Reveal Animation */
+        .reveal {
+            opacity: 0; transform: translateY(30px);
+            transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+
+        /* Form Inputs */
+        .input-minimal {
+            width: 100%; background: transparent; border: none;
+            border-bottom: 1px solid var(--border);
+            padding: 1.25rem 0; font-family: 'Manrope', sans-serif; font-size: 1.1rem;
+            color: var(--fg); outline: none; transition: border-color 0.3s, padding 0.3s;
+            border-radius: 0;
+        }
+        .input-minimal:focus { border-color: var(--fg); padding-left: 10px; }
+        .input-minimal::placeholder { text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.1em; color: var(--subtle); }
+
+    </style>
+</head>
+<body class="antialiased selection:bg-fg selection:text-bg">
+
+    <div class="noise"></div>
+    <div id="cursor" class="hidden md:block"></div>
+    <div id="preview-img"></div>
+
+    <nav class="fixed top-0 w-full z-50 px-6 py-6 transition-all duration-300">
+        <div class="flex justify-between items-center max-w-[1800px] mx-auto mix-blend-difference text-white">
+            <a href="#" class="font-display font-bold text-xl tracking-tighter hover-trigger relative z-50">PAN.</a>
+            
+            <div class="hidden md:flex gap-10 items-center">
+                <a href="#about" class="text-xs font-bold uppercase tracking-widest hover:opacity-60 transition-opacity hover-trigger">About</a>
+                <a href="#work" class="text-xs font-bold uppercase tracking-widest hover:opacity-60 transition-opacity hover-trigger">Work</a>
+                <a href="#contact" class="text-xs font-bold uppercase tracking-widest hover:opacity-60 transition-opacity hover-trigger">Contact</a>
+                <button id="theme-btn" class="ml-6 hover-trigger opacity-80 hover:opacity-100 transition-opacity"><i data-lucide="sun-moon" class="w-5 h-5"></i></button>
+            </div>
+
+            <div class="flex md:hidden gap-4 items-center z-50 relative">
+                 <button id="theme-btn-mobile" class="opacity-80"><i data-lucide="sun-moon" class="w-5 h-5"></i></button>
+                 <button id="menu-toggle" class="uppercase text-xs font-bold border border-white/40 px-4 py-2 rounded-full backdrop-blur-sm">Menu</button>
+            </div>
+        </div>
+    </nav>
+
+    <div id="mobile-menu" class="fixed inset-0 bg-bg/95 backdrop-blur-md z-40 flex flex-col justify-center items-center gap-8 translate-x-full transition-transform duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] md:hidden">
+        <a href="#about" class="font-display text-5xl font-bold mobile-link text-fg hover:text-subtle transition-colors">ABOUT</a>
+        <a href="#work" class="font-display text-5xl font-bold mobile-link text-fg hover:text-subtle transition-colors">WORK</a>
+        <a href="#contact" class="font-display text-5xl font-bold mobile-link text-fg hover:text-subtle transition-colors">CONTACT</a>
+        
+        <div class="absolute bottom-10 text-xs font-mono text-subtle uppercase tracking-widest">
+            Portfolio 2025
+        </div>
+    </div>
+
+    <main class="w-full">
+
+        <section class="min-h-screen flex flex-col justify-center px-6 md:px-12 pt-24 max-w-[1800px] mx-auto relative">
+            <div class="reveal">
+                <p class="font-mono text-xs tracking-[0.25em] mb-6 text-subtle">VISUAL & WEB</p>
+                <h1 class="font-display font-bold h-hero text-fg leading-[0.85] -ml-[0.05em]">
+                    VISUAL<br>
+                    <span class="pl-[10vw] text-subtle/50">DESIGNER</span><br>
+                    & DEV.
+                </h1>
+            </div>
+
+            <div class="mt-24 md:mt-32 grid grid-cols-1 md:grid-cols-12 gap-12 border-t border-border pt-10 reveal delay-100">
+                <div class="md:col-span-5">
+                    <p class="text-xl md:text-2xl font-light text-fg/90 leading-relaxed text-balance">
+                        Sono Stefano Panosetti. Unisco la <strong class="text-fg font-medium">strategia comunicativa</strong> al codice. Trasformo concetti complessi in interfacce pulite e memorabili.
+                    </p>
+                </div>
+                <div class="md:col-span-7 flex flex-col md:flex-row justify-end gap-16 font-mono text-xs uppercase tracking-widest text-subtle">
+                    <div>
+                        <span class="block text-fg mb-2">Location</span>
+                        Loreto Aprutino<br>Torino, IT
+                    </div>
+                    <div>
+                        <span class="block text-fg mb-2">Connect</span>
+                        <a href="mailto:panosettistefano@gmail.com" class="hover:text-fg transition-colors">Email Me ↗</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="py-10 border-y border-border overflow-hidden bg-surface/50">
+            <div class="flex gap-20 animate-marquee whitespace-nowrap font-display text-5xl md:text-7xl font-bold text-fg/5 select-none pointer-events-none">
+                STRATEGY • VISUAL IDENTITY • WEB DESIGN • DEVELOPMENT • SEO • STRATEGY • VISUAL IDENTITY • WEB DESIGN • DEVELOPMENT • SEO •
+            </div>
+        </div>
+
+        <section id="about" class="py-32 px-6 md:px-12 max-w-[1800px] mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-16">
+                <div class="md:col-span-4 md:sticky md:top-32 h-fit">
+                    <span class="font-mono text-xs tracking-widest text-subtle block mb-6">01 / BACKGROUND</span>
+                    <h2 class="font-display h-section font-bold mb-8 text-balance">NON SOLO<br>PIXEL.</h2>
+                    <a href="#contact" class="hover-trigger inline-flex items-center gap-2 border-b border-fg pb-1 text-sm uppercase tracking-widest hover:text-subtle hover:border-subtle transition-all">
+                        Scarica CV <i data-lucide="arrow-down" class="w-4 h-4"></i>
+                    </a>
+                </div>
+
+                <div class="md:col-span-8 space-y-20">
+                    <div class="reveal">
+                        <p class="text-2xl md:text-4xl font-light leading-tight text-balance">
+                            Design without thought is decoration. Con una laurea in <span class="border-b border-border text-fg">Scienze della Comunicazione</span> e competenze Full-Stack, il mio approccio è ibrido: sociologico nell'analisi, chirurgico nell'esecuzione.
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-16 reveal delay-75">
+                        <div>
+                            <h3 class="font-display text-lg font-bold mb-8 uppercase tracking-widest">Education</h3>
+                            <ul class="space-y-8">
+                                <li class="group">
+                                    <div class="text-xs font-mono text-subtle mb-2">2023 - 2024</div>
+                                    <div class="text-xl font-bold mb-2">Laurea in Comunicazione</div>
+                                    <div class="text-sm text-subtle leading-relaxed">Università di Torino. Focus su UX Research, Semiotica e Personal Branding.</div>
+                                </li>
+                                <li class="group">
+                                    <div class="text-xs font-mono text-subtle mb-2">2025</div>
+                                    <div class="text-xl font-bold mb-2">Master Web Design</div>
+                                    <div class="text-sm text-subtle leading-relaxed">250 ore intensive. WordPress Custom, HTML5, CSS3, GDPR Compliance & SEO.</div>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <div>
+                            <h3 class="font-display text-lg font-bold mb-8 uppercase tracking-widest">Experience</h3>
+                            <ul class="space-y-8">
+                                <li class="group">
+                                    <div class="text-xs font-mono text-subtle mb-2">2018 - 2023</div>
+                                    <div class="text-xl font-bold mb-2">Hospitality Management</div>
+                                    <div class="text-sm text-subtle leading-relaxed">Caposala e Barman. Gestione team, risoluzione conflitti e Customer Care avanzato.</div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="work" class="py-32 px-6 md:px-12 max-w-[1800px] mx-auto">
+            <span class="font-mono text-xs tracking-widest text-subtle block mb-16">02 / SELECTED WORKS</span>
+            
+            <div class="flex flex-col border-t border-border">
+                <a href="https://otfzone.altervista.org/" target="_blank" class="work-item group py-12 md:py-20 border-b border-border flex flex-col md:flex-row justify-between items-baseline hover-trigger relative z-10 transition-colors hover:bg-surface/30 px-4 md:px-0 -mx-4 md:mx-0" data-img="https://images.unsplash.com/photo-1600607686527-6fb886090705?q=80&w=2000">
+                    <h3 class="font-display text-4xl md:text-7xl font-bold group-hover:translate-x-6 transition-transform duration-500 ease-out">Otfzone</h3>
+                    <div class="mt-4 md:mt-0 flex items-center gap-6 font-mono text-sm text-subtle group-hover:text-fg group-hover:-translate-x-6 transition-all duration-500">
+                        <span>Brand Identity / Web</span>
+                        <i data-lucide="arrow-up-right" class="w-5 h-5"></i>
+                    </div>
+                </a>
+
+                <a href="https://panosettistefano.github.io/Website/" target="_blank" class="work-item group py-12 md:py-20 border-b border-border flex flex-col md:flex-row justify-between items-baseline hover-trigger relative z-10 transition-colors hover:bg-surface/30 px-4 md:px-0 -mx-4 md:mx-0" data-img="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2000">
+                    <h3 class="font-display text-4xl md:text-7xl font-bold group-hover:translate-x-6 transition-transform duration-500 ease-out">Doja Crypto</h3>
+                    <div class="mt-4 md:mt-0 flex items-center gap-6 font-mono text-sm text-subtle group-hover:text-fg group-hover:-translate-x-6 transition-all duration-500">
+                        <span>UI Design / Code</span>
+                        <i data-lucide="arrow-up-right" class="w-5 h-5"></i>
+                    </div>
+                </a>
+
+                <a href="https://dogtype.altervista.org/" target="_blank" class="work-item group py-12 md:py-20 border-b border-border flex flex-col md:flex-row justify-between items-baseline hover-trigger relative z-10 transition-colors hover:bg-surface/30 px-4 md:px-0 -mx-4 md:mx-0" data-img="https://images.unsplash.com/photo-1507721999472-8ed4421c4af2?q=80&w=2000">
+                    <h3 class="font-display text-4xl md:text-7xl font-bold group-hover:translate-x-6 transition-transform duration-500 ease-out">Dogtype</h3>
+                    <div class="mt-4 md:mt-0 flex items-center gap-6 font-mono text-sm text-subtle group-hover:text-fg group-hover:-translate-x-6 transition-all duration-500">
+                        <span>WordPress / Editorial</span>
+                        <i data-lucide="arrow-up-right" class="w-5 h-5"></i>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <section id="contact" class="py-32 px-6 md:px-12 bg-surface mt-20">
+            <div class="max-w-[1800px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-20 items-start">
+                <div class="reveal">
+                    <span class="font-mono text-xs tracking-widest text-subtle block mb-8">03 / CONTACT</span>
+                    <h2 class="font-display text-6xl md:text-8xl font-bold mb-8 leading-[0.9]">LET'S<br>TALK.</h2>
+                    <p class="text-xl font-light text-subtle mb-12 max-w-md text-balance">
+                        Hai un progetto o una visione? Costruiamola insieme. Scrivimi per un preventivo o una consulenza.
+                    </p>
+                    
+                    <div class="space-y-4 font-mono text-sm">
+                        <a href="mailto:panosettistefano@gmail.com" class="block hover:text-fg hover:translate-x-2 transition-all text-subtle">PANOSETTISTEFANO@GMAIL.COM</a>
+                        <a href="tel:+393341556321" class="block hover:text-fg hover:translate-x-2 transition-all text-subtle">+39 334 155 63 21</a>
+                    </div>
+                </div>
+
+                <form action="https://formsubmit.co/panosettistefano@gmail.com" method="POST" class="space-y-10 mt-10 md:mt-0 reveal delay-100">
+                    <input type="hidden" name="_captcha" value="false">
+                    <input type="text" name="_honey" style="display:none">
+                    
+                    <div>
+                        <input type="text" name="name" class="input-minimal hover-trigger" placeholder="IL TUO NOME *" required>
+                    </div>
+                    <div>
+                        <input type="email" name="email" class="input-minimal hover-trigger" placeholder="LA TUA EMAIL *" required>
+                    </div>
+                    <div>
+                        <textarea name="message" rows="4" class="input-minimal hover-trigger resize-none" placeholder="PARLAMI DEL PROGETTO *" required></textarea>
+                    </div>
+                    
+                    <button type="submit" class="hover-trigger bg-fg text-bg px-12 py-5 rounded-full font-bold font-display uppercase tracking-widest text-xs hover:bg-subtle hover:text-white transition-all duration-300 w-full md:w-auto">
+                        Invia Messaggio
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <footer class="py-12 px-6 md:px-12 border-t border-border flex flex-col md:flex-row justify-between text-xs font-mono uppercase text-subtle">
+            <p>&copy; 2025 Stefano Panosetti. All Rights Reserved.</p>
+            <div class="flex gap-8 mt-6 md:mt-0">
+                <a href="#" class="hover:text-fg transition-colors">Linkedin</a>
+                <a href="#" class="hover:text-fg transition-colors">Instagram</a>
+            </div>
+        </footer>
+
+    </main>
+
+    <script>
+        lucide.createIcons();
+
+        // 1. THEME MANAGER
+        const themeBtns = document.querySelectorAll('#theme-btn, #theme-btn-mobile');
+        const html = document.documentElement;
+
+        const toggleTheme = () => {
+            html.classList.toggle('light');
+            localStorage.theme = html.classList.contains('light') ? 'light' : 'dark';
+        };
+
+        if (localStorage.theme === 'light') html.classList.add('light');
+        themeBtns.forEach(btn => btn.addEventListener('click', toggleTheme));
+
+        // 2. MOBILE MENU MANAGER
+        const menuToggle = document.getElementById('menu-toggle');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileLinks = document.querySelectorAll('.mobile-link');
+        let isMenuOpen = false;
+
+        menuToggle.addEventListener('click', () => {
+            isMenuOpen = !isMenuOpen;
+            mobileMenu.style.transform = isMenuOpen ? 'translateX(0)' : 'translateX(100%)';
+            menuToggle.textContent = isMenuOpen ? 'Chiudi' : 'Menu';
+            document.body.style.overflow = isMenuOpen ? 'hidden' : '';
+        });
+
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                isMenuOpen = false;
+                mobileMenu.style.transform = 'translateX(100%)';
+                menuToggle.textContent = 'Menu';
+                document.body.style.overflow = '';
+            });
+        });
+
+        // 3. CURSOR & HOVER EFFECTS (DESKTOP)
+        if (window.matchMedia("(pointer: fine)").matches) {
+            const cursor = document.getElementById('cursor');
+            const preview = document.getElementById('preview-img');
+            const workItems = document.querySelectorAll('.work-item');
+            const triggers = document.querySelectorAll('.hover-trigger, a, button');
+
+            document.addEventListener('mousemove', e => {
+                cursor.style.left = e.clientX + 'px';
+                cursor.style.top = e.clientY + 'px';
+            });
+
+            triggers.forEach(el => {
+                el.addEventListener('mouseenter', () => cursor.classList.add('hovered'));
+                el.addEventListener('mouseleave', () => cursor.classList.remove('hovered'));
+            });
+
+            workItems.forEach(item => {
+                item.addEventListener('mouseenter', () => {
+                    const src = item.getAttribute('data-img');
+                    preview.style.backgroundImage = `url(${src})`;
+                    preview.classList.add('active');
+                    cursor.style.opacity = '0';
+                });
+                item.addEventListener('mousemove', e => {
+                    const x = (window.innerWidth / 2 - e.clientX) * 0.08;
+                    const y = (window.innerHeight / 2 - e.clientY) * 0.08;
+                    preview.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px)) scale(1) rotate(-2deg)`;
+                });
+                item.addEventListener('mouseleave', () => {
+                    preview.classList.remove('active');
+                    cursor.style.opacity = '1';
+                });
+            });
+        }
+
+        // 4. SCROLL REVEAL OBSERVER
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    </script>
+</body>
+</html>

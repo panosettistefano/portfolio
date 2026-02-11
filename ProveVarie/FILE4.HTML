@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="it" class="no-js">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#050505">
+    
+    <title>Stefano Panosetti | Senior Creative Engineer & Digital Architect</title>
+    <meta name="description" content="Portfolio di Stefano Panosetti. Sviluppo WebGL, React e Design System avanzati. Creo esperienze digitali immersive che uniscono estetica e performance. Base a Roma.">
+    <meta name="keywords" content="Creative Engineer, WebGL Developer, React, Three.js, Frontend Developer Rome, UX Design, Creative Coding">
+    <meta name="author" content="Stefano Panosetti">
+    <meta name="robots" content="index, follow">
+    
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Stefano Panosetti | Creative Engineer">
+    <meta property="og:description" content="Esperienze digitali immersive e ingegneria frontend ad alte prestazioni.">
+    <meta property="og:url" content="https://stefanopanosetti.com">
+    <meta property="og:image" content="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "Stefano Panosetti",
+      "jobTitle": "Creative Engineer",
+      "url": "https://stefanopanosetti.com",
+      "sameAs": [
+        "https://www.linkedin.com/in/stefano-panosetti",
+        "https://github.com/stefanopanosetti"
+      ],
+      "knowsAbout": ["WebGL", "React", "Three.js", "User Experience", "Performance Optimization"]
+    }
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Darker+Grotesque:wght@300;400;500;600;700;800;900&family=Manrope:wght@200;300;400;500;600&family=Syncopate:wght@400;700&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        bg: 'var(--c-bg)',
+                        surface: 'var(--c-surface)',
+                        accent: 'var(--c-accent)',
+                        line: 'var(--c-line)'
+                    },
+                    fontFamily: {
+                        display: ['Syncopate', 'sans-serif'],
+                        body: ['Manrope', 'sans-serif'],
+                        title: ['Darker Grotesque', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            --c-bg: #050505;
+            --c-surface: #0f0f0f;
+            --c-text-main: #e1e1e1;
+            --c-text-muted: #888888;
+            --c-accent: #8DA376; 
+            --c-line: rgba(255, 255, 255, 0.1);
+            
+            --nav-height: 60px;
+            --container-width: 92vw;
+            --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        @media (max-width: 768px) {
+            :root {
+                --nav-height: 70px;
+                --container-width: 90vw;
+            }
+        }
+
+        /* FIX: REDESIGN LIGHT MODE - PURPLE 3D THEME (INVERTED) */
+        body.light-mode {
+            /* COLORI INVERTITI: Sfondo Viola (dagli effetti 3D), Testo Bianco */
+            --c-bg: #4C1D95;         /* Viola Profondo / Indaco (Base 3D) */
+            --c-surface: #5B21B6;    /* Viola leggermente più chiaro per i layer */
+            --c-text-main: #FFFFFF;  /* Bianco Puro per leggibilità */
+            --c-text-muted: #E9D5FF; /* Viola chiarissimo per testi secondari */
+            --c-line: rgba(255, 255, 255, 0.2); /* Linee bianche trasparenti */
+            --c-accent: #A78BFA;     /* Accento Viola Acceso (opzionale, per coerenza) */
+            
+            --nav-bg: rgba(76, 29, 149, 0.85); /* Header viola scuro semi-trasparente */
+            --nav-text: #FFFFFF;
+            --nav-border: rgba(255, 255, 255, 0.1);
+            --bg-overlay: rgba(76, 29, 149, 0.95);
+        }
+        
+        /* FIX: Elementi UI in Light Mode (ora Purple Mode) */
+        body.light-mode .project-overlay,
+        body.light-mode .menu-overlay {
+            background-color: var(--c-surface) !important; /* Viola scuro */
+            backdrop-filter: none;
+            color: #FFFFFF;
+        }
+
+        /* FIX: Testo input bianco in Light Mode */
+        body.light-mode .input-group input, 
+        body.light-mode .input-group textarea {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+            color: #ffffff !important;
+        }
+        
+        body.light-mode .input-group label {
+            color: #E9D5FF;
+        }
+
+        body.light-mode .input-group input:-webkit-autofill,
+        body.light-mode .input-group textarea:-webkit-autofill {
+            -webkit-text-fill-color: #ffffff !important;
+            transition: background-color 5000s ease-in-out 0s;
+        }
+        
+        body.light-mode .submit-btn {
+             border-color: rgba(255,255,255,0.3); color: #ffffff;
+        }
+        
+        body.light-mode .submit-btn:hover {
+             background: rgba(255,255,255,0.1);
+        }
+
+        /* ACCESSIBILITY & UTILITIES */
+        html, body, .project-overlay { scrollbar-width: none; -ms-overflow-style: none; }
+        ::-webkit-scrollbar { display: none; width: 0px; background: transparent; }
+        
+        .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border-width: 0; }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        html { font-size: 16px; background-color: var(--c-bg); -webkit-font-smoothing: antialiased; }
+
+        body {
+            font-family: 'Manrope', sans-serif; color: var(--c-text-main); background-color: var(--c-bg);
+            overflow-x: hidden; cursor: none !important;
+            transition: background-color 0.8s var(--ease-out-expo), color 0.8s var(--ease-out-expo);
+        }
+
+        a, button, input, textarea { cursor: none !important; outline: none; text-decoration: none; color: inherit; }
+        
+        /* 3D BACKGROUND (DECORATIVE) */
+        #webgl-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; opacity: 1; /* Opacity Full per vedere le stelle */ }
+
+        .wrapper { width: var(--container-width); margin: 0 auto; position: relative; z-index: 2; }
+        .section-pad { padding: 10rem 0; }
+        @media (max-width: 768px) { .section-pad { padding: 5rem 0; } }
+
+        /* TYPOGRAPHY */
+        .h-hero {
+            font-family: 'Darker Grotesque', sans-serif; 
+            font-size: clamp(4rem, 14vw, 18rem);
+            font-weight: 800; line-height: 0.85; letter-spacing: -0.03em; text-transform: uppercase;
+        }
+        .h-section {
+            font-family: 'Syncopate', sans-serif; 
+            font-size: clamp(1.8rem, 6vw, 5rem);
+            font-weight: 700; line-height: 1; text-transform: uppercase;
+        }
+
+        /* PROJECT DIALOG/MODAL - FIX: Z-Index aumentato */
+        .project-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
+            background: var(--c-bg); z-index: 9999;
+            transform: translateY(100%); 
+            overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch;
+            display: block; 
+        }
+        .close-project-btn {
+            position: fixed; top: 2rem; right: 4vw; z-index: 10000;
+            mix-blend-mode: difference; color: white;
+            border: 1px solid rgba(255,255,255,0.3); padding: 10px 20px; border-radius: 50px;
+            font-family: 'Manrope', sans-serif; text-transform: uppercase; font-size: 0.8rem;
+            background: rgba(0,0,0,0.5); backdrop-filter: blur(5px);
+            cursor: pointer;
+        }
+
+        /* CURSOR SYSTEM (DECORATIVE) */#cursor-system { 
+            position: fixed; 
+            top: 0; left: 0; 
+            width: 100%; height: 100%; 
+            pointer-events: none; 
+            z-index: 999999; 
+        }
+        .c-dot {
+            position: absolute; top: 0; left: 0; width: 8px; height: 8px; background: var(--c-accent);
+            border-radius: 50%; transform: translate(-50%, -50%); z-index: 2;
+        }
+        .c-ring {
+            position: absolute; top: 0; left: 0; width: 40px; height: 40px; border: 1px solid rgba(127,127,127,0.5);
+            border-radius: 50%; transform: translate(-50%, -50%);
+            transition: width 0.3s, height 0.3s, background-color 0.3s, border-color 0.3s; z-index: 1;
+        }
+        body.is-hovering .c-ring { width: 80px; height: 80px; background-color: rgba(235, 89, 57, 0.05); border-color: var(--c-accent); }
+
+        
+        
+        /* --- HEADER AGGIORNATO: LIQUID GLASS FIX --- */
+        .nav-fixed {
+            position: fixed; top: 0; left: 0; right: 0; /* Aggiunto right:0 per larghezza piena */
+            height: var(--nav-height);
+            z-index: 100; 
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 4vw; 
+            
+            /* EFFETTO VETRO PER EVITARE SOVRAPPOSIZIONE */
+            /*background: rgba(255, 255, 255, 0.293); /* Sfondo scuro semitrasparente */
+            backdrop-filter: blur(15px);      /* Sfocatura potente */
+            -webkit-backdrop-filter: blur(25px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            
+            color: #868686;
+            transition: background 0.3s;
+        }
+
+        .menu-overlay {
+            position: fixed; inset: 0; background: var(--c-surface); z-index: 90;
+            transform: translateY(-100%); display: flex; align-items: center; justify-content: center;
+        }
+        .menu-link {
+            font-family: 'Darker Grotesque', sans-serif; font-size: clamp(3rem, 6vw, 6rem);
+            font-weight: 700; line-height: 1.1; text-transform: uppercase; cursor: pointer; color: var(--c-text-muted);
+            transition: color 0.3s;
+        }
+        .menu-link:hover { color: var(--c-accent); }
+
+        /* UI ELEMENTS */
+        .theme-toggle {
+            position: fixed; bottom: 2rem; right: 4vw; z-index: 100;
+            width: 50px; height: 50px; border-radius: 50%;
+            border: 1px solid var(--c-line); background: var(--c-bg);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .exp-row {
+            display: grid; grid-template-columns: 1fr 2fr 1fr; border-top: 1px solid var(--c-line); padding: 2rem 0;
+            transition: background 0.3s;
+        }
+        .exp-row:hover { background: rgba(255,255,255,0.02); }
+
+        /* DUOTONE IMAGES (Updated: Softer & Smoother) */
+        .work-img-wrapper { 
+            overflow: hidden; border-radius: 4px; position: relative; background-color: var(--c-accent); 
+        }
+        .work-img-wrapper img { 
+            width: 100%; height: 100%; object-fit: cover; 
+            
+            mix-blend-mode: multiply; opacity: 0.9; 
+            transition: all 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94); 
+            filter: grayscale(100%) contrast(1.1) brightness(0.8) sepia(30%) hue-rotate(-15deg);
+            will-change: transform, filter, opacity;
+        }
+        
+        /* FIX: Hover mantiene stile mono ma aumenta il senso di fluidità tramite scale e contrasto */
+        .work-item:hover .work-img-wrapper img { 
+            transform: scale(1.1); /* Aumentato scale per effetto fluido */
+            filter: grayscale(100%) contrast(1.2); /* Mantiene mono */
+            mix-blend-mode: multiply; /* Mantiene il duotone */
+            opacity: 1;
+        }
+
+        .gallery-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-top: 4rem; }
+        .gallery-grid img:first-child { grid-column: span 2; aspect-ratio: 21/9; }
+        .gallery-grid img { width: 100%; border-radius: 4px; object-fit: cover; aspect-ratio: 4/3; }
+
+    /* =========================================
+           FIX MOBILE DEFINITIVO (WORKS + LAYOUT)
+           Incolla questo alla FINE del CSS
+           ========================================= */
+        @media screen and (max-width: 768px) {
+            
+            /* 1. CONTAINER: Meno spazio ai lati, più contenuto */
+            .container {
+                padding-left: 20px !important;
+                padding-right: 20px !important;
+                width: 100% !important;
+                max-width: 100% !important;
+            }
+
+            /* 2. GRIGLIA: Diventa una colonna unica (niente cose affiancate) */
+            .grid {
+                display: flex !important;
+                flex-direction: column !important;
+                gap: 40px !important; /* Spazio tra i lavori */
+            }
+
+            /* 3. IMMAGINI LAVORI: Sblocco la larghezza di 280px -> Diventano GRANDI */
+            .work-img-wrapper { 
+                max-width: 100% !important; 
+                width: 100% !important;
+                margin: 0 !important;
+                aspect-ratio: 4/3; /* Formato più rettangolare per mobile */
+            }
+            
+
+            /* 4. CODE DI LAVORO (TESTO): Allineato a sinistra e largo */
+            .work-item > div:not(.work-img-wrapper) {
+                max-width: 100% !important; 
+                width: 100% !important;
+                margin-top: 15px !important;
+                
+                /* Allineamento a SINISTRA (molto più leggibile su mobile del 'center') */
+                text-align: left !important; 
+                
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: flex-start !important;
+            }
+
+            /* 5. TITOLI GIGANTI: Ridimensionati per non rompere lo schermo */
+            .text-8xl { font-size: 3rem !important; line-height: 1.1 !important; }
+            .text-6xl { font-size: 2.5rem !important; }
+            .text-4xl { font-size: 2rem !important; }
+
+            /* 6. SPAZIATURE VERTICALI */
+            .py-32 { padding-top: 4rem !important; padding-bottom: 4rem !important; }
+            .mb-32 { margin-bottom: 4rem !important; }
+        } 
+        
+        
+
+          /* --- CONTACT FORM (FIX REALE - NO VARIABILI) --- */
+        .input-group { position: relative; width: 100%; margin-bottom: 2rem; }
+        
+        .input-group label {
+            display: block; font-family: 'Space Mono', monospace; font-size: 11px;
+            text-transform: uppercase; letter-spacing: 0.1em; color: #888; margin-bottom: 8px;
+        }
+        
+        .input-group input, .input-group textarea {
+            width: 100%; background: transparent; border: none;
+            /* FORZO IL COLORE BIANCO PER LA DARK MODE */
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            color: #ffffff; 
+            font-family: 'Satoshi', sans-serif; font-size: 18px;
+            padding: 10px 0; border-radius: 0; 
+            transition: border-color 0.3s ease;
+        }
+
+        /* FIX: Forza testo NERO in Light Mode (Ora BIANCO in Purple Mode) */
+        body.light-mode .input-group input, 
+        body.light-mode .input-group textarea {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+            color: #ffffff !important; 
+        }
+
+        /* FIX AUTOFILL: Rende lo sfondo trasparente anche se il browser vuole metterlo bianco */
+        .input-group input:-webkit-autofill,
+        .input-group textarea:-webkit-autofill {
+            -webkit-text-fill-color: #ffffff !important; /* Testo bianco su autofill dark */
+            transition: background-color 5000s ease-in-out 0s;
+        }
+        
+        body.light-mode .input-group input:-webkit-autofill,
+        body.light-mode .input-group textarea:-webkit-autofill {
+            -webkit-text-fill-color: #ffffff !important; /* Testo bianco su autofill purple */
+        }
+
+        .input-group input:focus, .input-group textarea:focus {
+            outline: none; border-bottom: 1px solid var(--c-accent);
+        }
+        
+        .submit-btn {
+            background: transparent; 
+            border: 1px solid rgba(255,255,255,0.3);
+            color: #ffffff;
+            padding: 15px 30px; font-family: 'Space Mono', monospace;
+            font-size: 12px; letter-spacing: 0.1em; cursor: pointer; width: 100%;
+            transition: all 0.3s ease;
+        }
+        
+        body.light-mode .submit-btn {
+            border-color: rgba(255,255,255,0.3); color: #ffffff;
+        }
+
+        .submit-btn:hover {
+            border-color: var(--c-accent) !important; 
+            ;
+            background: rgba(141, 163, 118, 0.5);
+        }
+
+      
+
+
+        /* --- DISATTIVA CURSORE CUSTOM SU MOBILE --- */
+        @media screen and (max-width: 768px) {
+             /* Nasconde l'elemento grafico del cursore */
+             .cursor, .cursor-dot, .cursor-circle {
+                display: none !important;
+                opacity: 0 !important;
+                visibility: hidden !important;
+                width: 0 !important;
+                height: 0 !important;
+             }
+             
+             /* Ripristina il cursore di sistema (invisibile su touch, freccia su mouse bluetooth) */
+             body, html, a, button, input, textarea {
+                cursor: auto !important;
+             }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="webgl-bg"></div>
+    
+    <div id="cursor-system">
+        <div class="c-dot"></div>
+        <div class="c-ring"></div>
+    </div>
+
+    <div class="menu-overlay">
+        <nav class="flex flex-col gap-4 text-center">
+            <a onclick="closeMenu(); scrollToSection('works')" class="menu-link">Works</a>
+            <a onclick="closeMenu(); scrollToSection('experience')" class="menu-link">Experience</a>
+            <a onclick="closeMenu(); scrollToSection('contact')" class="menu-link">Contact</a>
+        </nav>
+    </div>
+
+    <header class="nav-fixed">
+        <div class="font-bold tracking-tighter text-lg z-50">SP.</div>
+        <button onclick="toggleMenu()" class="z-50 text-xs font-mono uppercase tracking-widest mix-blend-difference text-white">Menu</button>
+    </header>
+
+    <main id="smooth-wrapper">
+        <div id="smooth-content">
+            
+            <section class="min-h-screen flex items-center justify-center relative section-pad">
+                <div class="wrapper text-center">
+                    <h1 class="h-hero mb-6 mix-blend-overlay">Stefano<br>Panosetti</h1>
+                    <p class="max-w-xl mx-auto text-lg md:text-xl text-muted leading-relaxed">
+                        Senior Creative Engineer specializzato in esperienze WebGL immersive. 
+                        Trasformo il design in codice performante.
+                    </p>
+                </div>
+            </section>
+
+            <section id="works" class="section-pad bg-surface rounded-t-[3rem] relative z-10" aria-labelledby="works-title">
+                <div class="wrapper">
+                    <span class="text-accent font-mono uppercase block mb-12">(01) — Selected Works</span>
+                    <h2 id="works-title" class="sr-only">Progetti Selezionati</h2>
+
+                    <div class="flex flex-col gap-32">
+                        
+                        <article class="work-item grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center cursor-pointer" onclick="openProject(0)" role="button" tabindex="0" aria-label="Vedi caso studio Ethereal Finance">
+                            <div class="work-img-wrapper aspect-[4/3] magnetic-area">
+                                <img src="https://images.unsplash.com/photo-1639322537228-f710d846310a?auto=format&fit=crop&w=1000" alt="Dashboard finanziaria 3D">
+                            </div>
+                            <div>
+                                <h3 class="h-section !text-3xl md:!text-4xl mb-4">Ethereal Finance</h3>
+                                <div class="flex gap-4 font-mono text-xs uppercase opacity-60 mb-6">
+                                    <span>WebGL</span><span>React</span><span>2024</span>
+                                </div>
+                                <p class="text-muted mb-8 leading-relaxed">
+                                    Una piattaforma di trading decentralizzato con visualizzazione dati in tempo reale. 
+                                    L'obiettivo era semplificare la complessità della blockchain attraverso un'interfaccia 
+                                    fluida e reattiva.
+                                </p>
+                                <span class="magnetic-target inline-block border-b border-accent text-accent pb-1 font-bold tracking-wide">VIEW CASE STUDY</span>
+                            </div>
+                        </article>
+
+                        <article class="work-item grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center cursor-pointer" onclick="openProject(1)" role="button" tabindex="0" aria-label="Vedi caso studio Neon Architecture">
+                            <div class="order-2 md:order-1">
+                                <h3 class="h-section !text-3xl md:!text-4xl mb-4">Neon Architecture</h3>
+                                <div class="flex gap-4 font-mono text-xs uppercase opacity-60 mb-6">
+                                    <span>Three.js</span><span>GSAP</span><span>2023</span>
+                                </div>
+                                <p class="text-muted mb-8 leading-relaxed">
+                                    Portfolio interattivo per uno studio di architettura. Utilizzo di shaders custom per simulare 
+                                    l'esplorazione fisica di un edificio.
+                                </p>
+                                <span class="magnetic-target inline-block border-b border-accent text-accent pb-1 font-bold tracking-wide">VIEW CASE STUDY</span>
+                            </div>
+                            <div class="work-img-wrapper aspect-[4/3] magnetic-area order-1 md:order-2">
+                                <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=1000" alt="Rendering architettonico moderno con illuminazione al neon">
+                            </div>
+                        </article>
+
+                        <article class="work-item grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center cursor-pointer" onclick="openProject(2)" role="button" tabindex="0" aria-label="Vedi caso studio Apex Robotics">
+                            <div class="work-img-wrapper aspect-[4/3] magnetic-area">
+                                <img src="https://images.unsplash.com/photo-1558591710-4b4a1ae0f04d?auto=format&fit=crop&w=1000" alt="Interfaccia robotica industriale">
+                            </div>
+                            <div>
+                                <h3 class="h-section !text-3xl md:!text-4xl mb-4">Apex Robotics</h3>
+                                <div class="flex gap-4 font-mono text-xs uppercase opacity-60 mb-6">
+                                    <span>Vue.js</span><span>D3.js</span><span>2022</span>
+                                </div>
+                                <p class="text-muted mb-8 leading-relaxed">
+                                    Control panel per bracci robotici industriali. Focus totale su accessibilità e zero-latency feedback 
+                                    per operatori in ambiente critico.
+                                </p>
+                                <span class="magnetic-target inline-block border-b border-accent text-accent pb-1 font-bold tracking-wide">VIEW CASE STUDY</span>
+                            </div>
+                        </article>
+
+                    </div>
+                </div>
+            </section>
+
+            <section id="experience" class="section-pad bg-surface rounded-t-[3rem]" aria-labelledby="exp-title">
+                <div class="wrapper">
+                    <span class="text-accent font-mono uppercase block mb-12">(02) — Experience</span>
+                    <h2 id="exp-title" class="sr-only">Esperienza Lavorativa</h2>
+                    
+                    <article class="exp-row">
+                        <div class="font-mono opacity-50 mb-2 md:mb-0">2023 — Present</div>
+                        <div>
+                            <h3 class="text-2xl font-bold mb-1">Lead Creative Developer</h3>
+                            <div class="text-muted">Digital Luxury Group (DLG)</div>
+                            <p class="mt-4 text-sm max-w-prose opacity-80">
+                                Supervisione tecnica per piattaforme e-commerce immersive. Ho ridotto il Time-to-Interactive del 40% 
+                                sui flagship store dei clienti e introdotto pipeline 3D automatizzate per la visualizzazione prodotti.
+                            </p>
+                        </div>
+                        <div class="flex md:justify-end mt-4 md:mt-0">
+                            <span class="text-xs ">MILAN / HYBRID</span>
+                        </div>
+                    </article>
+
+                    <article class="exp-row">
+                        <div class="font-mono opacity-50 mb-2 md:mb-0">2021 — 2023</div>
+                        <div>
+                            <h3 class="text-2xl font-bold mb-1">Senior Frontend Engineer</h3>
+                            <div class="text-muted">FinTech Solutions SpA</div>
+                            <p class="mt-4 text-sm max-w-prose opacity-80">
+                                Sviluppo di dashboard analitiche in tempo reale per il trading ad alta frequenza. 
+                                Implementazione di librerie grafiche custom su Canvas per gestire milioni di data point senza lag.
+                            </p>
+                        </div>
+                        <div class="flex md:justify-end mt-4 md:mt-0">
+                            <span class="text-xs ">ROME</span>
+                        </div>
+                    </article>
+                </div>
+            </section>
+
+             <section id="contact" class="section-pad bg-bg" aria-labelledby="contact-title">
+                <div class="wrapper grid grid-cols-1 md:grid-cols-2 gap-16">
+                    <div>
+                        <span class="text-accent font-mono uppercase block mb-8">(03) — Contact</span>
+                        <h2 id="contact-title" class="h-section mb-8">Let's build<br>the future</h2>
+                        <p class="text-muted max-w-md mb-8">
+                            Disponibile per progetti freelance e consulenze tecniche. 
+                            Se hai un'idea visionaria, parliamone.
+                        </p>
+                        <a href="mailto:hello@stefanopanosetti.com" class="text-2xl hover:text-accent transition-colors">hello@stefanopanosetti.com</a>
+                    </div>
+                    
+                    <form id="contact-form" action="https://formspree.io/f/xbjnqkyz" method="POST" class="mt-8 md:mt-0">
+                        <div class="input-group">
+                            <label for="name">NAME / COMPANY</label>
+                            <input type="text" id="name" name="name" required autocomplete="name">
+                        </div>
+                        <div class="input-group">
+                            <label for="email">EMAIL</label>
+                            <input type="email" id="email" name="email" required autocomplete="email">
+                        </div>
+                        <div class="input-group">
+                            <label for="message">MESSAGE</label>
+                            <textarea id="message" name="message" rows="4" required></textarea>
+                        </div>
+                        <button type="submit" class="submit-btn">
+                            <span id="btn-text">INITIATE TRANSMISSION</span>
+                        </button>
+                        <div id="form-status" class="mt-4 font-mono text-xs hidden"></div>
+                    </form>
+                </div>
+            </section>
+
+            <footer class="py-12 border-t border-line mt-12">
+                <div class="wrapper flex justify-between items-center text-xs font-mono uppercase opacity-50">
+                    <div>© 2024 Stefano Panosetti</div>
+                    <div class="flex gap-6">
+                        <a href="#" class="hover:text-white" aria-label="Profilo LinkedIn" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+                        <a href="#" class="hover:text-white" aria-label="Profilo GitHub" target="_blank" rel="noopener noreferrer">GitHub</a>
+                    </div>
+                </div>
+            </footer>
+
+        </div>
+    </div>
+    </main>
+
+    <script>
+        // DATA PROGETTI
+        const projectsData = [
+            {
+                title: "Ethereal Finance",
+                year: "2024",
+                tags: ["WebGL", "React Fiber", "Real-time Data", "UX Research"],
+                desc: `
+                <p class="mb-6"><strong>Il Contesto:</strong> Nel settore Fintech, la densità di informazioni spesso compromette l'usabilità. Il cliente necessitava di una dashboard per trader professionisti che fosse leggibile per ore senza affaticare la vista.</p>
+                <p class="mb-6"><strong>La Soluzione:</strong> Abbiamo optato per un design "Dark Mode Native" con accenti di colore solo per le variazioni critiche di mercato. L'uso di WebGL ha permesso di renderizzare grafici complessi a 60fps su qualsiasi dispositivo.</p>
+                <ul class="list-disc list-inside space-y-2 mb-6 opacity-80">
+                    <li>Riduzione del carico cognitivo del 35% (test A/B)</li>
+                    <li>Latenza WebSocket < 50ms</li>
+                    <li>Sistema di alert sonori spazializzati</li>
+                </ul>
+                `,
+                img: "https://images.unsplash.com/photo-1639322537228-f710d846310a?auto=format&fit=crop&w=1000"
+            },
+            {
+                title: "Neon Architecture",
+                year: "2023",
+                tags: ["Three.js", "GSAP", "Creative Direction"],
+                desc: `
+                <p class="mb-6"><strong>Il Contesto:</strong> Uno studio di architettura d'avanguardia voleva un sito web che riflettesse la loro filosofia di "spazi liquidi".</p>
+                <p><strong>La Soluzione:</strong> Un'esperienza di navigazione continua dove non ci sono cambi pagina netti, ma transizioni fluide tra i progetti. Le immagini dei building reagiscono al cursore dell'utente, creando una connessione tattile.</p>
+                `,
+                img: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=1000"
+            },
+            {
+                title: "Apex Robotics",
+                year: "2022",
+                tags: ["Vue.js", "Industrial UX", "D3.js"],
+                desc: `
+                <p class="mb-6"><strong>Il Contesto:</strong> Interfaccia di controllo per una linea di assemblaggio automatizzata.</p>
+                <p><strong>La Soluzione:</strong> Un HMI (Human Machine Interface) ad alto contrasto, progettato per essere utilizzato con guanti touch e in condizioni di scarsa illuminazione.</p>
+                `,
+                img: "https://images.unsplash.com/photo-1558591710-4b4a1ae0f04d?auto=format&fit=crop&w=1000"
+            }
+        ];
+
+        // --- LENIS SCROLL ---
+        const lenis = new Lenis({
+            duration: 1.2,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            direction: 'vertical',
+            gestureDirection: 'vertical',
+            smooth: true,
+            mouseMultiplier: 1,
+            smoothTouch: false,
+            touchMultiplier: 2,
+        });
+
+        function raf(time) {
+            lenis.raf(time);
+            ScrollTrigger.update();
+            requestAnimationFrame(raf);
+        }
+        requestAnimationFrame(raf);
+
+        // --- GSAP SETUP ---
+        gsap.registerPlugin(ScrollTrigger);
+
+        // --- INTERACTION SYSTEM ---
+        function toggleMenu() {
+            const menu = document.querySelector('.menu-overlay');
+            const isOpen = menu.style.transform === 'translateY(0%)';
+            
+            if (isOpen) closeMenu();
+            else {
+                gsap.to(menu, { y: '0%', duration: 0.8, ease: "power4.inOut" });
+            }
+        }
+
+        function closeMenu() {
+            gsap.to('.menu-overlay', { y: '-100%', duration: 0.8, ease: "power4.inOut" });
+        }
+
+        function scrollToSection(id) {
+            lenis.scrollTo(`#${id}`);
+        }
+
+        // PROJECT OVERLAY
+        function openProject(index) {
+            const data = projectsData[index];
+            const overlay = document.createElement('div');
+            overlay.className = 'project-overlay';
+            overlay.innerHTML = `
+                <button class="close-project-btn" onclick="closeProject()">Close</button>
+                <div class="wrapper section-pad">
+                    <span class="text-accent font-mono uppercase mb-4 block">Case Study</span>
+                    <h2 class="h-hero mb-8">${data.title}</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-12 mb-12">
+                        <div>
+                             <div class="flex flex-wrap gap-2 mb-8">
+                                ${data.tags.map(tag => `<span class="border border-line px-3 py-1 rounded-full text-xs uppercase font-mono">${tag}</span>`).join('')}
+                            </div>
+                            <div class="text-muted leading-relaxed">
+                                ${data.desc}
+                            </div>
+                        </div>
+                        <div class="aspect-video bg-surface rounded-lg overflow-hidden">
+                            <img src="${data.img}" class="w-full h-full object-cover">
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+            gsap.to(overlay, { y: '0%', duration: 0.8, ease: "expo.out" });
+            lenis.stop();
+        }
+
+        function closeProject() {
+            const overlay = document.querySelector('.project-overlay');
+            gsap.to(overlay, { y: '100%', duration: 0.6, ease: "power2.in", onComplete: () => {
+                overlay.remove();
+                lenis.start();
+            }});
+        }
+
+        // --- FORM HANDLING ---
+        const form = document.getElementById("contact-form");
+        form.addEventListener("submit", function(event) {
+            event.preventDefault();
+            const status = document.getElementById("form-status");
+            const btnText = document.getElementById("btn-text");
+            const data = new FormData(event.target);
+            
+            btnText.innerHTML = "SENDING...";
+            
+            fetch(event.target.action, {
+                method: form.method,
+                body: data,
+                headers: { 'Accept': 'application/json' }
+            }).then(response => {
+                if (response.ok) {
+                    status.innerHTML = "/// TRANSMISSION RECEIVED.";
+                    status.classList.remove("hidden");
+                    status.style.color = "#4ADE80";
+                    form.reset();
+                    btnText.innerHTML = "SENT";
+                } else {
+                    status.innerHTML = "/// ERROR: CONNECTION FAILED";
+                    status.classList.remove("hidden");
+                    status.style.color = "#EF4444";
+                    btnText.innerHTML = "RETRY";
+                }
+            }).catch(() => {
+                status.innerHTML = "/// ERROR: SYSTEM OFFLINE";
+                status.classList.remove("hidden");
+                status.style.color = "#EF4444";
+            });
+        });
+
+        /* 3D BACKGROUND: FUSION OPTIMIZED (TORUS + STARDUST)
+           Correggi qui: Funzione totalmente riscritta per gestire lag e visibilità */
+        let scene, camera, renderer, torusMesh, starField;
+
+        function init3D() {
+            const container = document.getElementById('webgl-bg');
+            scene = new THREE.Scene();
+            // FOG PER PROFONDITÀ
+            scene.fog = new THREE.FogExp2(0x050505, 0.001); // Colore deve matchare BG CSS
+
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 20;
+
+            renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Ottimizzazione DPI
+            container.appendChild(renderer.domElement);
+
+            // 1. TORUS GEOMETRY (WIREFRAME)
+            const geometry = new THREE.TorusGeometry(10, 3, 16, 100);
+            const material = new THREE.MeshBasicMaterial({ 
+                color: 0x2a2a2a, // Colore scuro base
+                wireframe: true,
+                transparent: true,
+                opacity: 0.15 
+            });
+            torusMesh = new THREE.Mesh(geometry, material);
+            scene.add(torusMesh);
+
+            // 2. STARS (PARTICLES)
+            const starGeo = new THREE.BufferGeometry();
+            const starCount = 800;
+            const posArray = new Float32Array(starCount * 3);
+            
+            for(let i=0; i < starCount * 3; i++) {
+                posArray[i] = (Math.random() - 0.5) * 80; // Spread spaziale
+            }
+            
+            starGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+            const starMat = new THREE.PointsMaterial({
+                size: 0.05,
+                color: 0x888888,
+                transparent: true,
+                opacity: 0.8
+            });
+            starField = new THREE.Points(starGeo, starMat);
+            scene.add(starField);
+
+            // MOUSE PARALLAX
+            let mouseX = 0;
+            let mouseY = 0;
+            
+            if (!window.matchMedia("(pointer: coarse)").matches) {
+                document.addEventListener('mousemove', (e) => {
+                    mouseX = (e.clientX - window.innerWidth / 2) * 0.000005;
+                    mouseY = (e.clientY - window.innerHeight / 2) * 0.000005;
+                });
+            }
+
+            function animate() {
+                requestAnimationFrame(animate);
+
+                // Rotazione base molto lenta ed elegante
+                torusMesh.rotation.y += 0.0001 + mouseX;
+                torusMesh.rotation.x += 0.00002 + mouseY;
+                
+                starField.rotation.y += 0.00002;
+
+                renderer.render(scene, camera);
+            }
+            animate();
+        }
+
+        init3D();
+
+        // RESIZE HANDLER
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // TOGGLE THEME
+        function toggleTheme() {
+            document.body.classList.toggle('light-mode');
+            const isLight = document.body.classList.contains('light-mode');
+            
+            // Aggiorna colore fog 3D
+            if (scene) {
+                // In Light Mode ora usiamo il Viola Scuro (#4C1D95 = 0x4C1D95)
+                const fogColor = isLight ? 0x4C1D95 : 0x050505;
+                scene.fog.color.setHex(fogColor);
+                
+                // Aggiorna colore Torus
+                torusMesh.material.color.setHex(isLight ? 0xA78BFA : 0x2a2a2a); // Viola chiaro wireframe in "Light" mode
+                torusMesh.material.opacity = isLight ? 0.3 : 0.15;
+            }
+        }
+        
+        // Aggiungo il bottone toggle floating se non c'è, o lo collego se esiste
+        const toggleBtn = document.createElement('button');
+        toggleBtn.className = 'theme-toggle';
+        toggleBtn.innerHTML = '<div style="width:12px;height:12px;background:var(--c-text-main);border-radius:50%"></div>';
+        toggleBtn.onclick = toggleTheme;
+        document.body.appendChild(toggleBtn);
+
+        // CURSOR AND SVG LIQUID EFFECT LOGIC
+        // (Integra parte finale del codice per effetti scroll e svg)
+        
+        const dot = document.querySelector('.c-dot');
+        const ring = document.querySelector('.c-ring');
+
+        // Verifica supporto puntatore fine (mouse)
+        if (window.matchMedia("(pointer: fine)").matches) {
+            window.addEventListener('mousemove', (e) => {
+                gsap.to(dot, { x: e.clientX, y: e.clientY, duration: 0.1 });
+                gsap.to(ring, { x: e.clientX, y: e.clientY, duration: 0.4 });
+            });
+
+            document.querySelectorAll('a, button, .magnetic-target, .work-item').forEach(el => {
+                el.addEventListener('mouseenter', () => document.body.classList.add('is-hovering'));
+                el.addEventListener('mouseleave', () => document.body.classList.remove('is-hovering'));
+            });
+        }
+
+        // Funzione per svelare le immagini dei progetti al passaggio dello scroll
+        function initImageReveal() {
+            const imageWrappers = document.querySelectorAll('.work-img-wrapper');
+            imageWrappers.forEach((wrapper) => {
+                gsap.to(wrapper, {
+                    scrollTrigger: {
+                        trigger: wrapper,
+                        start: "top 85%", 
+                        onEnter: () => wrapper.classList.add('revealed') // Classe ipotetica o animazione diretta
+                    }
+                });
+            });
+        }
+        initImageReveal();
+
+        // LIQUID SCROLL EFFECT (SVG FILTER)
+        // Simulazione della logica di updateLiquidEffect basata sui frammenti
+        
+        let scrollSpeed = 0;
+        let lastScrollY = window.scrollY;
+
+        window.addEventListener('scroll', () => {
+           const currentScrollY = window.scrollY;
+           scrollSpeed = Math.abs(currentScrollY - lastScrollY);
+           lastScrollY = currentScrollY;
+           
+           // Logic from snippet for Blur in Light Mode
+            if (document.body.classList.contains('light-mode')) {
+                const scrollPercent = Math.min(window.scrollY / 500, 1);
+                const blurValue = 20 + (scrollPercent * 15);
+                document.documentElement.style.setProperty('--dynamic-blur', `${blurValue}px`);
+            }
+        });
+
+        function updateLiquidEffect() {
+             // Placeholder for displacement/turbulence elements if they exist in SVG (omitted in fetch but logic preserved)
+             // const displacement = document.querySelector('#some-displacement-filter');
+             // if(displacement) {
+             //    gsap.to(displacement, {
+             //        attr: { scale: Math.min(scrollSpeed, 20) }, 
+             //        duration: 0.5,
+             //        ease: "power2.out"
+             //    });
+             // }
+             requestAnimationFrame(updateLiquidEffect);
+        }
+        updateLiquidEffect();
+
+    </script>
+ </body>
+</html>

@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mino Inspired | Portfolio</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+    <script src="https://unpkg.com/split-type"></script>
+
+    <style>
+        :root {
+            --c-bg: #EAEaea; /* Quel grigio chiarissimo "Mino" */
+            --c-text: #111111;
+            --ease-custom: cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        body {
+            background-color: var(--c-bg);
+            color: var(--c-text);
+            font-family: 'Manrope', sans-serif;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* TIPOGRAFIA */
+        .title-huge {
+            font-size: clamp(3.5rem, 11vw, 15rem);
+            line-height: 0.85;
+            letter-spacing: -0.04em;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .title-medium {
+            font-size: clamp(1.5rem, 4vw, 3.5rem);
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+            font-weight: 500;
+        }
+
+        /* GRID SYSTEM */
+        .grid-layout {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 1.5rem;
+            padding: 0 2rem;
+        }
+
+        /* PRELOADER */
+        .preloader {
+            position: fixed; inset: 0; background: #111; z-index: 9999; color: #fff;
+            display: flex; justify-content: space-between; align-items: flex-end; padding: 2rem;
+        }
+        .preloader-overlay {
+            position: fixed; inset: 0; background: var(--c-bg); z-index: 9998; transform: translateY(100%);
+        }
+
+        /* IMMAGINI PROGETTI (Con effetto zoom interno) */
+        .media-wrapper {
+            position: relative; overflow: hidden; width: 100%; display: block;
+            background: #ccc; /* Placeholder color */
+        }
+        .media-wrapper img {
+            width: 100%; height: 100%; object-fit: cover; display: block;
+            transition: transform 1.2s var(--ease-custom);
+        }
+        .project-item:hover .media-wrapper img { transform: scale(1.05); }
+
+        /* LISTA PROGETTI (Hover Reveal) */
+        .list-row {
+            border-top: 1px solid rgba(0,0,0,0.1);
+            transition: background 0.3s;
+        }
+        .list-row:last-child { border-bottom: 1px solid rgba(0,0,0,0.1); }
+        .list-row:hover { background: rgba(255,255,255,0.4); }
+        .list-row:hover .list-arrow { transform: translateX(5px) rotate(-45deg); opacity: 1; }
+
+        /* FOOTER */
+        .footer-link {
+            position: relative; display: inline-block;
+        }
+        .footer-link::after {
+            content: ''; position: absolute; bottom: 5px; left: 0; width: 100%; height: 2px;
+            background: currentColor; transform: scaleX(0); transform-origin: right; transition: transform 0.5s var(--ease-custom);
+        }
+        .footer-link:hover::after { transform: scaleX(1); transform-origin: left; }
+
+        @media (max-width: 768px) {
+            .grid-layout { padding: 0 1rem; display: flex; flex-direction: column; }
+            .title-huge { font-size: 18vw; }
+        }
+    </style>
+</head>
+<body class="opacity-0"> <div class="preloader">
+        <div class="text-xs uppercase tracking-widest">Loading assets</div>
+        <div class="text-6xl font-bold" id="counter">0%</div>
+    </div>
+    <div class="preloader-overlay"></div>
+
+    <nav class="fixed top-0 w-full p-8 flex justify-between z-50 mix-blend-difference text-[#EAEaea]">
+        <a href="#" class="uppercase font-bold tracking-tight text-lg">Mino<span class="opacity-50">.replica</span></a>
+        <div class="flex gap-8 text-xs uppercase tracking-widest font-medium hidden md:flex">
+            <a href="#work" class="hover:opacity-50 transition">Work</a>
+            <a href="#agency" class="hover:opacity-50 transition">Agency</a>
+            <a href="#contact" class="hover:opacity-50 transition">Contact</a>
+        </div>
+        <div class="md:hidden uppercase text-xs">Menu</div>
+    </nav>
+
+    <main>
+        
+        <header class="min-h-screen flex flex-col justify-end pb-20 pt-40">
+            <div class="grid-layout">
+                <div class="col-span-12 mb-10">
+                    <h1 class="title-huge reveal-text">Digital</h1>
+                    <h1 class="title-huge reveal-text ml-[10vw] md:ml-[15vw]">Design</h1>
+                    <h1 class="title-huge reveal-text text-right md:text-left md:ml-[5vw]">Practice</h1>
+                </div>
+                
+                <div class="col-span-12 md:col-span-5 md:col-start-8 mt-10">
+                    <p class="text-xl md:text-2xl leading-relaxed opacity-80 reveal-fade">
+                        Siamo uno studio di design digitale focalizzato su brand identity, siti web e direzione artistica. Creiamo sistemi visivi che durano nel tempo.
+                    </p>
+                    <div class="mt-8 text-xs uppercase tracking-widest opacity-50 reveal-fade">
+                        Based in Milan — Available Worldwide
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <section id="work" class="py-20">
+            <div class="grid-layout mb-10">
+                <div class="col-span-12 flex justify-between items-end border-b border-black/10 pb-4">
+                    <span class="text-xs uppercase tracking-widest opacity-50">(01) — Selected Works</span>
+                    <span class="text-xs uppercase tracking-widest opacity-50">2024-2026</span>
+                </div>
+            </div>
+
+            <div class="grid-layout mb-32 project-item cursor-pointer group">
+                <div class="col-span-12 media-wrapper aspect-[16/9] md:aspect-[21/9]">
+                    <img src="https://images.unsplash.com/photo-1497215728101-856f4ea42174?q=80&w=2000&auto=format&fit=crop" alt="Office Project">
+                </div>
+                <div class="col-span-12 flex justify-between mt-4">
+                    <h3 class="text-2xl md:text-4xl font-semibold">Aesop Interior</h3>
+                    <div class="text-right">
+                        <span class="block text-xs uppercase opacity-50">Art Direction</span>
+                        <span class="block text-xs uppercase opacity-50">Berlin</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid-layout mb-32">
+                
+                <div class="col-span-12 md:col-span-6 project-item cursor-pointer group mb-20 md:mb-0">
+                    <div class="media-wrapper aspect-[4/5] mb-4">
+                        <img src="https://images.unsplash.com/photo-1600607686527-6fb886090705?q=80&w=1200&auto=format&fit=crop" alt="Magazine">
+                    </div>
+                    <div class="flex justify-between items-start">
+                        <h3 class="text-2xl font-semibold">Vogue Editorial</h3>
+                        <span class="text-xs uppercase opacity-50 mt-2">Print Design</span>
+                    </div>
+                </div>
+
+                <div class="col-span-12 md:col-span-6 project-item cursor-pointer group md:mt-32">
+                    <div class="media-wrapper aspect-[4/5] mb-4">
+                        <img src="https://images.unsplash.com/photo-1595429035839-c99c298ffdde?q=80&w=1200&auto=format&fit=crop" alt="Packaging">
+                    </div>
+                    <div class="flex justify-between items-start">
+                        <h3 class="text-2xl font-semibold">Kinfolk Scent</h3>
+                        <span class="text-xs uppercase opacity-50 mt-2">Packaging</span>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <section id="agency" class="py-20 bg-[#e0e0e0]">
+            <div class="grid-layout py-20">
+                <div class="col-span-12 md:col-span-4 mb-10">
+                    <h2 class="title-medium">(What we do)</h2>
+                    <p class="mt-6 opacity-60 max-w-xs">
+                        Un approccio olistico al design. Non facciamo solo "cose belle", costruiamo strumenti di business.
+                    </p>
+                </div>
+                <div class="col-span-12 md:col-span-8">
+                    
+                    <div class="list-row py-8 flex justify-between items-center cursor-pointer group">
+                        <h3 class="text-3xl md:text-5xl font-light group-hover:pl-4 transition-all duration-300">Brand Strategy</h3>
+                        <span class="list-arrow opacity-0 transition-all duration-300 text-3xl">→</span>
+                    </div>
+
+                    <div class="list-row py-8 flex justify-between items-center cursor-pointer group">
+                        <h3 class="text-3xl md:text-5xl font-light group-hover:pl-4 transition-all duration-300">Web Development</h3>
+                        <span class="list-arrow opacity-0 transition-all duration-300 text-3xl">→</span>
+                    </div>
+
+                    <div class="list-row py-8 flex justify-between items-center cursor-pointer group">
+                        <h3 class="text-3xl md:text-5xl font-light group-hover:pl-4 transition-all duration-300">Content Creation</h3>
+                        <span class="list-arrow opacity-0 transition-all duration-300 text-3xl">→</span>
+                    </div>
+
+                    <div class="list-row py-8 flex justify-between items-center cursor-pointer group">
+                        <h3 class="text-3xl md:text-5xl font-light group-hover:pl-4 transition-all duration-300">Visual Identity</h3>
+                        <span class="list-arrow opacity-0 transition-all duration-300 text-3xl">→</span>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <footer id="contact" class="min-h-[80vh] flex flex-col justify-between pt-32 pb-10 px-8 bg-[#111] text-[#EAEaea]">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-10">
+                <div class="col-span-12 md:col-span-8">
+                    <p class="text-xs uppercase tracking-widest opacity-50 mb-10">Have an idea?</p>
+                    <a href="mailto:hello@mino-replica.com" class="title-medium leading-tight footer-link">
+                        hello@mino.works
+                    </a>
+                </div>
+                <div class="col-span-12 md:col-span-4 md:text-right flex flex-col justify-between">
+                    <div class="space-y-2">
+                        <p class="text-xl">Via della Spiga, 22<br>Milano, Italia</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-10 border-t border-white/20 pt-8 mt-20 items-end">
+                <div class="col-span-6 text-xs uppercase tracking-widest opacity-50">
+                    © 2026 Mino Replica
+                </div>
+                <div class="col-span-6 flex gap-6 md:justify-end text-xs uppercase tracking-widest">
+                    <a href="#" class="hover:text-white/50 transition">Instagram</a>
+                    <a href="#" class="hover:text-white/50 transition">LinkedIn</a>
+                    <a href="#" class="hover:text-white/50 transition">Behance</a>
+                </div>
+            </div>
+        </footer>
+
+    </main>
+
+    <script>
+        // 1. SETUP LENIS (SMOOTH SCROLL)
+        const lenis = new Lenis({
+            duration: 1.2,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            direction: 'vertical',
+            gestureDirection: 'vertical',
+            smooth: true,
+            mouseMultiplier: 1,
+            smoothTouch: false,
+            touchMultiplier: 2,
+        });
+
+        function raf(time) {
+            lenis.raf(time);
+            requestAnimationFrame(raf);
+        }
+        requestAnimationFrame(raf);
+
+        // 2. ANIMAZIONI GSAP
+        gsap.registerPlugin(ScrollTrigger);
+
+        // PRELOADER
+        const counter = document.getElementById('counter');
+        let count = 0;
+        const interval = setInterval(() => {
+            count += Math.floor(Math.random() * 10) + 1;
+            if (count > 100) count = 100;
+            counter.innerText = count + "%";
+            
+            if (count === 100) {
+                clearInterval(interval);
+                revealSite();
+            }
+        }, 50);
+
+        function revealSite() {
+            const tl = gsap.timeline();
+            
+            tl.to(".preloader", {
+                yPercent: -100,
+                duration: 1,
+                ease: "power4.inOut"
+            })
+            .set("body", { opacity: 1 }) // Mostra body
+            .from(".reveal-text", {
+                y: 100,
+                opacity: 0,
+                duration: 1.5,
+                stagger: 0.1,
+                ease: "power4.out"
+            }, "-=0.5")
+            .from(".reveal-fade", {
+                y: 20,
+                opacity: 0,
+                duration: 1,
+                stagger: 0.2,
+                ease: "power2.out"
+            }, "-=1");
+        }
+
+        // PARALLASSE IMMAGINI
+        document.querySelectorAll('.media-wrapper img').forEach(img => {
+            gsap.to(img, {
+                yPercent: 15, // Leggero movimento dell'immagine nel container
+                ease: "none",
+                scrollTrigger: {
+                    trigger: img.parentElement,
+                    start: "top bottom",
+                    end: "bottom top",
+                    scrub: true
+                }
+            });
+        });
+
+        // TITOLI CHE ENTRANO ALLO SCROLL
+        gsap.utils.toArray('.project-item h3, .title-medium').forEach(el => {
+            gsap.from(el, {
+                y: 50,
+                opacity: 0,
+                duration: 1,
+                ease: "power3.out",
+                scrollTrigger: {
+                    trigger: el,
+                    start: "top 90%"
+                }
+            });
+        });
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="it" class="scroll-smooth dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Stefano Panosetti | Strat & Eng</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class', 
+            theme: {
+                extend: {
+                    colors: {
+                        cyberlime: '#DFFF00',
+                        // Dark Mode Colors
+                        darkbg: '#050505',
+                        darkline: '#1A1A1A',
+                        darktext: '#E5E5E5',
+                        // Light Mode Colors
+                        lightbg: '#FAFAFA',
+                        lightline: '#E5E7EB',
+                        lighttext: '#171717',
+                    },
+                    fontFamily: {
+                        mono: ['JetBrains Mono', 'monospace'],
+                        grotesk: ['Space Grotesk', 'sans-serif'],
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;700&family=Space+Grotesk:wght@300;500;700&display=swap');
+        
+        /* Base Reset */
+        html, body {
+            width: 100%;
+            overflow-x: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* --- CUSTOM CURSOR --- */
+        body { cursor: none; } /* Nasconde il cursore di default */
+        
+        #cursor {
+            position: fixed; top: 0; left: 0;
+            width: 16px; height: 16px;
+            background-color: #DFFF00;
+            border-radius: 50%;
+            pointer-events: none; /* CRITICO: Permette il click sugli elementi sotto */
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: width 0.2s, height 0.2s, border-radius 0.2s, background-color 0.2s;
+            mix-blend-mode: difference; /* Visibile sia su chiaro che su scuro */
+        }
+        
+        #cursor.hovered {
+            width: 50px; height: 50px;
+            border-radius: 4px;
+            background-color: transparent;
+            border: 2px solid #DFFF00;
+        }
+
+        /* --- BACKGROUND GRID --- */
+        .grid-bg {
+            background-image: 
+                linear-gradient(to right, var(--line-color) 1px, transparent 1px),
+                linear-gradient(to bottom, var(--line-color) 1px, transparent 1px);
+            background-size: 4rem 4rem;
+            mask-image: linear-gradient(to bottom, black 30%, transparent 100%);
+        }
+
+        /* Variabili CSS per la griglia */
+        .dark .grid-bg { --line-color: #1A1A1A; }
+        html:not(.dark) .grid-bg { --line-color: #E5E7EB; }
+
+        /* --- SCROLL REVEAL --- */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- UTILITIES --- */
+        .break-word { word-break: break-word; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="font-mono antialiased bg-lightbg text-lighttext dark:bg-darkbg dark:text-darktext selection:bg-cyberlime selection:text-black">
+
+    <div id="cursor"></div>
+
+    <div id="loader" class="fixed inset-0 bg-black z-[10000] flex flex-col justify-end p-6 md:p-8 font-mono">
+        <div class="text-cyberlime text-xs md:text-sm mb-2">root@panosetti:~# <span id="typing-text" class="text-white"></span><span class="animate-pulse">_</span></div>
+        <div class="w-full bg-gray-900 h-1 mt-4 overflow-hidden">
+            <div id="progress-bar" class="bg-cyberlime h-full w-0 transition-all duration-1000 ease-out"></div>
+        </div>
+    </div>
+
+    <div id="mobile-menu" class="fixed inset-0 z-[999] bg-white/95 dark:bg-darkbg/95 backdrop-blur-xl translate-x-full transition-transform duration-500 ease-in-out flex flex-col justify-center items-center md:hidden">
+        <button id="close-menu-btn" class="absolute top-6 right-6 text-gray-500 hover:text-cyberlime text-3xl font-mono p-4 hover-trigger">
+            [x]
+        </button>
+        
+        <nav class="flex flex-col gap-8 text-center w-full px-8">
+            <a href="#hero" class="mobile-link text-4xl font-grotesk text-lighttext dark:text-white hover:text-cyberlime transition-colors">01. Start</a>
+            <a href="#about" class="mobile-link text-4xl font-grotesk text-lighttext dark:text-white hover:text-cyberlime transition-colors">02. Identity</a>
+            <a href="#projects" class="mobile-link text-4xl font-grotesk text-lighttext dark:text-white hover:text-cyberlime transition-colors">03. Works</a>
+            <a href="mailto:hello@stefanopanosetti.com" class="mobile-link text-lg font-mono text-cyberlime border border-cyberlime/50 dark:border-cyberlime/30 px-6 py-4 rounded-sm mt-6 mx-auto w-full max-w-xs hover:bg-cyberlime hover:text-black transition-all">
+                Get_in_touch()
+            </a>
+        </nav>
+    </div>
+
+    <header class="fixed top-0 left-0 w-full z-50 px-6 md:px-12 py-5 md:py-6 flex justify-between items-center backdrop-blur-md bg-lightbg/85 dark:bg-darkbg/85 border-b border-black/5 dark:border-white/5 transition-all duration-300">
+        <a href="#" class="hover-trigger font-mono text-lg md:text-2xl font-bold tracking-tight group relative z-[60]" data-value="[stefano_panosetti]" data-hacker>
+            <span class="text-cyberlime">[</span>stefano<span class="text-cyberlime">_</span>panosetti<span class="text-cyberlime">]</span>
+        </a>
+
+        <div class="hidden md:flex items-center gap-8">
+            <nav class="flex gap-8 text-sm items-center">
+                <a href="#hero" class="hover-trigger hover:text-cyberlime transition-colors text-gray-500 dark:text-gray-400">01. //Start</a>
+                <a href="#about" class="hover-trigger hover:text-cyberlime transition-colors text-gray-500 dark:text-gray-400">02. //Identity</a>
+                <a href="#projects" class="hover-trigger hover:text-cyberlime transition-colors text-gray-500 dark:text-gray-400">03. //Works</a>
+            </nav>
+            
+            <div class="h-6 w-px bg-gray-300 dark:bg-gray-800"></div> <button id="theme-toggle" class="hover-trigger p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors" aria-label="Toggle Theme">
+                <svg class="w-5 h-5 text-gray-800 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                <svg class="w-5 h-5 text-gray-800 block dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+            </button>
+
+            <a href="mailto:hello@stefanopanosetti.com" class="hover-trigger border border-black/10 dark:border-white/20 px-5 py-2 hover:bg-cyberlime hover:text-black hover:border-cyberlime transition-all rounded-sm text-cyberlime font-bold text-xs tracking-wider">
+                CONTACT
+            </a>
+        </div>
+
+        <div class="flex items-center gap-4 md:hidden z-[60]">
+            <button id="theme-toggle-mobile" class="p-2 text-cyberlime">
+                <div class="w-4 h-4 rounded-full border border-current bg-transparent dark:bg-cyberlime"></div>
+            </button>
+            
+            <button id="open-menu-btn" class="text-cyberlime text-2xl hover-trigger">
+                ///
+            </button>
+        </div>
+    </header>
+
+    <main class="relative pt-20 md:pt-24 w-full min-h-screen">
+        
+        <div class="fixed inset-0 grid-bg pointer-events-none z-0 transition-opacity duration-300"></div>
+
+        <section id="hero" class="min-h-[100dvh] md:min-h-[90vh] flex flex-col justify-center px-6 md:px-20 relative z-10 border-b border-lightline dark:border-darkline pb-12 md:pb-0">
+            
+            <p class="reveal text-cyberlime mb-4 md:mb-6 font-mono text-[10px] md:text-xs tracking-widest uppercase font-bold">
+                // System Status: Online
+            </p>
+            
+            <h1 class="reveal font-grotesk text-[11vw] md:text-8xl lg:text-9xl font-bold leading-[0.9] text-lighttext dark:text-white mb-8 md:mb-12 tracking-tighter break-words">
+                STRATEGIC<br>
+                <span class="text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white transition-colors cursor-help block md:inline-block origin-left whitespace-nowrap" data-value="COMMUNICATION" data-hacker>COMMUNICATION</span>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyberlime to-gray-800 dark:to-white">ENGINEERED.</span>
+            </h1>
+
+            <div class="reveal delay-200 hover-trigger w-full max-w-2xl mx-auto bg-white dark:bg-[#0A0A0A] border border-gray-200 dark:border-darkline p-5 md:p-6 rounded-lg shadow-xl dark:shadow-2xl group transition-transform hover:-translate-y-1 overflow-hidden relative">
+                <div class="flex gap-2 mb-4 border-b border-gray-100 dark:border-darkline pb-2">
+                    <div class="w-2.5 h-2.5 rounded-full bg-red-500"></div>
+                    <div class="w-2.5 h-2.5 rounded-full bg-yellow-500"></div>
+                    <div class="w-2.5 h-2.5 rounded-full bg-green-500"></div>
+                    <span class="ml-auto text-[10px] md:text-xs text-gray-400 dark:text-gray-600">identity.json</span>
+                </div>
+                <div class="overflow-x-auto no-scrollbar pb-2">
+                    <code class="text-xs md:text-sm text-gray-600 dark:text-gray-400 block font-mono leading-relaxed whitespace-pre">
+<span class="text-purple-600 dark:text-purple-400">const</span> <span class="text-blue-600 dark:text-blue-400">profile</span> = {
+  <span class="text-gray-500 dark:text-gray-300">"role"</span>: <span class="text-green-600 dark:text-green-400">"Creative Technologist"</span>,
+  <span class="text-gray-500 dark:text-gray-300">"stack"</span>: [<span class="text-green-600 dark:text-green-400">"Strategy"</span>, <span class="text-green-600 dark:text-green-400">"UX/UI"</span>, <span class="text-green-600 dark:text-green-400">"Dev"</span>],
+  <span class="text-gray-500 dark:text-gray-300">"mode"</span>: <span class="text-green-600 dark:text-green-400">"Hybrid"</span>
+};</code>
+                </div>
+            </div>
+        </section>
+
+        <section id="about" class="py-12 md:py-24 px-6 md:px-20 relative z-10 border-b border-lightline dark:border-darkline">
+            <div class="flex flex-col md:flex-row items-start md:items-end justify-between mb-10 md:mb-16 reveal">
+                <h2 class="font-grotesk text-3xl md:text-4xl text-lighttext dark:text-white">01. About_Data</h2>
+                <span class="hidden md:block text-cyberlime text-xl">→</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16">
+                <div class="space-y-6 md:space-y-8 reveal delay-100">
+                    <p class="text-base md:text-lg text-gray-600 dark:text-gray-300 leading-relaxed max-w-md">
+                        Non sono solo un designer che sa usare Figma, né solo un dev che scrive React. Sono il punto d'incontro.
+                        <br><br>
+                        La mia <span class="bg-gray-200 dark:bg-gray-800 px-1 text-black dark:text-white">formazione ibrida</span> mi permette di vedere il prodotto digitale nella sua interezza.
+                    </p>
+                    <a href="#" class="inline-block hover-trigger border border-cyberlime text-black dark:text-cyberlime px-8 py-3 text-sm font-bold hover:bg-cyberlime hover:text-black transition-all">
+                        SCARICA CV
+                    </a>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3 md:gap-4 reveal delay-200">
+                    <div class="bg-white dark:bg-[#0A0A0A] p-4 border border-gray-200 dark:border-darkline hover:border-cyberlime dark:hover:border-cyberlime transition-colors group shadow-sm">
+                        <span class="text-gray-400 dark:text-gray-500 text-[10px] uppercase tracking-wider block mb-2">// Frontend</span>
+                        <ul class="text-xs md:text-sm text-gray-600 dark:text-gray-300 space-y-1 font-bold">
+                            <li>React / Next.js</li>
+                            <li>Vue / Nuxt</li>
+                            <li>Tailwind CSS</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white dark:bg-[#0A0A0A] p-4 border border-gray-200 dark:border-darkline hover:border-cyberlime dark:hover:border-cyberlime transition-colors group shadow-sm">
+                        <span class="text-gray-400 dark:text-gray-500 text-[10px] uppercase tracking-wider block mb-2">// Design</span>
+                        <ul class="text-xs md:text-sm text-gray-600 dark:text-gray-300 space-y-1 font-bold">
+                            <li>Figma (Adv.)</li>
+                            <li>Adobe CC</li>
+                            <li>Blender 3D</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white dark:bg-[#0A0A0A] p-4 border border-gray-200 dark:border-darkline hover:border-cyberlime dark:hover:border-cyberlime transition-colors group shadow-sm col-span-2 md:col-span-1">
+                        <span class="text-gray-400 dark:text-gray-500 text-[10px] uppercase tracking-wider block mb-2">// Method</span>
+                        <ul class="text-xs md:text-sm text-gray-600 dark:text-gray-300 space-y-1 font-bold">
+                            <li>Atomic Design</li>
+                            <li>WCAG 2.1 AA</li>
+                        </ul>
+                    </div>
+                    <div class="hidden md:flex bg-white dark:bg-[#0A0A0A] p-4 border border-gray-200 dark:border-darkline hover:border-cyberlime transition-colors group items-center justify-center">
+                        <span class="text-cyberlime text-3xl md:text-4xl animate-pulse-slow font-bold">+</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="projects" class="py-20 md:py-32 px-6 md:px-20 relative z-10 bg-gray-50 dark:bg-[#050505] transition-colors">
+            <h2 class="font-grotesk text-3xl md:text-4xl text-lighttext dark:text-white mb-10 md:mb-12 reveal">02. Selected_Works</h2>
+            
+            <div class="space-y-0">
+                <article class="reveal hover-trigger group border-t border-gray-300 dark:border-darkline py-8 md:py-12 cursor-pointer relative overflow-hidden transition-colors hover:bg-white dark:hover:bg-[#0A0A0A]">
+                    <div class="absolute inset-0 bg-cyberlime opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
+                    <div class="flex flex-col md:flex-row justify-between md:items-center relative z-10 px-2 md:px-4 gap-2">
+                        <div>
+                            <h3 class="text-2xl md:text-5xl font-bold text-gray-800 dark:text-gray-400 group-hover:text-black dark:group-hover:text-white md:group-hover:translate-x-2 transition-all duration-300">Fintech Dashboard</h3>
+                            <p class="text-gray-500 dark:text-gray-600 text-xs md:text-sm mt-2 group-hover:text-black dark:group-hover:text-cyberlime md:group-hover:translate-x-2 transition-all duration-500 delay-75 font-bold">React • D3.js • Design System</p>
+                        </div>
+                        <span class="text-2xl md:text-3xl text-gray-400 group-hover:text-black dark:group-hover:text-cyberlime transition-colors self-end md:self-auto rotate-0 md:rotate-45 md:group-hover:rotate-0 duration-300">↗</span>
+                    </div>
+                </article>
+
+                <article class="reveal hover-trigger group border-t border-gray-300 dark:border-darkline py-8 md:py-12 cursor-pointer relative overflow-hidden transition-colors hover:bg-white dark:hover:bg-[#0A0A0A]">
+                    <div class="absolute inset-0 bg-cyberlime opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
+                    <div class="flex flex-col md:flex-row justify-between md:items-center relative z-10 px-2 md:px-4 gap-2">
+                        <div>
+                            <h3 class="text-2xl md:text-5xl font-bold text-gray-800 dark:text-gray-400 group-hover:text-black dark:group-hover:text-white md:group-hover:translate-x-2 transition-all duration-300">Luxury E-Commerce</h3>
+                            <p class="text-gray-500 dark:text-gray-600 text-xs md:text-sm mt-2 group-hover:text-black dark:group-hover:text-cyberlime md:group-hover:translate-x-2 transition-all duration-500 delay-75 font-bold">Shopify Liquid • GSAP Animations</p>
+                        </div>
+                        <span class="text-2xl md:text-3xl text-gray-400 group-hover:text-black dark:group-hover:text-cyberlime transition-colors self-end md:self-auto rotate-0 md:rotate-45 md:group-hover:rotate-0 duration-300">↗</span>
+                    </div>
+                </article>
+                
+                <article class="reveal hover-trigger group border-t border-b border-gray-300 dark:border-darkline py-8 md:py-12 cursor-pointer relative overflow-hidden transition-colors hover:bg-white dark:hover:bg-[#0A0A0A]">
+                    <div class="absolute inset-0 bg-cyberlime opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
+                    <div class="flex flex-col md:flex-row justify-between md:items-center relative z-10 px-2 md:px-4 gap-2">
+                        <div>
+                            <h3 class="text-2xl md:text-5xl font-bold text-gray-800 dark:text-gray-400 group-hover:text-black dark:group-hover:text-white md:group-hover:translate-x-2 transition-all duration-300">Portfolio 2024</h3>
+                            <p class="text-gray-500 dark:text-gray-600 text-xs md:text-sm mt-2 group-hover:text-black dark:group-hover:text-cyberlime md:group-hover:translate-x-2 transition-all duration-500 delay-75 font-bold">Next.js • Framer Motion</p>
+                        </div>
+                        <span class="text-2xl md:text-3xl text-gray-400 group-hover:text-black dark:group-hover:text-cyberlime transition-colors self-end md:self-auto rotate-0 md:rotate-45 md:group-hover:rotate-0 duration-300">↗</span>
+                    </div>
+                </article>
+            </div>
+
+            <div class="mt-20 md:mt-32 pt-12 text-center reveal border-t border-gray-300 dark:border-darkline">
+                <p class="text-xs text-gray-500 mb-4 uppercase tracking-widest font-bold">Available for 2025</p>
+                <a href="https://www.linkedin.com/in/stefano-panosetti-51b65b1b0/" class="text-xl md:text-4xl text-gray-800 dark:text-gray-300 hover-trigger inline-block border-b-2 border-transparent hover:border-cyberlime hover:text-black dark:hover:text-white transition-all pb-1 font-grotesk break-all font-bold">
+                    Linkedln
+                </a>
+                <p class="text-[10px] text-gray-500 dark:text-gray-700 mt-8 md:mt-12 font-mono">Designed & Engineered by Stefano Panosetti © 2025</p>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // --- 1. THEME MANAGER ---
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const themeToggleMobile = document.getElementById('theme-toggle-mobile');
+        
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+
+        function toggleTheme() {
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark');
+                localStorage.theme = 'light';
+            } else {
+                document.documentElement.classList.add('dark');
+                localStorage.theme = 'dark';
+            }
+        }
+
+        themeToggleBtn.addEventListener('click', toggleTheme);
+        themeToggleMobile.addEventListener('click', toggleTheme);
+
+        // --- 2. LOADER ---
+        window.addEventListener('load', () => {
+            const text = "sh ./init_portfolio.sh --verbose";
+            let i = 0;
+            const typeText = document.getElementById('typing-text');
+            const bar = document.getElementById('progress-bar');
+            
+            function type() {
+                if(i < text.length) {
+                    typeText.innerHTML += text.charAt(i);
+                    i++;
+                    setTimeout(type, 30);
+                } else {
+                    bar.style.width = '100%';
+                    setTimeout(() => {
+                        document.getElementById('loader').style.opacity = '0';
+                        setTimeout(() => document.getElementById('loader').remove(), 500);
+                    }, 800);
+                }
+            }
+            type();
+        });
+
+        // --- 3. MENU MOBILE ---
+        const menuBtn = document.getElementById('open-menu-btn');
+        const closeBtn = document.getElementById('close-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileLinks = document.querySelectorAll('.mobile-link');
+        let isMenuOpen = false;
+
+        function toggleMenu() {
+            isMenuOpen = !isMenuOpen;
+            mobileMenu.classList.toggle('translate-x-full');
+            mobileMenu.classList.toggle('translate-x-0');
+            
+            if(isMenuOpen) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = '';
+            }
+        }
+
+        menuBtn.addEventListener('click', toggleMenu);
+        closeBtn.addEventListener('click', toggleMenu);
+        mobileLinks.forEach(link => link.addEventListener('click', toggleMenu));
+
+        // --- 4. HACKER TEXT FIX (NO STRETCHING/BREAKING) ---
+        const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ_[]1234567890";
+        document.querySelectorAll("[data-hacker]").forEach(element => {
+            const triggerEvents = ['mouseover', 'touchstart'];
+            
+            triggerEvents.forEach(evt => {
+                element.addEventListener(evt, event => {  
+                    if (element.dataset.animating === "true") return;
+                    element.dataset.animating = "true";
+
+                    let iteration = 0;
+                    let originalText = element.dataset.value || element.innerText;
+                    
+                    // FIX: Calcolo e blocco la larghezza esatta al pixel attuale
+                    // Questo impedisce al contenitore di allargarsi/stringersi
+                    const currentRect = element.getBoundingClientRect();
+                    element.style.width = currentRect.width + "px"; 
+                    element.style.display = "inline-block";
+                    element.style.whiteSpace = "nowrap"; // IMPEDISCE DI ANDARE A CAPO
+                    element.style.textAlign = "left";
+
+                    clearInterval(element.interval);
+                    
+                    element.interval = setInterval(() => {
+                        if (element.dataset.value === "[stefano_panosetti]") {
+                            const scrambled = originalText.split("").map((letter, index) => {
+                                if(index < iteration) return originalText[index];
+                                return letters[Math.floor(Math.random() * 26)];
+                            }).join("");
+                            element.innerHTML = `<span class="text-cyberlime">${scrambled[0]}</span>${scrambled.substring(1, 8)}<span class="text-cyberlime">${scrambled[8]}</span>${scrambled.substring(9, 18)}<span class="text-cyberlime">${scrambled[18]}</span>`;
+                        } else {
+                            element.innerText = originalText.split("").map((letter, index) => {
+                                if(index < iteration) return originalText[index];
+                                return letters[Math.floor(Math.random() * 26)];
+                            }).join("");
+                        }
+                        
+                        if(iteration >= originalText.length){ 
+                            clearInterval(element.interval);
+                            element.dataset.animating = "false";
+                            
+                            // Reset per il logo (HTML)
+                            if (element.dataset.value === "[stefano_panosetti]") {
+                                element.innerHTML = `<span class="text-cyberlime">[</span>stefano<span class="text-cyberlime">_</span>panosetti<span class="text-cyberlime">]</span>`;
+                            }
+                            
+                            // RESET DELLO STILE: Importante rimuovere la larghezza fissa
+                            // altrimenti se ridimensioni la finestra il testo responsive si rompe.
+                            element.style.width = "";
+                            element.style.display = "";
+                            element.style.whiteSpace = "";
+                        }
+                        iteration += 1 / 3;
+                    }, 30);
+                });
+            });
+        });
+
+        // --- 5. CUSTOM CURSOR ---
+        const cursor = document.getElementById('cursor');
+        
+        document.addEventListener('mousemove', e => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
+
+        document.querySelectorAll('.hover-trigger').forEach(el => {
+            el.addEventListener('mouseenter', () => cursor.classList.add('hovered'));
+            el.addEventListener('mouseleave', () => cursor.classList.remove('hovered'));
+        });
+
+        document.addEventListener('mousedown', () => cursor.style.transform = 'translate(-50%, -50%) scale(0.8)');
+        document.addEventListener('mouseup', () => cursor.style.transform = 'translate(-50%, -50%) scale(1)');
+
+        // --- 6. SCROLL REVEAL ---
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if(entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    </script>
+</body>
+</html>

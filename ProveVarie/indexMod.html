@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="it" class="no-js">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0a0a0a">
+    <title>Stefano Panosetti | High-End Creative Developer</title>
+    
+    <meta name="description" content="Portfolio di Stefano Panosetti. Esperienze digitali immersive e sviluppo frontend avanzato.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600&family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.4/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.4/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/@studio-freight/lenis@1.0.29/dist/lenis.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        black: '#0a0a0a',
+                        white: '#f2f2f2',
+                        accent: '#FF4D00',
+                        gray: '#888888',
+                        'dark-gray': '#1a1a1a'
+                    },
+                    fontFamily: {
+                        sans: ['Manrope', 'sans-serif'],
+                        display: ['Syne', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    screens: {
+                        'xs': '400px',
+                        '3xl': '1920px'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            --bg-color: #050505;
+            --text-color: #f0f0f0;
+            --accent-color: #FF4D00;
+            --grid-color: rgba(255, 255, 255, 0.03);
+            --cursor-size: 20px;
+            --nav-height: 80px;
+        }
+
+        /* RESET & BASE */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            font-size: 16px;
+            scroll-behavior: auto; /* Gestito da Lenis */
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Manrope', sans-serif;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            cursor: none; /* Custom cursor mandatory */
+        }
+
+        a { text-decoration: none; color: inherit; cursor: none; }
+        button { cursor: none; border: none; background: none; font-family: inherit; }
+        ul { list-style: none; }
+
+        /* UTILITY CLASSES CUSTOM */
+        .wrapper {
+            width: 100%;
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .clip-text {
+            clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
+        }
+
+        .char-reveal {
+            transform: translateY(110%);
+            transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            display: inline-block;
+        }
+        .is-inview .char-reveal {
+            transform: translateY(0);
+        }
+
+        /* CUSTOM CURSOR SYSTEM */
+        #cursor-dot, #cursor-ring {
+            position: fixed;
+            top: 0; left: 0;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: difference;
+        }
+        
+        #cursor-dot {
+            width: 8px; height: 8px;
+            background: white;
+            transform: translate(-50%, -50%);
+        }
+
+        #cursor-ring {
+            width: 40px; height: 40px;
+            border: 1px solid rgba(255,255,255,0.5);
+            transform: translate(-50%, -50%);
+            transition: width 0.3s, height 0.3s, background-color 0.3s, border-color 0.3s;
+        }
+
+        body.hover-active #cursor-ring {
+            width: 80px; height: 80px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-color: transparent;
+        }
+        
+        body.hover-text #cursor-ring {
+            width: 0px; height: 0px; 
+            opacity: 0;
+        }
+        body.hover-text #cursor-dot {
+            width: 100px; height: 100px;
+            background: var(--accent-color);
+            mix-blend-mode: normal;
+            display: flex; align-items: center; justify-content: center;
+        }
+        body.hover-text #cursor-dot::after {
+            content: 'VIEW';
+            color: black;
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        /* GRAIN OVERLAY */
+        .grain-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 9000; opacity: 0.05;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='1'/%3E%3C/svg%3E");
+        }
+
+        /* PRELOADER */
+        .preloader {
+            position: fixed; inset: 0; z-index: 10000;
+            background: var(--bg-color);
+            display: flex; justify-content: center; align-items: center;
+            flex-direction: column;
+        }
+        .preloader-bar-bg {
+            width: 200px; height: 2px; background: #333; margin-top: 20px;
+            overflow: hidden;
+        }
+        .preloader-bar {
+            width: 0%; height: 100%; background: var(--text-color);
+        }
+
+        /* NAVIGATION */
+        .nav-main {
+            position: fixed; top: 0; left: 0; width: 100%; height: var(--nav-height);
+            z-index: 100; padding: 0 40px;
+            display: flex; justify-content: space-between; align-items: center;
+            mix-blend-mode: difference;
+        }
+
+        /* MENU OVERLAY */
+        .menu-overlay {
+            position: fixed; inset: 0; background: var(--accent-color);
+            z-index: 90; transform: translateY(-100%);
+            transition: transform 0.8s cubic-bezier(0.77, 0, 0.175, 1);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .menu-overlay.active { transform: translateY(0); }
+        .menu-link {
+            font-family: 'Syne', sans-serif; font-size: 8vw; line-height: 0.9;
+            font-weight: 700; text-transform: uppercase; color: #000;
+            opacity: 0; transform: translateY(50px); transition: 0.5s;
+            display: block;
+        }
+        .menu-overlay.active .menu-link {
+            opacity: 1; transform: translateY(0);
+        }
+
+        /* HERO SECTION */
+        .hero-title {
+            font-size: clamp(3rem, 13vw, 15rem);
+            line-height: 0.85;
+            letter-spacing: -0.04em;
+            text-transform: uppercase;
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            margin-bottom: 2rem;
+        }
+        
+        .hero-image-wrap {
+            position: absolute; top: 20%; right: 10%; width: 30vw; height: 40vw;
+            z-index: -1; opacity: 0.5; filter: grayscale(100%);
+            overflow: hidden;
+        }
+        .hero-image-wrap img {
+            width: 100%; height: 100%; object-fit: cover;
+            animation: slowZoom 20s infinite alternate;
+        }
+
+        @keyframes slowZoom { from { transform: scale(1); } to { transform: scale(1.1); } }
+
+        /* MARQUEE */
+        .marquee-container {
+            width: 100%; overflow: hidden; white-space: nowrap;
+            padding: 4rem 0; border-top: 1px solid #222; border-bottom: 1px solid #222;
+        }
+        .marquee-content {
+            display: inline-block; animation: marquee 30s linear infinite;
+        }
+        .marquee-item {
+            font-family: 'Syne', sans-serif; font-size: 6rem; font-weight: 700;
+            -webkit-text-stroke: 1px rgba(255,255,255,0.3); color: transparent;
+            margin-right: 4rem; text-transform: uppercase;
+            transition: color 0.3s;
+        }
+        .marquee-container:hover .marquee-item { color: var(--accent-color); -webkit-text-stroke: 0; }
+
+        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+        /* STACKING PROJECTS */
+        .project-section {
+            background-color: var(--bg-color);
+            padding-bottom: 10vh;
+        }
+        .project-sticky-card {
+            position: sticky; top: 0;
+            height: 100vh; width: 100%;
+            display: flex; align-items: center; justify-content: center;
+            overflow: hidden;
+            border-top: 1px solid #222;
+            background: #0a0a0a; /* Fallback */
+            box-shadow: 0 -10px 50px rgba(0,0,0,0.5);
+        }
+        /* Colori diversi per ogni card per stacco visivo */
+        .card-1 { background-color: #0F0F0F; z-index: 1; }
+        .card-2 { background-color: #141414; z-index: 2; }
+        .card-3 { background-color: #1A1A1A; z-index: 3; }
+        .card-4 { background-color: #1F1F1F; z-index: 4; }
+
+        .project-content {
+            width: 100%; max-width: 1600px; padding: 0 2rem;
+            display: grid; grid-template-columns: 1fr 1.5fr; gap: 4rem;
+            align-items: center;
+        }
+        
+        .p-img-container {
+            position: relative; width: 100%; height: 60vh;
+            overflow: hidden; border-radius: 4px;
+        }
+        .p-img-container img {
+            width: 100%; height: 100%; object-fit: cover;
+            transition: transform 0.7s ease;
+        }
+        .project-sticky-card:hover .p-img-container img { transform: scale(1.05); }
+
+        /* SERVICES ACCORDION */
+        .accordion-item {
+            border-bottom: 1px solid #333;
+            padding: 2rem 0; cursor: pointer;
+        }
+        .accordion-header {
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .accordion-title {
+            font-family: 'Syne', sans-serif; font-size: 3rem; text-transform: uppercase;
+            transition: color 0.3s;
+        }
+        .accordion-icon {
+            font-size: 2rem; transition: transform 0.3s;
+        }
+        .accordion-body {
+            height: 0; overflow: hidden; transition: height 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+            opacity: 0.7; font-size: 1.2rem; max-width: 600px;
+        }
+        .accordion-item.active .accordion-body { height: auto; padding-top: 1rem; }
+        .accordion-item.active .accordion-title { color: var(--accent-color); }
+        .accordion-item:hover .accordion-title { padding-left: 20px; } /* Micro-interaction */
+
+        /* FOOTER */
+        .footer-mega {
+            position: relative; z-index: 10;
+            background: #fff; color: #000;
+            padding: 6rem 2rem;
+            min-height: 80vh;
+            display: flex; flex-col; justify-content: space-between;
+        }
+        .footer-form input, .footer-form textarea {
+            width: 100%; border: none; border-bottom: 2px solid #000;
+            background: transparent; padding: 1.5rem 0;
+            font-family: 'Syne', sans-serif; font-size: 1.5rem;
+            color: #000; margin-bottom: 2rem;
+            border-radius: 0;
+        }
+        .footer-form input:focus, .footer-form textarea:focus {
+            outline: none; border-bottom-color: var(--accent-color);
+        }
+
+        /* MEDIA QUERIES */
+        @media (max-width: 1024px) {
+            .hero-title { font-size: 4rem; }
+            .project-content { grid-template-columns: 1fr; }
+            .p-img-container { height: 40vh; order: -1; margin-bottom: 2rem; }
+            .accordion-title { font-size: 1.5rem; }
+            .marquee-item { font-size: 3rem; }
+            /* Mobile cursor fix */
+            #cursor-dot, #cursor-ring { display: none !important; }
+            body { cursor: auto !important; }
+            a, button { cursor: pointer !important; }
+        }
+
+    </style>
+</head>
+<body class="loading">
+
+    <div class="grain-overlay"></div>
+
+    <div id="cursor-dot"></div>
+    <div id="cursor-ring"></div>
+
+    <div class="preloader" id="preloader">
+        <div class="font-display font-bold text-6xl mb-4 tracking-tighter">SP©25</div>
+        <div class="font-mono text-xs uppercase tracking-widest mb-2" id="loader-text">Initializing Core...</div>
+        <div class="preloader-bar-bg">
+            <div class="preloader-bar" id="loader-bar"></div>
+        </div>
+    </div>
+
+    <div class="menu-overlay" id="menu-overlay">
+        <div class="flex flex-col items-center gap-4 text-center">
+            <a href="#hero" class="menu-link hover-magnet">Home</a>
+            <a href="#about" class="menu-link hover-magnet">About</a>
+            <a href="#projects" class="menu-link hover-magnet">Works</a>
+            <a href="#services" class="menu-link hover-magnet">Services</a>
+            <a href="#contact" class="menu-link hover-magnet">Contact</a>
+        </div>
+        <button id="close-menu" class="absolute top-8 right-8 font-mono text-black text-xl hover-magnet">[CLOSE]</button>
+    </div>
+
+    <nav class="nav-main">
+        <div class="logo font-display font-bold text-2xl tracking-tighter hover-magnet" data-strength="20">
+            <a href="#">PANOSETTI<span class="text-xs align-top">®</span></a>
+        </div>
+        
+        <div class="hidden md:flex gap-12 font-mono text-xs uppercase tracking-widest">
+            <a href="#about" class="hover-magnet">Profile</a>
+            <a href="#projects" class="hover-magnet">Selected Work</a>
+            <a href="#services" class="hover-magnet">Services</a>
+        </div>
+
+        <button id="open-menu" class="group flex flex-col gap-1.5 hover-magnet" data-strength="30" aria-label="Menu">
+            <span class="w-8 h-[2px] bg-white group-hover:w-10 transition-all"></span>
+            <span class="w-8 h-[2px] bg-white group-hover:w-6 transition-all"></span>
+        </button>
+    </nav>
+
+    <main id="smooth-wrapper">
+        <div id="smooth-content">
+
+            <section id="hero" class="relative min-h-screen flex items-center pt-32 pb-20 px-4 md:px-12 overflow-hidden">
+                <div class="wrapper relative z-10">
+                    <p class="font-mono text-accent text-sm mb-4 tracking-widest uppercase fade-in-up">Portfolio 2026 / Abruzzo, IT</p>
+                    
+                    <h1 class="hero-title text-white">
+                        <div class="overflow-hidden"><span class="block char-reveal">Creative</span></div>
+                        <div class="overflow-hidden"><span class="block char-reveal ml-[10vw] text-gray-500">Developer</span></div>
+                        <div class="overflow-hidden"><span class="block char-reveal">& Designer</span></div>
+                    </h1>
+
+                    <div class="mt-12 max-w-xl fade-in-up">
+                        <p class="font-sans text-lg md:text-xl font-light leading-relaxed text-gray-300">
+                            Aiuto brand visionari a trasformare idee complesse in esperienze digitali memorabili. 
+                            Specializzato in interfacce utente fluide e codice performante.
+                        </p>
+                        
+                        <div class="mt-8 flex gap-8 items-center">
+                            <a href="#projects" class="border border-white/30 rounded-full px-8 py-4 font-mono text-xs uppercase tracking-widest hover:bg-white hover:text-black transition-all hover-magnet">
+                                View Projects
+                            </a>
+                            <div class="flex items-center gap-2 font-mono text-xs text-gray-400">
+                                <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                                Available for Freelance
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hero-image-wrap">
+                     <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop" alt="Abstract">
+                </div>
+            </section>
+
+            <div class="marquee-container">
+                <div class="marquee-content">
+                    <span class="marquee-item">User Experience</span>
+                    <span class="marquee-item">Interface Design</span>
+                    <span class="marquee-item">Web Development</span>
+                    <span class="marquee-item">Creative Direction</span>
+                    <span class="marquee-item">Motion Graphics</span>
+                    <span class="marquee-item">User Experience</span>
+                    <span class="marquee-item">Interface Design</span>
+                    <span class="marquee-item">Web Development</span>
+                </div>
+            </div>
+
+            <section id="about" class="py-32 bg-[#0d0d0d]">
+                <div class="wrapper">
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-12">
+                        <div class="col-span-12 md:col-span-4">
+                            <h2 class="font-mono text-xs text-gray uppercase tracking-widest mb-8">(01) — Who I Am</h2>
+                        </div>
+                        <div class="col-span-12 md:col-span-8">
+                            <p class="font-display text-3xl md:text-5xl leading-tight mb-12 text-balance">
+                                Sono Stefano Panosetti, un ponte tra il design visivo e l'ingegneria del software.
+                                <span class="text-gray-500">Credo che un sito web non debba solo funzionare, ma debba raccontare una storia attraverso micro-interazioni, tipografia e ritmo.</span>
+                            </p>
+                            
+                            <div class="grid grid-cols-2 md:grid-cols-3 gap-8 border-t border-white/10 pt-8">
+                                <div>
+                                    <h3 class="font-bold text-white mb-2">Coding</h3>
+                                    <ul class="text-sm text-gray space-y-1 font-mono">
+                                        <li>HTML5 / CSS3</li>
+                                        <li>JavaScript (ES6+)</li>
+                                        <li>React / Vue</li>
+                                        <li>Tailwind / GSAP</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-white mb-2">Design</h3>
+                                    <ul class="text-sm text-gray space-y-1 font-mono">
+                                        <li>Figma / Adobe XD</li>
+                                        <li>UI / UX Principles</li>
+                                        <li>Wireframing</li>
+                                        <li>Prototyping</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-white mb-2">Tools</h3>
+                                    <ul class="text-sm text-gray space-y-1 font-mono">
+                                        <li>Git / GitHub</li>
+                                        <li>VS Code</li>
+                                        <li>WordPress</li>
+                                        <li>Webpack / Vite</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="projects" class="project-section">
+                <div class="wrapper py-20">
+                    <h2 class="font-display text-8xl md:text-[10rem] font-bold text-white/10 leading-none">WORKS</h2>
+                </div>
+
+                <article class="project-sticky-card card-1">
+                    <div class="project-content">
+                        <div class="text-content">
+                            <span class="font-mono text-accent text-sm mb-2">01 — Finance</span>
+                            <h3 class="font-display text-5xl md:text-7xl font-bold mb-6">DOJA CRYPTO</h3>
+                            <p class="text-gray-400 mb-8 max-w-md">Una dashboard finanziaria rivoluzionaria. Design scuro, grafici in tempo reale e UX ottimizzata per il trading ad alta frequenza.</p>
+                            
+                            <div class="flex flex-wrap gap-2 mb-8">
+                                <span class="px-3 py-1 border border-white/20 rounded-full text-xs font-mono">React</span>
+                                <span class="px-3 py-1 border border-white/20 rounded-full text-xs font-mono">D3.js</span>
+                                <span class="px-3 py-1 border border-white/20 rounded-full text-xs font-mono">Figma</span>
+                            </div>
+
+                            <a href="https://panosettistefano.github.io/Website/" target="_blank" class="magnetic-link inline-flex items-center gap-2 font-display font-bold uppercase hover:text-accent transition-colors">
+                                Live Preview
+                                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 11L11 1M11 1H1M11 1V11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            </a>
+                        </div>
+                        <div class="p-img-container hover-magnet-area">
+                            <img src="img/doja.png" alt="Doja Crypto Project">
+                        </div>
+                    </div>
+                </article>
+
+                <article class="project-sticky-card card-2">
+                    <div class="project-content">
+                        <div class="text-content">
+                            <span class="font-mono text-accent text-sm mb-2">02 — Branding / E-comm</span>
+                            <h3 class="font-display text-5xl md:text-7xl font-bold mb-6">OTF ZONE</h3>
+                            <p class="text-gray-400 mb-8 max-w-md">E-commerce streetwear con un'identità visiva aggressiva e moderna. Integrazione completa con sistemi di pagamento e gestione magazzino.</p>
+                            
+                            <div class="flex flex-wrap gap-2 mb-8">
+                                <span class="px-3 py-1 border border-white/20 rounded-full text-xs font-mono">WordPress</span>
+                                <span class="px-3 py-1 border border-white/20 rounded-full text-xs font-mono">WooCommerce</span>
+                                <span class="px-3 py-1 border border-white/20 rounded-full text-xs font-mono">Branding</span>
+                            </div>
+
+                            <a href="https://otfzone.altervista.org/" target="_blank" class="magnetic-link inline-flex items-center gap-2 font-display font-bold uppercase hover:text-accent transition-colors">
+                                Live Preview
+                                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 11L11 1M11 1H1M11 1V11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            </a>
+                        </div>
+                        <div class="p-img-container hover-magnet-area">
+                            <img src="img/otfzone1.png" alt="Otf Zone Project">
+                        </div>
+                    </div>
+                </article>
+
+                <article class="project-sticky-card card-3">
+                    <div class="project-content">
+                        <div class="text-content">
+                            <span class="font-mono text-accent text-sm mb-2">03 — Art Direction</span>
+                            <h3 class="font-display text-5xl md:text-7xl font-bold mb-6">AL DI FUORI</h3>
+                            <p class="text-gray-400 mb-8 max-w-md">Progetto editoriale sperimentale che mescola fotografia analogica e layout grid-breaking digitale. Un viaggio visivo nell'arte contemporanea.</p>
+                            
+                            <div class="flex flex-wrap gap-2 mb-8">
+                                <span class="px-3 py-1 border border-white/20 rounded-full text-xs font-mono">Editorial</span>
+                                <span class="px-3 py-1 border border-white/20 rounded-full text-xs font-mono">Photography</span>
+                                <span class="px-3 py-1 border border-white/20 rounded-full text-xs font-mono">Layout</span>
+                            </div>
+
+                            <a href="#" class="magnetic-link inline-flex items-center gap-2 font-display font-bold uppercase hover:text-accent transition-colors opacity-50 cursor-not-allowed">
+                                Coming Soon
+                            </a>
+                        </div>
+                        <div class="p-img-container hover-magnet-area">
+                            <img src="img/adfdq.png" alt="Editorial Project">
+                        </div>
+                    </div>
+                </article>
+                 <article class="project-sticky-card card-4">
+                    <div class="project-content">
+                        <div class="text-content">
+                            <span class="font-mono text-accent text-sm mb-2">04 — Web Design</span>
+                            <h3 class="font-display text-5xl md:text-7xl font-bold mb-6">DOGTYPE</h3>
+                            <p class="text-gray-400 mb-8 max-w-md">Blog minimale per appassionati cinofili. Focus sulla leggibilità (Typography scale) e velocità di caricamento.</p>
+                            
+                            <div class="flex flex-wrap gap-2 mb-8">
+                                <span class="px-3 py-1 border border-white/20 rounded-full text-xs font-mono">Blogging</span>
+                                <span class="px-3 py-1 border border-white/20 rounded-full text-xs font-mono">SEO</span>
+                            </div>
+
+                            <a href="#" class="magnetic-link inline-flex items-center gap-2 font-display font-bold uppercase hover:text-accent transition-colors">
+                                View Case Study
+                                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 11L11 1M11 1H1M11 1V11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            </a>
+                        </div>
+                        <div class="p-img-container hover-magnet-area">
+                            <img src="img/Dogtype.png" alt="Dogtype Project">
+                        </div>
+                    </div>
+                </article>
+            </section>
+
+            <section id="services" class="py-32 bg-[#050505]">
+                <div class="wrapper max-w-4xl mx-auto">
+                    <div class="text-center mb-20">
+                        <span class="font-mono text-xs text-accent uppercase tracking-widest">(03) — Capabilities</span>
+                        <h2 class="font-display text-5xl md:text-6xl font-bold mt-4">WHAT I DO BEST</h2>
+                    </div>
+
+                    <div class="accordion-list">
+                        <div class="accordion-item hover-magnet">
+                            <div class="accordion-header">
+                                <h3 class="accordion-title">Web Design & UI</h3>
+                                <span class="accordion-icon">+</span>
+                            </div>
+                            <div class="accordion-body">
+                                <p class="py-4">Progettazione di interfacce utente moderne, sistemi di design scalabili e prototipi interattivi ad alta fedeltà. Utilizzo Figma per creare layout che rispettano le griglie ma sanno quando romperle.</p>
+                            </div>
+                        </div>
+                         <div class="accordion-item hover-magnet">
+                            <div class="accordion-header">
+                                <h3 class="accordion-title">Creative Development</h3>
+                                <span class="accordion-icon">+</span>
+                            </div>
+                            <div class="accordion-body">
+                                <p class="py-4">Sviluppo frontend con React, Vue o Vanilla JS. Implementazione di animazioni complesse (GSAP), transizioni fluide (Lenis) e interazioni WebGL. Codice pulito, semantico e SEO-friendly.</p>
+                            </div>
+                        </div>
+                         <div class="accordion-item hover-magnet">
+                            <div class="accordion-header">
+                                <h3 class="accordion-title">Brand Identity</h3>
+                                <span class="accordion-icon">+</span>
+                            </div>
+                            <div class="accordion-body">
+                                <p class="py-4">Definizione dell'identità visiva completa: loghi, palette colori, tipografia e linee guida del brand. Creo linguaggi visivi che comunicano i valori dell'azienda a colpo d'occhio.</p>
+                            </div>
+                        </div>
+                         <div class="accordion-item hover-magnet">
+                            <div class="accordion-header">
+                                <h3 class="accordion-title">E-Commerce</h3>
+                                <span class="accordion-icon">+</span>
+                            </div>
+                            <div class="accordion-body">
+                                <p class="py-4">Realizzazione di shop online performanti su piattaforme come Shopify o WooCommerce, oppure soluzioni headless custom per esperienze d'acquisto uniche.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <footer id="contact" class="footer-mega">
+                <div class="wrapper w-full h-full flex flex-col justify-between">
+                    <div>
+                        <span class="font-mono text-xs text-black uppercase tracking-widest mb-4 block">(04) — Start a Project</span>
+                        <h2 class="font-display text-6xl md:text-8xl font-bold tracking-tighter mb-12">LET'S TALK.</h2>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                            <form action="#" class="footer-form">
+                                <div class="group relative">
+                                    <input type="text" placeholder="Name" required>
+                                </div>
+                                <div class="group relative">
+                                    <input type="email" placeholder="Email Address" required>
+                                </div>
+                                <div class="group relative">
+                                    <textarea placeholder="Tell me about your project" rows="3" required></textarea>
+                                </div>
+                                <button type="submit" class="w-full bg-black text-white font-display font-bold text-xl py-6 hover:bg-accent transition-colors hover-magnet">
+                                    SEND MESSAGE
+                                </button>
+                            </form>
+
+                            <div class="flex flex-col justify-between pl-0 md:pl-20">
+                                <div class="space-y-4">
+                                    <h4 class="font-bold text-xl">Contact Details</h4>
+                                    <a href="mailto:panosettistefano@gmail.com" class="block text-2xl hover:text-accent transition-colors hover-magnet">panosettistefano@gmail.com</a>
+                                    <a href="tel:+393341556321" class="block text-2xl hover:text-accent transition-colors hover-magnet">+39 334 155 63 21</a>
+                                </div>
+
+                                <div class="flex gap-4 mt-12">
+                                    <a href="#" class="w-16 h-16 border border-black rounded-full flex items-center justify-center hover:bg-black hover:text-white transition-all hover-magnet">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                                    </a>
+                                    <a href="#" class="w-16 h-16 border border-black rounded-full flex items-center justify-center hover:bg-black hover:text-white transition-all hover-magnet">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+                                    </a>
+                                    <a href="https://github.com/PanosettiStefano" target="_blank" class="w-16 h-16 border border-black rounded-full flex items-center justify-center hover:bg-black hover:text-white transition-all hover-magnet">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-between items-end mt-20 pt-8 border-t border-black/10 text-sm font-mono uppercase">
+                        <div>&copy; 2026 Stefano Panosetti.</div>
+                        <div class="flex gap-4">
+                            <a href="#" class="hover:underline">Privacy</a>
+                            <a href="#" class="hover:underline">Legal</a>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+
+        </div> </main> <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('UX DEV System: Initializing...');
+
+            // 1. PRELOADER LOGIC
+            const loader = document.getElementById('preloader');
+            const loaderBar = document.getElementById('loader-bar');
+            const loaderText = document.getElementById('loader-text');
+            let progress = 0;
+
+            const updateLoader = () => {
+                progress += Math.random() * 5;
+                if (progress > 100) progress = 100;
+                
+                loaderBar.style.width = `${progress}%`;
+                
+                if (progress < 100) {
+                    requestAnimationFrame(updateLoader);
+                } else {
+                    loaderText.innerText = "SYSTEM READY";
+                    setTimeout(() => {
+                        gsap.to(loader, {
+                            yPercent: -100,
+                            duration: 1.2,
+                            ease: "power4.inOut",
+                            onComplete: initSite
+                        });
+                    }, 500);
+                }
+            };
+            requestAnimationFrame(updateLoader);
+
+            // 2. MAIN INITIALIZATION FUNCTION
+            function initSite() {
+                document.body.classList.remove('loading');
+                
+                // Initialize Libraries
+                initLenis();
+                initCursor();
+                initAnimations();
+                initMagneticButtons();
+                initMenu();
+                initAccordion();
+            }
+
+            // 3. SMOOTH SCROLL (LENIS)
+            let lenis;
+            function initLenis() {
+                if (typeof Lenis !== 'undefined') {
+                    lenis = new Lenis({
+                        duration: 1.2,
+                        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+                        smooth: true,
+                        direction: 'vertical',
+                    });
+
+                    function raf(time) {
+                        lenis.raf(time);
+                        requestAnimationFrame(raf);
+                    }
+                    requestAnimationFrame(raf);
+                    
+                    // Sync ScrollTrigger
+                    if (typeof ScrollTrigger !== 'undefined') {
+                        lenis.on('scroll', ScrollTrigger.update);
+                        gsap.ticker.add((time) => {
+                            lenis.raf(time * 1000);
+                        });
+                        gsap.ticker.lagSmoothing(0);
+                    }
+                }
+            }
+
+            // 4. CUSTOM CURSOR
+            function initCursor() {
+                const dot = document.getElementById('cursor-dot');
+                const ring = document.getElementById('cursor-ring');
+                
+                // Mouse Move
+                window.addEventListener('mousemove', (e) => {
+                    // Simple direct following for responsiveness
+                    gsap.to(dot, { x: e.clientX, y: e.clientY, duration: 0.1 });
+                    gsap.to(ring, { x: e.clientX, y: e.clientY, duration: 0.3, ease: "power2.out" });
+                });
+
+                // Hover Effects
+                const hoverElements = document.querySelectorAll('a, button, .hover-magnet, input, textarea');
+                hoverElements.forEach(el => {
+                    el.addEventListener('mouseenter', () => document.body.classList.add('hover-active'));
+                    el.addEventListener('mouseleave', () => document.body.classList.remove('hover-active'));
+                });
+
+                // Image Hover Areas
+                const imgAreas = document.querySelectorAll('.hover-magnet-area');
+                imgAreas.forEach(el => {
+                    el.addEventListener('mouseenter', () => document.body.classList.add('hover-text'));
+                    el.addEventListener('mouseleave', () => document.body.classList.remove('hover-text'));
+                });
+            }
+
+            // 5. MAGNETIC BUTTONS (Math Logic)
+            function initMagneticButtons() {
+                const magnets = document.querySelectorAll('.hover-magnet');
+                
+                magnets.forEach(magnet => {
+                    magnet.addEventListener('mousemove', (e) => {
+                        const bound = magnet.getBoundingClientRect();
+                        const strength = magnet.getAttribute('data-strength') || 40;
+                        
+                        const newX = ((e.clientX - bound.left) / magnet.offsetWidth) - 0.5;
+                        const newY = ((e.clientY - bound.top) / magnet.offsetHeight) - 0.5;
+
+                        gsap.to(magnet, {
+                            x: newX * strength,
+                            y: newY * strength,
+                            duration: 1,
+                            ease: "power4.out"
+                        });
+                    });
+
+                    magnet.addEventListener('mouseleave', () => {
+                        gsap.to(magnet, { x: 0, y: 0, duration: 1, ease: "elastic.out(1, 0.3)" });
+                    });
+                });
+            }
+
+            // 6. ANIMATIONS (GSAP)
+            function initAnimations() {
+                if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+                    
+                    // Hero Text Reveal
+                    const chars = document.querySelectorAll('.char-reveal');
+                    gsap.to(chars, {
+                        y: 0,
+                        stagger: 0.1,
+                        duration: 1.5,
+                        ease: "power4.out",
+                        delay: 0.2
+                    });
+
+                    // General Fade Up
+                    const fadeUps = document.querySelectorAll('.fade-in-up');
+                    fadeUps.forEach(el => {
+                        gsap.fromTo(el, 
+                            { y: 50, opacity: 0 },
+                            {
+                                y: 0, opacity: 1, duration: 1, ease: "power2.out",
+                                scrollTrigger: {
+                                    trigger: el,
+                                    start: "top 85%"
+                                }
+                            }
+                        );
+                    });
+
+                    // Project Image Parallax (Internal)
+                    document.querySelectorAll('.p-img-container img').forEach(img => {
+                        gsap.to(img, {
+                            y: "10%",
+                            scale: 1.1,
+                            scrollTrigger: {
+                                trigger: img.parentElement,
+                                start: "top bottom",
+                                end: "bottom top",
+                                scrub: true
+                            }
+                        });
+                    });
+                }
+            }
+
+            // 7. MENU LOGIC
+            function initMenu() {
+                const openBtn = document.getElementById('open-menu');
+                const closeBtn = document.getElementById('close-menu');
+                const menu = document.getElementById('menu-overlay');
+                const links = document.querySelectorAll('.menu-link');
+
+                openBtn.addEventListener('click', () => {
+                    menu.classList.add('active');
+                    lenis.stop(); // Stop scroll
+                });
+
+                closeBtn.addEventListener('click', closeMenu);
+                links.forEach(link => link.addEventListener('click', closeMenu));
+
+                function closeMenu() {
+                    menu.classList.remove('active');
+                    lenis.start();
+                }
+            }
+
+            // 8. ACCORDION LOGIC
+            function initAccordion() {
+                const items = document.querySelectorAll('.accordion-item');
+                
+                items.forEach(item => {
+                    item.addEventListener('click', () => {
+                        const isActive = item.classList.contains('active');
+                        
+                        // Close all first
+                        items.forEach(i => {
+                            i.classList.remove('active');
+                            i.querySelector('.accordion-icon').style.transform = "rotate(0deg)";
+                            i.querySelector('.accordion-icon').innerText = "+";
+                        });
+
+                        // Toggle clicked
+                        if (!isActive) {
+                            item.classList.add('active');
+                            const icon = item.querySelector('.accordion-icon');
+                            icon.innerText = "-";
+                            icon.style.transform = "rotate(180deg)";
+                        }
+                    });
+                });
+            }
+
+        }); // End DOMContentLoaded
+    </script>
+</body>
+</html>

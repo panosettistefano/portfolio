@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="it" class="dark scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+    
+    <title>Stefano Panosetti | Strategic Design & Engineering</title>
+    <meta name="description" content="Creative Technologist specializzato nel colmare il divario tra Design e Codice. React, Next.js, UI Strategy.">
+    <meta name="theme-color" content="#050505">
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://stefanopanosetti.com/">
+    <meta property="og:title" content="Stefano Panosetti | Strat & Eng">
+    <meta property="og:description" content="Strategic Communication Engineered. Portfolio 2025.">
+    <meta property="og:image" content="https://stefanopanosetti.com/og-image.jpg">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;700&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class', 
+            theme: {
+                extend: {
+                    colors: {
+                        cyberlime: 'var(--accent-color)', 
+                        darkbg: '#050505',
+                        darkline: '#1A1A1A',
+                        darktext: '#E5E5E5',
+                        lightbg: '#FAFAFA',
+                        lightline: '#E5E7EB',
+                        lighttext: '#171717',
+                    },
+                    fontFamily: {
+                        mono: ['JetBrains Mono', 'monospace'],
+                        grotesk: ['Space Grotesk', 'sans-serif'],
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'grain': 'grain 8s steps(10) infinite',
+                    },
+                    keyframes: {
+                        grain: {
+                            '0%, 100%': { transform: 'translate(0, 0)' },
+                            '10%': { transform: 'translate(-5%, -10%)' },
+                            '20%': { transform: 'translate(-15%, 5%)' },
+                            '30%': { transform: 'translate(7%, -25%)' },
+                            '40%': { transform: 'translate(-5%, 25%)' },
+                            '50%': { transform: 'translate(-15%, 10%)' },
+                            '60%': { transform: 'translate(15%, 0%)' },
+                            '70%': { transform: 'translate(0%, 15%)' },
+                            '80%': { transform: 'translate(3%, 35%)' },
+                            '90%': { transform: 'translate(-10%, 10%)' },
+                        }
+                    },
+                    screens: {
+                        'xs': '400px', // Breakpoint extra per piccoli schermi
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* --- CORE VARIABLES --- */
+        /* Impostiamo il Lime come default se JS non è caricato */
+        :root { --accent-color: #171717; --cursor-size: 16px; }
+        html.dark { --accent-color: #DFFF00; } /* Default Lime Neon */
+
+        /* Classi di utilità per i bottoni colore */
+        .color-btn { width: 20px; height: 20px; border-radius: 50%; border: 1px solid #333; cursor: pointer; transition: transform 0.2s; }
+        .color-btn:hover { transform: scale(1.2); }
+        .color-btn.active { border-color: white; box-shadow: 0 0 10px var(--btn-color); }
+
+        /* --- BASE RESET & SETTINGS --- */
+        html { width: 100%; height: 100%; -webkit-text-size-adjust: 100%; }
+        body { 
+            width: 100%; min-height: 100%; position: relative; 
+            -webkit-font-smoothing: antialiased; 
+            cursor: none; /* Nasconde cursore solo dove gestito via JS */
+            overflow-x: hidden;
+        }
+
+        /* --- NOISE TEXTURE --- */
+        .noise-overlay {
+            position: fixed; top: -50%; left: -50%; width: 200%; height: 200%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+            pointer-events: none; z-index: 50; /* Z-index ridotto per stare sotto il menu mobile */
+            opacity: 0.08; animation: grain 8s steps(10) infinite;
+        }
+        html.dark .noise-overlay { opacity: 0.05; }
+
+        /* --- ACCESSIBILITY --- */
+        :focus:not(:focus-visible) { outline: none; }
+        :focus-visible { outline: 2px solid var(--accent-color); outline-offset: 4px; }
+
+        /* --- CUSTOM CURSOR --- */
+        #cursor {
+            position: fixed; top: 0; left: 0;
+            width: var(--cursor-size); height: var(--cursor-size);
+            background-color: var(--accent-color); border-radius: 50%;
+            pointer-events: none; z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: width 0.2s cubic-bezier(0.19, 1, 0.22, 1), 
+                        height 0.2s cubic-bezier(0.19, 1, 0.22, 1), 
+                        background-color 0.2s;
+            mix-blend-mode: difference;
+            display: none; /* Nascosto di default, attivato via JS solo se pointer:fine */
+        }
+        #cursor.hovered {
+            width: 60px; height: 60px;
+            background-color: transparent;
+            border: 1px solid var(--accent-color);
+        }
+        
+        /* Mostra cursore custom SOLO su dispositivi con mouse preciso */
+        @media (pointer: fine) {
+            #cursor { display: block; }
+        }
+        /* Ripristina cursore di sistema su touch */
+        @media (pointer: coarse), (hover: none) {
+            body { cursor: auto !important; }
+            #cursor { display: none !important; }
+        }
+
+        /* --- PROJECT PREVIEW REVEAL --- */
+        #project-preview {
+            position: fixed; pointer-events: none;
+            width: 300px; height: 200px;
+            z-index: 60; opacity: 0;
+            transform: translate(-50%, -50%) scale(0.8);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            background-size: cover; background-position: center;
+            border-radius: 4px; border: 1px solid var(--accent-color);
+            mix-blend-mode: normal;
+        }
+        #project-preview.visible {
+            opacity: 1; transform: translate(-50%, -50%) scale(1);
+        }
+
+        /* --- UTILS --- */
+        .grid-bg {
+            background-image: 
+                linear-gradient(to right, var(--line-color) 1px, transparent 1px),
+                linear-gradient(to bottom, var(--line-color) 1px, transparent 1px);
+            background-size: 4rem 4rem;
+            mask-image: linear-gradient(to bottom, black 30%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to bottom, black 30%, transparent 100%);
+            transform: translateZ(0);
+        }
+        .dark .grid-bg { --line-color: #1A1A1A; }
+        html:not(.dark) .grid-bg { --line-color: #E5E7EB; }
+
+        .reveal {
+            opacity: 0; transform: translateY(40px);
+            transition: opacity 1s cubic-bezier(0.5, 0, 0, 1), transform 1s cubic-bezier(0.5, 0, 0, 1);
+        }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+
+        .nav-link.active { color: var(--accent-color); font-weight: 700; }
+        .nav-link.active::before { content: '>'; margin-right: 4px; }
+        
+        /* Scrollbar nascosta cross-browser */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        @media (prefers-reduced-motion: reduce) {
+            *, ::before, ::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+            .noise-overlay { animation: none; }
+        }
+
+        /* 3D Styles & Animations */
+        .perspective-1000 { perspective: 1000px; }
+        .preserve-3d { transform-style: preserve-3d; }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+        .cursor-blink { animation: blink 0.8s step-end infinite; }
+    </style>
+</head>
+<body class="font-mono antialiased bg-lightbg text-lighttext dark:bg-darkbg dark:text-darktext selection:bg-cyberlime selection:text-white dark:selection:text-black">
+
+    <div class="noise-overlay"></div>
+
+    <div id="cursor"></div>
+    <div id="project-preview"></div>
+
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 z-[10001] bg-cyberlime text-black px-4 py-2 font-bold rounded-sm">Skip to content</a>
+
+    <div id="loader" class="fixed inset-0 bg-lightbg dark:bg-black z-[10000] flex flex-col justify-end p-6 md:p-8 font-mono transition-colors duration-300">
+        <div class="text-cyberlime text-xs md:text-sm mb-2">root@panosetti:~# <span id="typing-text" class="text-black dark:text-white"></span><span class="animate-pulse text-black dark:text-white">_</span></div>
+        <div class="w-full bg-gray-200 dark:bg-gray-900 h-1 mt-4 overflow-hidden rounded-full">
+            <div id="progress-bar" class="bg-cyberlime h-full w-0 transition-all duration-1000 ease-out"></div>
+        </div>
+    </div>
+
+    <div id="mobile-menu" class="fixed inset-0 z-[10000] bg-white/98 dark:bg-[#050505]/98 backdrop-blur-xl translate-x-full transition-transform duration-500 ease-in-out flex flex-col justify-center items-center md:hidden overscroll-contain" aria-hidden="true">
+        <button id="close-menu-btn" class="absolute top-6 right-6 text-gray-500 hover:text-cyberlime text-3xl font-mono p-4 hover-trigger focus:text-cyberlime transition-colors" aria-label="Close Menu">[x]</button>
+        <nav class="flex flex-col gap-6 xs:gap-8 text-center w-full px-8">
+            <a href="#hero" class="mobile-link text-4xl font-grotesk text-lighttext dark:text-white hover:text-cyberlime transition-colors">01. Start</a>
+            <a href="#about" class="mobile-link text-4xl font-grotesk text-lighttext dark:text-white hover:text-cyberlime transition-colors">02. Identity</a>
+            <a href="#projects" class="mobile-link text-4xl font-grotesk text-lighttext dark:text-white hover:text-cyberlime transition-colors">03. Works</a>
+            <div class="flex justify-center gap-6 mt-4 mb-2">
+                <button class="color-btn w-8 h-8" style="background-color: #DFFF00; --btn-color: #DFFF00;" onclick="setAccentColor('#DFFF00')"></button>
+                <button class="color-btn w-8 h-8" style="background-color: #2fe6e9; --btn-color: #2fe6e9;" onclick="setAccentColor('#2fe6e9')"></button>
+                <button class="color-btn w-8 h-8" style="background-color: #98FF98; --btn-color: #98FF98;" onclick="setAccentColor('#98FF98')"></button>
+            </div>
+            <a href="mailto:hello@stefanopanosetti.com" class="mobile-link text-lg font-mono text-cyberlime border border-cyberlime/50 dark:border-cyberlime/30 px-6 py-4 rounded-sm mt-8 mx-auto w-full max-w-xs hover:bg-cyberlime hover:text-white dark:hover:text-black transition-all" style="margin-bottom: env(safe-area-inset-bottom);">Get_in_touch()</a>
+        </nav>
+    </div>
+
+    <header class="fixed top-0 left-0 w-full z-50 px-5 md:px-12 py-4 md:py-6 flex justify-between items-center backdrop-blur-md bg-lightbg/85 dark:bg-darkbg/85 border-b border-black/5 dark:border-white/5 transition-all duration-300">
+        <a href="#hero" class="hover-trigger magnetic font-mono text-lg md:text-2xl font-bold tracking-tight group relative z-[60]" data-value="[stefano_panosetti]" data-hacker aria-label="Stefano Panosetti Home">
+            <span class="text-cyberlime">[</span>stefano<span class="text-cyberlime">_</span>panosetti<span class="text-cyberlime">]</span>
+        </a>
+
+       <div class="hidden md:flex items-center gap-6">
+            <nav class="flex gap-6 text-sm items-center">
+                <a href="#hero" class="nav-link hover-trigger magnetic hover:text-cyberlime transition-colors text-gray-500 dark:text-gray-400">01. //Start</a>
+                <a href="#about" class="nav-link hover-trigger magnetic hover:text-cyberlime transition-colors text-gray-500 dark:text-gray-400">02. //Identity</a>
+                <a href="#projects" class="nav-link hover-trigger magnetic hover:text-cyberlime transition-colors text-gray-500 dark:text-gray-400">03. //Works</a>
+            </nav>
+            
+            <div class="h-6 w-px bg-gray-300 dark:bg-gray-800"></div> 
+            
+            <div class="flex items-center gap-2">
+                
+                <div class="relative z-[70]">
+                    <button id="color-menu-toggle" class="hover-trigger magnetic flex items-center justify-center p-2 border border-transparent hover:border-gray-300 dark:hover:border-gray-700 transition-all rounded-sm" aria-label="Toggle Color Palette">
+                        <div class="flex items-center gap-2 font-mono text-xs font-bold tracking-tighter">
+                            <span class="hidden lg:block text-gray-500"></span>
+                            <div id="color-indicator" class="w-4 h-4 border border-black dark:border-white bg-cyberlime shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] transition-transform active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"></div>
+                        </div>
+                    </button>
+                    
+                    <div id="color-dropdown" class="hidden absolute top-full right-0 mt-2 p-3 bg-lightbg dark:bg-darkbg border border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] min-w-[160px]">
+                        <div class="flex flex-col gap-2">
+                            <span class="font-mono text-[10px] uppercase text-gray-500 border-b border-gray-300 dark:border-gray-800 pb-1 mb-1">Select_Hue</span>
+                            
+                            <button class="flex items-center gap-3 hover:bg-gray-200 dark:hover:bg-gray-800 p-2 transition-colors group w-full text-left" onclick="setAccentColor('#DFFF00')">
+                                <div class="w-3 h-3 bg-[#DFFF00] border border-gray-400"></div>
+                                <span class="font-mono text-xs group-hover:text-black dark:group-hover:text-white">YELLOW</span>
+                            </button>
+
+                            <button class="flex items-center gap-3 hover:bg-gray-200 dark:hover:bg-gray-800 p-2 transition-colors group w-full text-left" onclick="setAccentColor('#2fe6e9')">
+                                <div class="w-3 h-3 bg-[#2fe6e9] border border-gray-400"></div>
+                                <span class="font-mono text-xs group-hover:text-black dark:group-hover:text-white">BLUE</span>
+                            </button>
+
+                            <button class="flex items-center gap-3 hover:bg-gray-200 dark:hover:bg-gray-800 p-2 transition-colors group w-full text-left" onclick="setAccentColor('#98FF98')">
+                                <div class="w-3 h-3 bg-[#98FF98] border border-gray-400"></div>
+                                <span class="font-mono text-xs group-hover:text-black dark:group-hover:text-white">GREEN</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <button id="theme-toggle" class="hover-trigger magnetic p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors" aria-label="Toggle Theme">
+                    <svg class="w-5 h-5 text-gray-800 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    <svg class="w-5 h-5 text-gray-800 block dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                </button>
+
+            </div>
+
+            <a href="mailto:hello@stefanopanosetti.com" class="hover-trigger magnetic border border-black/10 dark:border-white/20 px-5 py-2 hover:bg-cyberlime hover:text-white dark:hover:text-black hover:border-cyberlime transition-all rounded-sm text-cyberlime font-bold text-xs tracking-wider">CONTACT</a>
+        
+        </div>
+        <div class="flex items-center gap-4 md:hidden z-[60]">
+            <button id="theme-toggle-mobile" class="p-3 text-cyberlime focus:outline-none" aria-label="Toggle Theme Mobile">
+                <div class="w-4 h-4 rounded-full border border-current bg-transparent dark:bg-cyberlime transition-colors"></div>
+            </button>
+            <button id="open-menu-btn" class="text-cyberlime text-2xl hover-trigger p-2 font-mono tracking-tighter focus:outline-none" aria-label="Open Menu">///</button>
+        </div>
+    </header>
+
+    <main id="main-content" class="relative pt-20 md:pt-24 w-full min-h-screen transform-gpu">
+        <div class="fixed inset-0 grid-bg pointer-events-none z-0 transition-opacity duration-300"></div>
+
+        <section id="hero" class="min-h-[90dvh] md:min-h-[90vh] flex flex-col justify-center px-6 md:px-20 relative z-10 border-b border-lightline dark:border-darkline pb-16 md:pb-0 scroll-mt-24">
+            <p class="reveal text-cyberlime mb-4 md:mb-6 font-mono text-[10px] md:text-xs tracking-widest uppercase font-bold">// System Status: Online</p>
+            
+            <h1 class="reveal font-grotesk text-[11vw] md:text-8xl lg:text-9xl font-bold leading-[0.95] md:leading-[0.9] text-lighttext dark:text-white mb-10 md:mb-12 tracking-tighter">
+                STRATEGIC<br>
+                <span class="text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white transition-colors cursor-help inline-block origin-left hover-trigger" data-value="COMMUNICATION" data-hacker>COMMUNICATION</span>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyberlime to-gray-800 dark:to-white block md:inline">ENGINEERED.</span>
+            </h1>
+
+            <div id="code-card" class="reveal delay-200 w-full max-w-2xl mx-auto bg-white/90 dark:bg-[#0A0A0A]/90 backdrop-blur-sm border border-gray-200 dark:border-darkline p-5 md:p-6 rounded-lg shadow-2xl transition-all duration-300 transform perspective-1000 group cursor-pointer select-none">
+    
+                <div class="flex gap-2 mb-4 border-b border-gray-100 dark:border-darkline pb-2 items-center" aria-hidden="true">
+                    <div class="flex gap-2">
+                        <div class="w-2.5 h-2.5 rounded-full bg-red-500 hover:bg-red-600 transition-colors"></div>
+                        <div class="w-2.5 h-2.5 rounded-full bg-yellow-500 hover:bg-yellow-600 transition-colors"></div>
+                        <div class="w-2.5 h-2.5 rounded-full bg-green-500 hover:bg-green-600 transition-colors"></div>
+                    </div>
+                    <span class="ml-auto text-[10px] md:text-xs text-gray-400 dark:text-gray-600 font-mono flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-cyberlime animate-pulse"></span> identity.json
+                    </span>
+                </div>
+
+                <div class="overflow-x-auto no-scrollbar pb-2" tabindex="0">
+                    <code class="text-xs md:text-sm text-gray-600 dark:text-gray-400 block font-mono leading-relaxed whitespace-pre">
+<span class="text-purple-600 dark:text-purple-400">const</span> <span class="text-blue-600 dark:text-blue-400">profile</span> = {
+  <span class="text-gray-500 dark:text-gray-300">"role"</span>: <span class="text-green-600 dark:text-green-400">"</span><span id="type-role" class="text-green-600 dark:text-green-400"></span><span class="text-green-600 dark:text-green-400">"</span>,
+  <span class="text-gray-500 dark:text-gray-300">"stack"</span>: [<span class="text-green-600 dark:text-green-400">"</span><span id="type-stack" class="text-green-600 dark:text-green-400"></span><span class="text-green-600 dark:text-green-400">"</span>],
+  <span class="text-gray-500 dark:text-gray-300">"mode"</span>: <span class="text-green-600 dark:text-green-400">"</span><span id="type-mode" class="text-green-600 dark:text-green-400"></span><span class="text-green-600 dark:text-green-400">"</span>
+};<span id="typing-cursor" class="inline-block w-2 h-4 align-middle bg-cyberlime ml-1 animate-pulse"></span></code>
+                </div>
+            </div>
+        </section>
+
+        <section id="about" class="py-20 md:py-24 px-6 md:px-20 relative z-10 border-b border-lightline dark:border-darkline scroll-mt-24">
+            <div class="flex flex-col md:flex-row items-start md:items-end justify-between mb-12 md:mb-16 reveal">
+                <h2 class="font-grotesk text-3xl md:text-4xl text-lighttext dark:text-white">01. About_Data</h2>
+                <span class="hidden md:block text-cyberlime text-xl" aria-hidden="true">→</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-16">
+                <div class="md:col-span-5 space-y-6 md:space-y-8 reveal delay-100">
+                    <p class="text-base md:text-m text-gray-600 dark:text-gray-300 leading-relaxed">
+                        Ciao, sono Stefano :)  
+                        <br><br>
+                        Sono un appassionato di <span class="bg-cyberlime/20 dark:bg-cyberlime/80 dark:text-black px-1 font-bold">Design e Developing</span>  <br> Curo il prodotto digitale nella sua interezza, dall'idea al deploy.
+                        <br><br>
+                        Mi sono laureato in Comunicazione e da lì ho iniziato<br>
+                        a sviluppare la passione per il Graphic e Web Design. <br>
+                        <br> Ora studio ICT presso l'ITS di Lanciano.
+                    </p>
+                    <a href="#" class="inline-block hover-trigger magnetic border border-cyberlime text-black dark:text-cyberlime px-8 py-3 text-sm font-bold hover:bg-cyberlime hover:text-white dark:hover:text-black transition-all rounded-sm" aria-label="Scarica Curriculum Vitae">
+                        SCARICA CV
+                    </a>
+                </div>
+
+                <div class="md:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4 reveal delay-200">
+                    <div class="bg-white dark:bg-[#0A0A0A] p-6 border border-gray-200 dark:border-darkline hover:border-cyberlime dark:hover:border-cyberlime transition-colors group shadow-sm flex flex-col justify-between h-full">
+                        <span class="text-gray-400 dark:text-gray-500 text-[10px] uppercase tracking-wider block mb-4">// Frontend Engineering</span>
+                        <ul class="text-sm text-gray-600 dark:text-gray-300 space-y-2 font-bold font-mono">
+                            <li>React / Next.js</li>
+                            <li>TypeScript</li>
+                            <li>Tailwind CSS</li>
+                            <li>Wordpress</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white dark:bg-[#0A0A0A] p-6 border border-gray-200 dark:border-darkline hover:border-cyberlime dark:hover:border-cyberlime transition-colors group shadow-sm flex flex-col justify-between h-full">
+                        <span class="text-gray-400 dark:text-gray-500 text-[10px] uppercase tracking-wider block mb-4">// Strategic Design</span>
+                        <ul class="text-sm text-gray-600 dark:text-gray-300 space-y-2 font-bold font-mono">
+                            <li>UI/UX Systems</li>
+                            <li>Figma Prototyping</li>
+                            <li>Logo Design</li>
+                            <li>Brand Identity</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="projects" class="py-20 md:py-32 px-6 md:px-20 relative z-10 bg-gray-50 dark:bg-[#050505] transition-colors scroll-mt-24">
+            <h2 class="font-grotesk text-3xl md:text-4xl text-lighttext dark:text-white mb-10 md:mb-12 reveal">02. Selected_Works</h2>
+            
+            <div class="space-y-0 group-projects">
+                <article class="project-item reveal hover-trigger border-t border-gray-300 dark:border-darkline py-10 md:py-16 cursor-pointer relative transition-all hover:bg-white dark:hover:bg-[#0A0A0A] active:bg-gray-100 dark:active:bg-[#0f0f0f]" 
+                         data-image="#00000">
+                    <a href="https://otfzone.altervista.org/" class="block focus:outline-none w-full" target="_blank" rel="noopener">
+                        <div class="flex flex-col md:flex-row justify-between md:items-center relative z-10 px-2 md:px-4 gap-4">
+                            <div>
+                                <h3 class="text-3xl md:text-4xl font-bold text-gray-800 dark:text-gray-400 project-title transition-all duration-300">Otfzone</h3>
+                                <div class="flex flex-wrap gap-2 md:gap-3 mt-3">
+                                    <span class="text-[10px] font-mono border border-gray-400 rounded-full px-2 py-1 text-gray-500 uppercase">Elementor</span>
+                                    <span class="text-[10px] font-mono border border-gray-400 rounded-full px-2 py-1 text-gray-500 uppercase">Brand Identity</span>
+                                    <span class="text-[10px] font-mono border border-gray-400 rounded-full px-2 py-1 text-gray-500 uppercase">Shooting</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <span class="hidden md:block text-xs font-mono text-gray-400">2025</span>
+                                <span class="text-4xl text-gray-300 project-arrow transition-all duration-300">↗</span>
+                            </div>
+                        </div>
+                    </a>
+                </article>
+
+                <article class="project-item reveal hover-trigger border-t border-gray-300 dark:border-darkline py-10 md:py-16 cursor-pointer relative transition-all hover:bg-white dark:hover:bg-[#0A0A0A] active:bg-gray-100 dark:active:bg-[#0f0f0f]" 
+                         data-image="https://images.unsplash.com/photo-1518998053901-5348d3961a04?q=80&w=1974&auto=format&fit=crop">
+                    <a href="https://panosettistefano.github.io/Website/" class="block focus:outline-none w-full" target="_blank" rel="noopener">
+                        <div class="flex flex-col md:flex-row justify-between md:items-center relative z-10 px-2 md:px-4 gap-4">
+                            <div>
+                                <h3 class="text-3xl md:text-4xl font-bold text-gray-800 dark:text-gray-400 project-title transition-all duration-300">Doja | Art crypto portal</h3>
+                                <div class="flex flex-wrap gap-2 md:gap-3 mt-3">
+                                    <span class="text-[10px] font-mono border border-gray-400 rounded-full px-2 py-1 text-gray-500 uppercase">Tailwind</span>
+                                    <span class="text-[10px] font-mono border border-gray-400 rounded-full px-2 py-1 text-gray-500 uppercase">Vanilla js</span>
+                                    <span class="text-[10px] font-mono border border-gray-400 rounded-full px-2 py-1 text-gray-500 uppercase">Brand Identity</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <span class="hidden md:block text-xs font-mono text-gray-400">2025</span>
+                                <span class="text-4xl text-gray-300 project-arrow transition-all duration-300">↗</span>
+                            </div>
+                        </div>
+                    </a>
+                </article>
+                
+                <article class="project-item reveal hover-trigger border-t border-b border-gray-300 dark:border-darkline py-10 md:py-16 cursor-pointer relative transition-all hover:bg-white dark:hover:bg-[#0A0A0A] active:bg-gray-100 dark:active:bg-[#0f0f0f]" 
+                         data-image="https://dogtype.altervista.org/wp-content/uploads/2025/03/anna-dudkova-SpO8gwe4JYs-unsplash-1536x864.jpg">
+                   <a href="https://dogtype.altervista.org/" class="block focus:outline-none w-full" target="_blank" rel="noopener">
+                        <div class="flex flex-col md:flex-row justify-between md:items-center relative z-10 px-2 md:px-4 gap-4">
+                            <div>
+                                <h3 class="text-3xl md:text-4xl font-bold text-gray-800 dark:text-gray-400 project-title transition-all duration-300">Dogtype</h3>
+                                <div class="flex flex-wrap gap-2 md:gap-3 mt-3">
+                                    <span class="text-[10px] font-mono border border-gray-400 rounded-full px-2 py-1 text-gray-500 uppercase">Wordpress</span>
+                                    <span class="text-[10px] font-mono border border-gray-400 rounded-full px-2 py-1 text-gray-500 uppercase">First Project</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <span class="hidden md:block text-xs font-mono text-gray-400">2025</span>
+                                <span class="text-4xl text-gray-300 project-arrow transition-all duration-300">↗</span>
+                            </div>
+                        </div>
+                    </a>
+                </article>
+            </div>
+
+            <div class="mt-20 md:mt-32 pt-12 text-center reveal border-t border-gray-300 dark:border-darkline pb-safe">
+                <p class="text-xs text-gray-500 mb-8 uppercase tracking-widest font-bold">Open for new opportunities</p>
+                <div class="flex flex-wrap justify-center gap-6 md:gap-16">
+                    <a href="https://www.linkedin.com/in/stefano-panosetti-51b65b1b0/" target="_blank" rel="noopener noreferrer" class="text-2xl md:text-5xl text-gray-800 dark:text-gray-300 hover-trigger magnetic inline-block font-grotesk font-bold hover:text-cyberlime transition-colors">
+                        LinkedIn
+                    </a>
+                     <a href="#" target="_blank" rel="noopener noreferrer" class="text-2xl md:text-5xl text-gray-800 dark:text-gray-300 hover-trigger magnetic inline-block font-grotesk font-bold hover:text-cyberlime transition-colors">
+                        GitHub
+                    </a>
+                     <a href="mailto:hello@stefanopanosetti.com" class="text-2xl md:text-5xl text-gray-800 dark:text-gray-300 hover-trigger magnetic inline-block font-grotesk font-bold hover:text-cyberlime transition-colors">
+                        Email
+                    </a>
+                </div>
+                <div class="text-[10px] text-gray-500 dark:text-gray-700 mt-16 pb-8 font-mono flex flex-col gap-2">
+                   <p>Engineered by Stefano Panosetti © <span id="year">2025</span></p>
+                   <p>System Ver. 2.0.4 // <a href="#" class="hover:underline">Privacy</a></p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // --- 0. DYNAMIC YEAR ---
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        // --- 1. THEME MANAGER ---
+      // --- 1. SMART THEME & COLOR MANAGER (SAFE MODE) ---
+        
+        // Mappa dei colori
+        const colorPalettes = {
+            '#DFFF00': { neon: '#DFFF00', contrast: '#666666' }, // Lime -> Verde Oliva
+            '#2fe6e9': { neon: '#2fe6e9', contrast: '#0891b2' }, // Ciano -> Petrolio
+            '#98FF98': { neon: '#98FF98', contrast: '#b53737' }  // Menta -> Verde Foresta
+        };
+
+        let currentBaseColor = localStorage.getItem('accentColor') || '#DFFF00';
+        
+        // Elementi DOM (con controlli di sicurezza)
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const themeToggleMobile = document.getElementById('theme-toggle-mobile'); // Assicurati che questo ID esista nell'HTML mobile!
+        const colorMenuBtn = document.getElementById('color-menu-toggle');
+        const colorDropdown = document.getElementById('color-dropdown');
+        const colorIndicator = document.getElementById('color-indicator');
+
+        // A. Funzione Colore Responsivo
+        function applyResponsiveColor() {
+            const isDark = document.documentElement.classList.contains('dark');
+            const palette = colorPalettes[currentBaseColor] || { neon: currentBaseColor, contrast: currentBaseColor };
+            const finalColor = isDark ? palette.neon : palette.contrast;
+
+            document.documentElement.style.setProperty('--accent-color', finalColor);
+            
+            if(colorIndicator) colorIndicator.style.backgroundColor = finalColor;
+
+            // Aggiorna i cerchietti nel menu mobile (se esistono)
+            const mobileBtns = document.querySelectorAll('.color-btn');
+            if(mobileBtns.length > 0) {
+                mobileBtns.forEach(btn => {
+                    const btnColor = rgbToHex(btn.style.backgroundColor).toLowerCase();
+                    const activeBase = currentBaseColor.toLowerCase();
+                    
+                    if(btnColor === activeBase || btnColor === activeBase.replace('#','')) {
+                        btn.classList.add('scale-110', 'ring-2', 'ring-offset-2', 'dark:ring-offset-black');
+                        btn.style.borderColor = finalColor;
+                    } else {
+                        btn.classList.remove('scale-110', 'ring-2', 'ring-offset-2', 'dark:ring-offset-black');
+                        btn.style.borderColor = '#333';
+                    }
+                });
+            }
+        }
+
+        // B. Gestione Tema
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+
+        function toggleTheme() {
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark');
+                localStorage.theme = 'light';
+            } else {
+                document.documentElement.classList.add('dark');
+                localStorage.theme = 'dark';
+            }
+            applyResponsiveColor();
+        }
+
+        // ASSEGNAZIONE LISTENER SICURA (Non crasha se manca un bottone)
+        if (themeToggleBtn) themeToggleBtn.addEventListener('click', toggleTheme);
+        if (themeToggleMobile) themeToggleMobile.addEventListener('click', toggleTheme);
+
+        // C. Cambio Colore
+        function setAccentColor(selectedBaseColor) {
+            currentBaseColor = selectedBaseColor;
+            localStorage.setItem('accentColor', currentBaseColor);
+            applyResponsiveColor();
+            if(colorDropdown) colorDropdown.classList.add('hidden');
+        }
+        
+        // Espone la funzione globalmente per i bottoni onclick nell'HTML
+        window.setAccentColor = setAccentColor;
+
+        // Gestione Menu Dropdown
+        if(colorMenuBtn) {
+            colorMenuBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if(colorDropdown) colorDropdown.classList.toggle('hidden');
+            });
+        }
+        document.addEventListener('click', (e) => {
+            if (colorDropdown && !colorDropdown.classList.contains('hidden') && !colorDropdown.contains(e.target) && e.target !== colorMenuBtn) {
+                colorDropdown.classList.add('hidden');
+            }
+        });
+
+        // Helper
+        function rgbToHex(col) {
+            if(!col) return '';
+            if(col.charAt(0)=='r'){
+                col=col.replace('rgb(','').replace(')','').split(',');
+                var r=parseInt(col[0], 10).toString(16);
+                var g=parseInt(col[1], 10).toString(16);
+                var b=parseInt(col[2], 10).toString(16);
+                r=r.length==1?'0'+r:r; g=g.length==1?'0'+g:g; b=b.length==1?'0'+b:b;
+                return '#'+r+g+b;
+            }
+            return col;
+        }
+
+        // Avvio immediato colore
+        applyResponsiveColor();
+
+
+        // --- 2. LOADER MANAGER (CON FALLBACK) ---
+        function hideLoader() {
+            const loader = document.getElementById('loader');
+            if(loader && loader.style.opacity !== '0') {
+                loader.style.opacity = '0';
+                loader.style.pointerEvents = 'none';
+                document.body.classList.remove('overflow-hidden');
+            }
+        }
+
+        window.addEventListener('load', () => {
+            const progress = document.getElementById('progress-bar');
+            const typingText = document.getElementById('typing-text');
+            const textToType = "./init_system.sh"; 
+            
+            // Animazione barra
+            if(progress) {
+                setTimeout(() => { progress.style.width = "40%"; }, 100);
+                setTimeout(() => { progress.style.width = "75%"; }, 600);
+                setTimeout(() => { progress.style.width = "100%"; }, 1200);
+            }
+
+            // Typing
+            if (typingText) {
+                let i = 0;
+                function typeLoader() {
+                    if (i < textToType.length) {
+                        typingText.textContent += textToType.charAt(i);
+                        i++;
+                        setTimeout(typeLoader, 50);
+                    }
+                }
+                setTimeout(typeLoader, 200);
+            }
+
+            // Nascondi loader alla fine
+            setTimeout(hideLoader, 1800);
+        });
+
+        // RETE DI SICUREZZA: Se qualcosa si blocca, sblocca comunque il sito dopo 3.5 secondi
+        setTimeout(hideLoader, 3500);
+
+
+        // --- 3. MOBILE MENU ---
+        const menuBtn = document.getElementById('open-menu-btn');
+        const closeBtn = document.getElementById('close-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileLinks = document.querySelectorAll('.mobile-link');
+        let isMenuOpen = false;
+        function toggleMenu() {
+            isMenuOpen = !isMenuOpen;
+            mobileMenu.classList.toggle('translate-x-full');
+            mobileMenu.classList.toggle('translate-x-0');
+            mobileMenu.setAttribute('aria-hidden', !isMenuOpen);
+            if(isMenuOpen) { document.body.style.overflow = 'hidden'; closeBtn.focus(); } 
+            else { document.body.style.overflow = ''; menuBtn.focus(); }
+        }
+        menuBtn.addEventListener('click', toggleMenu);
+        closeBtn.addEventListener('click', toggleMenu);
+        mobileLinks.forEach(link => link.addEventListener('click', toggleMenu));
+
+        // --- 4. HACKER TEXT EFFECT (Fixed: Stable Width on Mobile) ---
+            const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ_[]1234567890";
+            document.querySelectorAll("[data-hacker]").forEach(element => {
+                element.addEventListener('mouseover', event => {  
+                    if (element.dataset.animating === "true") return;
+                    
+                    element.dataset.animating = "true";
+                    let iteration = 0;
+                    let originalText = element.dataset.value || element.innerText;
+                    
+                    // FIX: Calcoliamo e blocchiamo la larghezza SEMPRE, anche su mobile.
+                    // Questo impedisce al testo di andare a capo mentre le lettere cambiano.
+                    const currentRect = element.getBoundingClientRect();
+                    element.style.width = currentRect.width + "px"; 
+                    element.style.display = "inline-block";
+                    
+                    clearInterval(element.interval);
+                    element.interval = setInterval(() => {
+                        if (element.dataset.value === "[stefano_panosetti]") {
+                            // Logica speciale per il logo
+                            const scrambled = originalText.split("").map((letter, index) => {
+                                if(index < iteration) return originalText[index];
+                                return letters[Math.floor(Math.random() * letters.length)];
+                            }).join("");
+                            element.innerHTML = `<span class="text-cyberlime">${scrambled[0]}</span>${scrambled.substring(1, 8)}<span class="text-cyberlime">${scrambled[8]}</span>${scrambled.substring(9, 18)}<span class="text-cyberlime">${scrambled[18]}</span>`;
+                        } else {
+                            // Logica standard
+                            element.innerText = originalText.split("").map((letter, index) => {
+                                if(index < iteration) return originalText[index];
+                                return letters[Math.floor(Math.random() * letters.length)];
+                            }).join("");
+                        }
+                        
+                        if(iteration >= originalText.length){ 
+                            clearInterval(element.interval);
+                            element.dataset.animating = "false";
+                            // Ripristino testo originale
+                            if (element.dataset.value === "[stefano_panosetti]") {
+                                element.innerHTML = `<span class="text-cyberlime">[</span>stefano<span class="text-cyberlime">_</span>panosetti<span class="text-cyberlime">]</span>`;
+                            } else {
+                                    element.innerText = originalText;
+                            }
+                            // Rilascia la larghezza fissa alla fine
+                            element.style.width = "";
+                            element.style.display = "";
+                        }
+                        iteration += 1 / 2; 
+                    }, 30);
+                });
+            });
+
+        // --- 5. CUSTOM CURSOR & MAGNETIC ---
+        const cursor = document.getElementById('cursor');
+        const magneticElements = document.querySelectorAll('.magnetic');
+
+        if (window.matchMedia("(pointer: fine)").matches) {
+            document.addEventListener('mousemove', e => {
+                requestAnimationFrame(() => {
+                    cursor.style.left = e.clientX + 'px';
+                    cursor.style.top = e.clientY + 'px';
+                });
+            });
+
+            document.querySelectorAll('.hover-trigger').forEach(el => {
+                el.addEventListener('mouseenter', () => cursor.classList.add('hovered'));
+                el.addEventListener('mouseleave', () => cursor.classList.remove('hovered'));
+            });
+
+            document.addEventListener('mousedown', () => cursor.style.transform = 'translate(-50%, -50%) scale(0.8)');
+            document.addEventListener('mouseup', () => cursor.style.transform = 'translate(-50%, -50%) scale(1)');
+
+            magneticElements.forEach(el => {
+                el.addEventListener('mousemove', (e) => {
+                    const rect = el.getBoundingClientRect();
+                    const x = e.clientX - rect.left - rect.width / 2;
+                    const y = e.clientY - rect.top - rect.height / 2;
+                    el.style.transform = `translate(${x * 0.2}px, ${y * 0.2}px)`; 
+                });
+                el.addEventListener('mouseleave', () => {
+                    el.style.transform = 'translate(0px, 0px)';
+                });
+            });
+        }
+
+        // --- 6. PROJECT IMAGE REVEAL ---
+        const projectItems = document.querySelectorAll('.project-item');
+        const previewEl = document.getElementById('project-preview');
+
+        if (window.matchMedia("(pointer: fine)").matches) {
+            projectItems.forEach(item => {
+                item.addEventListener('mouseenter', () => {
+                    const imgUrl = item.getAttribute('data-image');
+                    previewEl.style.backgroundImage = `url(${imgUrl})`;
+                    previewEl.classList.add('visible');
+                    item.querySelector('.project-title').classList.add('text-cyberlime', 'translate-x-4');
+                    item.querySelector('.project-arrow').classList.add('text-cyberlime', 'rotate-45');
+                    item.style.zIndex = '60'; 
+                });
+
+                item.addEventListener('mousemove', (e) => {
+                    const xOffset = 20; const yOffset = 20;
+                    previewEl.style.left = (e.clientX + xOffset) + 'px';
+                    previewEl.style.top = (e.clientY + yOffset) + 'px';
+                });
+
+                item.addEventListener('mouseleave', () => {
+                    previewEl.classList.remove('visible');
+                    item.querySelector('.project-title').classList.remove('text-cyberlime', 'translate-x-4');
+                    item.querySelector('.project-arrow').classList.remove('text-cyberlime', 'rotate-45');
+                    item.style.zIndex = '';
+                });
+            });
+        }
+
+        // --- 7. SCROLL REVEAL ---
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if(entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    
+        // --- 8. JSON CARD TYPING (Clean & Replayable) ---
+        const codeCard = document.getElementById('code-card');
+        const cursorElement = document.getElementById('typing-cursor');
+        let isAnimating = false; 
+
+        const typeData = [
+            { id: 'type-role', text: 'Creative Technologist' },
+            { id: 'type-stack', text: 'Strategy", "UX/UI", "Dev' }, 
+            { id: 'type-mode', text: 'Hybrid' }
+        ];
+
+        async function typeWriter(elementId, text, speed = 40) {
+            const element = document.getElementById(elementId);
+            element.parentNode.insertBefore(cursorElement, element.nextSibling);
+            
+            for (let i = 0; i < text.length; i++) {
+                element.textContent += text.charAt(i);
+                const randomSpeed = speed + (Math.random() * 50 - 25); 
+                await new Promise(r => setTimeout(r, randomSpeed));
+            }
+        }
+
+        async function startTypingAnimation() {
+            if (isAnimating) return;
+            isAnimating = true;
+
+            // 1. Reset
+            document.getElementById('type-role').textContent = '';
+            document.getElementById('type-stack').textContent = '';
+            document.getElementById('type-mode').textContent = '';
+            
+            cursorElement.style.display = 'inline-block';
+            cursorElement.classList.remove('hidden');
+            
+            // 2. Typing Sequence
+            await new Promise(r => setTimeout(r, 300));
+            await typeWriter('type-role', typeData[0].text);
+            await new Promise(r => setTimeout(r, 300)); 
+            await typeWriter('type-stack', typeData[1].text);
+            await new Promise(r => setTimeout(r, 300));
+            await typeWriter('type-mode', typeData[2].text);
+            
+            // 3. Clean up
+            cursorElement.style.display = 'none'; 
+            isAnimating = false;
+        }
+
+        const codeObserver = new IntersectionObserver((entries) => {
+            entries.forEach(async entry => {
+                if (entry.isIntersecting) {
+                    codeObserver.unobserve(entry.target);
+                    await new Promise(r => setTimeout(r, 800)); 
+                    startTypingAnimation();
+                }
+            });
+        }, { threshold: 0.5 });
+
+        if(codeCard) {
+            codeObserver.observe(codeCard);
+
+            codeCard.addEventListener('click', () => {
+                codeCard.style.transform = "scale(0.98)";
+                setTimeout(() => codeCard.style.transform = window.matchMedia("(pointer: fine)").matches ? "scale(1.02)" : "scale(1)", 150);
+                startTypingAnimation();
+            });
+        }
+
+        // Effetto 3D TILT (Solo Desktop)
+        if (window.matchMedia("(pointer: fine)").matches && codeCard) {
+            codeCard.addEventListener('mousemove', (e) => {
+                const rect = codeCard.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const xRotation = ((y - rect.height / 2) / rect.height) * -5;
+                const yRotation = ((x - rect.width / 2) / rect.width) * 5;
+                codeCard.style.transform = `perspective(1000px) rotateX(${xRotation}deg) rotateY(${yRotation}deg) scale(1.02)`;
+            });
+            codeCard.addEventListener('mouseleave', () => {
+                codeCard.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale(1)';
+            });
+        }
+    </script>
+</body>
+</html>

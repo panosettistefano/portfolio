@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="it" class="no-js">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#050505">
+    <title>Stefano Panosetti | Creative Engineer</title>
+    <meta name="description" content="Portfolio avanzato di Stefano Panosetti. Visual Design & Creative Coding.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Darker+Grotesque:wght@300;400;500;600;700;800;900&family=Manrope:wght@200;300;400;500;600&family=Syncopate:wght@400;700&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        bg: 'var(--c-bg)',
+                        surface: 'var(--c-surface)',
+                        accent: 'var(--c-accent)',
+                        line: 'var(--c-line)'
+                    },
+                    fontFamily: {
+                        display: ['Syncopate', 'sans-serif'],
+                        body: ['Manrope', 'sans-serif'],
+                        title: ['Darker Grotesque', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            /* Colors - Dark (Default) */
+            --c-bg: #050505;
+            --c-surface: #0f0f0f;
+            --c-text-main: #e1e1e1;
+            --c-text-muted: #888888;
+            --c-accent: #EB5939; 
+            --c-line: rgba(255, 255, 255, 0.1);
+            
+            --nav-height: 100px;
+            --container-width: 92vw;
+            --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        /* Light Mode Override */
+        body.light-mode {
+            --c-bg: #e6e6e6;
+            --c-surface: #ffffff;
+            --c-text-main: #121212;
+            --c-text-muted: #555555;
+            --c-line: rgba(0, 0, 0, 0.1);
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        html { 
+            font-size: 16px; 
+            background-color: var(--c-bg);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            font-family: 'Manrope', sans-serif;
+            color: var(--c-text-main);
+            background-color: var(--c-bg);
+            overflow-x: hidden;
+            cursor: none !important;
+            transition: background-color 0.8s var(--ease-out-expo), color 0.8s var(--ease-out-expo);
+        }
+
+        a, button, input, textarea { cursor: none !important; outline: none; text-decoration: none; color: inherit; }
+        
+        /* 3D Canvas Layer */
+        #webgl-bg {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 1; pointer-events: none; opacity: 0.3;
+        }
+
+        .wrapper { width: var(--container-width); margin: 0 auto; position: relative; z-index: 2; }
+        .section-pad { padding: 10rem 0; }
+
+        /* Typography */
+        .h-hero {
+            font-family: 'Darker Grotesque', sans-serif;
+            font-size: clamp(5rem, 15vw, 18rem);
+            font-weight: 800; line-height: 0.85; letter-spacing: -0.03em;
+            text-transform: uppercase;
+        }
+        
+        .h-section {
+            font-family: 'Syncopate', sans-serif;
+            font-size: clamp(2rem, 5vw, 5rem);
+            font-weight: 700; line-height: 1; text-transform: uppercase;
+        }
+
+        /* CURSOR SYSTEM */
+        #cursor-system {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 999999;
+        }
+        .c-dot {
+            position: absolute; top: 0; left: 0;
+            width: 8px; height: 8px; background: var(--c-accent);
+            border-radius: 50%; transform: translate(-50%, -50%);
+            z-index: 2;
+        }
+        .c-ring {
+            position: absolute; top: 0; left: 0;
+            width: 40px; height: 40px; border: 1px solid rgba(127,127,127,0.5);
+            border-radius: 50%; transform: translate(-50%, -50%);
+            transition: width 0.3s, height 0.3s, background-color 0.3s, border-color 0.3s;
+            z-index: 1;
+        }
+        body.is-hovering .c-ring {
+            width: 80px; height: 80px;
+            background-color: rgba(235, 89, 57, 0.05);
+            border-color: var(--c-accent);
+        }
+
+        /* Components */
+        .bg-noise {
+            position: fixed; inset: 0; z-index: 0; opacity: 0.04; pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='1'/%3E%3C/svg%3E");
+        }
+        
+        /* Navigation */
+        .nav-fixed {
+            position: fixed; top: 0; left: 0; width: 100%; height: var(--nav-height);
+            z-index: 100; display: flex; justify-content: space-between; align-items: center;
+            padding: 0 4vw; mix-blend-mode: difference; color: #fff;
+        }
+
+        /* Menu Overlay */
+        .menu-overlay {
+            position: fixed; inset: 0; background: var(--c-surface); z-index: 90;
+            transform: translateY(-100%); display: flex; align-items: center; justify-content: center;
+        }
+        .menu-link {
+            font-family: 'Darker Grotesque', sans-serif; font-size: clamp(3rem, 6vw, 6rem);
+            font-weight: 700; line-height: 1.1; display: block; overflow: hidden;
+            text-transform: uppercase; cursor: pointer; color: var(--c-text-muted);
+            transition: color 0.3s;
+        }
+        .menu-link:hover { color: var(--c-accent); }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            position: fixed; bottom: 2rem; right: 4vw; z-index: 100;
+            width: 50px; height: 50px; border-radius: 50%;
+            border: 1px solid var(--c-line); background: var(--c-bg);
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        /* Hero */
+        .hero-reveal-mask { overflow: hidden; }
+        .hero-reveal-text { transform: translateY(120%); }
+
+        /* Experience Section */
+        .exp-row {
+            display: grid; grid-template-columns: 1fr 2fr 1fr;
+            border-top: 1px solid var(--c-line); padding: 2rem 0;
+            transition: background 0.3s;
+        }
+        .exp-row:hover { background: rgba(255,255,255,0.02); }
+        
+        /* Work */
+        .work-img-wrapper { overflow: hidden; border-radius: 4px; position: relative; }
+        .work-img-wrapper img { width: 100%; height: 100%; object-fit: cover; transition: transform 1s ease; }
+        .work-item:hover img { transform: scale(1.05); }
+
+        @media (max-width: 768px) {
+            .exp-row { grid-template-columns: 1fr; gap: 0.5rem; }
+            #cursor-system, #webgl-bg { display: none; }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="webgl-bg"></div>
+    <div class="bg-noise"></div>
+    
+    <div id="cursor-system">
+        <div class="c-dot"></div>
+        <div class="c-ring"></div>
+    </div>
+
+    <div class="fixed inset-0 bg-black z-[9999] flex flex-col justify-center items-center" id="preloader">
+        <div class="text-[15vw] font-title font-bold text-accent leading-none"><span id="load-count">0</span>%</div>
+    </div>
+
+    <nav class="nav-fixed">
+        <a href="#" class="text-2xl font-display font-bold magnetic-target block">SP<span class="text-accent">.</span></a>
+        <div class="hidden md:flex gap-8 font-mono text-xs uppercase tracking-widest opacity-60">
+            <div>Based in Rome, IT</div>
+            <div>Available for 2026</div>
+        </div>
+        <button id="menu-btn" class="magnetic-target px-6 py-2 border border-white/20 rounded-full font-mono text-sm uppercase hover:bg-white hover:text-black transition-colors">Menu</button>
+    </nav>
+
+    <button class="theme-toggle magnetic-target" id="theme-btn">
+        <div class="w-4 h-4 rounded-full bg-accent"></div>
+    </button>
+
+    <div class="menu-overlay" id="menu-overlay">
+        <div class="wrapper flex flex-col items-center text-center gap-4">
+            <a href="#about" class="menu-link magnetic-target" onclick="closeMenu()">About</a>
+            <a href="#experience" class="menu-link magnetic-target" onclick="closeMenu()">Experience</a>
+            <a href="#work" class="menu-link magnetic-target" onclick="closeMenu()">Projects</a>
+            <a href="#contact" class="menu-link magnetic-target" onclick="closeMenu()">Contact</a>
+        </div>
+    </div>
+
+    <main id="smooth-wrapper">
+        <div id="smooth-content">
+
+            <section class="min-h-screen pt-[25vh] wrapper relative">
+                <div class="hero-reveal-mask"><p class="font-mono text-accent uppercase tracking-widest mb-6 hero-reveal-text">Creative Engineer</p></div>
+                <div class="hero-reveal-mask"><h1 class="h-hero hero-reveal-text">Digital</h1></div>
+                <div class="hero-reveal-mask"><h1 class="h-hero hero-reveal-text ml-[5vw] text-transparent" style="-webkit-text-stroke: 1px currentColor;">Reality</h1></div>
+                <div class="hero-reveal-mask"><h1 class="h-hero hero-reveal-text ml-[15vw]">Architect</h1></div>
+
+                <div class="mt-24 border-t border-line pt-8 grid grid-cols-1 md:grid-cols-2 gap-8 hero-reveal-text opacity-0">
+                    <p class="text-xl md:text-2xl font-light max-w-md">
+                        Trasformo visioni complesse in esperienze digitali immersive. Specializzato in interazioni avanzate e ingegneria frontend.
+                    </p>
+                    <div class="flex flex-col justify-end md:items-end font-mono text-sm opacity-50">
+                        <span>SCROLL TO EXPLORE</span>
+                    </div>
+                </div>
+            </section>
+
+            <section id="about" class="section-pad wrapper">
+                <span class="text-accent font-mono uppercase block mb-8">(01) — About</span>
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-12">
+                    <div class="col-span-12 md:col-span-5">
+                        <h2 class="h-section">Beyond<br>Code.</h2>
+                    </div>
+                    <div class="col-span-12 md:col-span-7 space-y-8 text-lg font-light text-muted">
+                        <p class="text-white text-2xl">
+                            Sono Stefano Panosetti, un Creative Engineer con un background ibrido tra design e sviluppo software.
+                        </p>
+                        <p>
+                            La mia filosofia si basa sul "Brutalist Functionalism": rimuovere il superfluo per esaltare l'interazione pura. Costruisco infrastrutture scalabili utilizzando le tecnologie web più recenti, garantendo non solo estetica ma performance di alto livello.
+                        </p>
+                        <div class="pt-8">
+                            <h3 class="font-mono text-xs uppercase mb-4 text-white">Core Stack</h3>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="px-3 py-1 border border-line rounded-full text-sm">JavaScript (ES6+)</span>
+                                <span class="px-3 py-1 border border-line rounded-full text-sm">React / Next.js</span>
+                                <span class="px-3 py-1 border border-line rounded-full text-sm">WebGL / Three.js</span>
+                                <span class="px-3 py-1 border border-line rounded-full text-sm">GSAP</span>
+                                <span class="px-3 py-1 border border-line rounded-full text-sm">Node.js</span>
+                                <span class="px-3 py-1 border border-line rounded-full text-sm">Tailwind CSS</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="experience" class="section-pad bg-surface rounded-t-[3rem]">
+                <div class="wrapper">
+                    <span class="text-accent font-mono uppercase block mb-12">(02) — Experience</span>
+                    
+                    <div class="exp-row">
+                        <div class="font-mono opacity-50">2023 — Present</div>
+                        <div>
+                            <h3 class="text-2xl font-bold mb-1">Senior Creative Developer</h3>
+                            <div class="text-muted">Tech Agency Name</div>
+                            <p class="mt-4 text-sm max-w-prose opacity-80">Guido lo sviluppo di esperienze web immersive per clienti fashion & luxury. Ottimizzazione pipeline 3D e mentoring junior.</p>
+                        </div>
+                        <div class="text-right md:text-right flex items-start justify-end">
+                            <span class="text-xs border border-white/20 px-2 py-1 rounded">MILAN</span>
+                        </div>
+                    </div>
+
+                    <div class="exp-row">
+                        <div class="font-mono opacity-50">2021 — 2023</div>
+                        <div>
+                            <h3 class="text-2xl font-bold mb-1">Frontend Engineer</h3>
+                            <div class="text-muted">Software House SpA</div>
+                            <p class="mt-4 text-sm max-w-prose opacity-80">Sviluppo di dashboard finanziarie complesse in React. Miglioramento performance del 40%.</p>
+                        </div>
+                        <div class="text-right md:text-right flex items-start justify-end">
+                            <span class="text-xs border border-white/20 px-2 py-1 rounded">REMOTE</span>
+                        </div>
+                    </div>
+
+                    <div class="exp-row" style="border-bottom: 1px solid var(--c-line);">
+                        <div class="font-mono opacity-50">2019 — 2021</div>
+                        <div>
+                            <h3 class="text-2xl font-bold mb-1">Junior Web Developer</h3>
+                            <div class="text-muted">Freelance</div>
+                        </div>
+                        <div class="text-right md:text-right flex items-start justify-end">
+                            <span class="text-xs border border-white/20 px-2 py-1 rounded">ITALY</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="py-12 border-y border-line overflow-hidden bg-bg">
+                <div class="flex whitespace-nowrap" id="marquee">
+                    <span class="text-[8vw] font-display font-bold px-8 text-transparent" style="-webkit-text-stroke: 1px var(--c-text-muted)">CREATIVE ENGINEERING</span>
+                    <span class="text-[8vw] font-display font-bold px-8">INTERACTION</span>
+                    <span class="text-[8vw] font-display font-bold px-8 text-transparent" style="-webkit-text-stroke: 1px var(--c-text-muted)">CREATIVE ENGINEERING</span>
+                    <span class="text-[8vw] font-display font-bold px-8">INTERACTION</span>
+                </div>
+            </div>
+
+            <section id="work" class="section-pad wrapper">
+                <span class="text-accent font-mono uppercase block mb-12">(03) — Selected Works</span>
+                
+                <div class="space-y-32">
+                    <article class="work-item grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                        <div class="work-img-wrapper aspect-[4/3] magnetic-area">
+                            <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1000" alt="Project 1">
+                        </div>
+                        <div>
+                            <h3 class="h-section !text-4xl mb-4">Ethereal Finance</h3>
+                            <div class="flex gap-4 text-xs font-mono uppercase opacity-60 mb-6">
+                                <span>WebGL</span>
+                                <span>React</span>
+                                <span>2024</span>
+                            </div>
+                            <p class="text-lg text-muted mb-8">Una piattaforma DeFi che utilizza visualizzazioni dati in tempo reale. Interfaccia minimalista per trader professionisti.</p>
+                            <a href="#" class="magnetic-target inline-block border-b border-accent text-accent pb-1 font-bold tracking-wide">VIEW CASE STUDY</a>
+                        </div>
+                    </article>
+
+                    <article class="work-item grid grid-cols-1 md:grid-cols-2 gap-12 items-center md:flex-row-reverse">
+                        <div class="order-2 md:order-1">
+                            <h3 class="h-section !text-4xl mb-4">Neon Architects</h3>
+                            <div class="flex gap-4 text-xs font-mono uppercase opacity-60 mb-6">
+                                <span>Three.js</span>
+                                <span>GSAP</span>
+                                <span>2023</span>
+                            </div>
+                            <p class="text-lg text-muted mb-8">Portfolio 3D navigabile per uno studio di architettura. Include rendering in tempo reale e fisica interattiva.</p>
+                            <a href="#" class="magnetic-target inline-block border-b border-accent text-accent pb-1 font-bold tracking-wide">VIEW CASE STUDY</a>
+                        </div>
+                        <div class="work-img-wrapper aspect-[4/3] magnetic-area order-1 md:order-2">
+                            <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=1000" alt="Project 2">
+                        </div>
+                    </article>
+                </div>
+            </section>
+
+            <footer id="contact" class="min-h-screen flex flex-col justify-center items-center text-center wrapper relative">
+                <p class="font-mono text-accent uppercase mb-4">Available for new opportunities</p>
+                <a href="mailto:stefano@example.com" class="h-hero magnetic-target hover:text-accent transition-colors duration-500">LET'S TALK</a>
+                
+                <div class="absolute bottom-8 w-full flex justify-between font-mono text-xs opacity-40 uppercase">
+                    <div>© 2026 Stefano Panosetti</div>
+                    <div class="flex gap-4">
+                        <a href="#" class="hover:text-white">LinkedIn</a>
+                        <a href="#" class="hover:text-white">GitHub</a>
+                        <a href="#" class="hover:text-white">Instagram</a>
+                    </div>
+                </div>
+            </footer>
+
+        </div>
+    </main>
+
+    <script>
+        // 1. SETUP LENIS (SMOOTH SCROLL)
+        const lenis = new Lenis({
+            duration: 1.2,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            smooth: true
+        });
+        function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+        requestAnimationFrame(raf);
+
+        // 2. MAGNETIC BUTTONS (PHYSICS)
+        const magneticTargets = document.querySelectorAll('.magnetic-target');
+        magneticTargets.forEach((el) => {
+            el.addEventListener('mousemove', (e) => {
+                const rect = el.getBoundingClientRect();
+                const x = e.clientX - rect.left - rect.width / 2;
+                const y = e.clientY - rect.top - rect.height / 2;
+                // Forza magnetica: muovi l'elemento del 30% rispetto alla posizione del mouse
+                gsap.to(el, { x: x * 0.3, y: y * 0.3, duration: 0.3, ease: 'power2.out' });
+            });
+            el.addEventListener('mouseleave', () => {
+                gsap.to(el, { x: 0, y: 0, duration: 0.7, ease: 'elastic.out(1, 0.3)' });
+            });
+        });
+
+        // 3. ANIMAZIONI GSAP
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Loader
+        const loadTimeline = gsap.timeline();
+        let progress = 0;
+        const interval = setInterval(() => {
+            progress += Math.floor(Math.random() * 10);
+            if(progress >= 100) {
+                progress = 100;
+                clearInterval(interval);
+                loadTimeline.to("#preloader", { yPercent: -100, duration: 1, ease: "expo.inOut" })
+                            .to(".hero-reveal-text", { y: 0, stagger: 0.1, duration: 1.5, ease: "power4.out" }, "-=0.5")
+                            .to(".hero-reveal-text", { opacity: 1, duration: 1 }, "<");
+            }
+            document.getElementById('load-count').innerText = progress;
+        }, 30);
+
+        // Marquee Scroll
+        gsap.to("#marquee", {
+            xPercent: -20,
+            ease: "none",
+            scrollTrigger: {
+                trigger: "#marquee",
+                scrub: 1
+            }
+        });
+
+        // 4. MENU LOGIC
+        const menuBtn = document.getElementById('menu-btn');
+        const menuOverlay = document.getElementById('menu-overlay');
+        let isMenuOpen = false;
+
+        menuBtn.addEventListener('click', () => {
+            isMenuOpen = !isMenuOpen;
+            if(isMenuOpen) {
+                gsap.to(menuOverlay, { y: '0%', duration: 0.8, ease: 'power4.inOut' });
+                menuBtn.innerText = "Close";
+                menuBtn.style.borderColor = "var(--c-text-main)";
+            } else {
+                closeMenu();
+            }
+        });
+
+        function closeMenu() {
+            isMenuOpen = false;
+            gsap.to(menuOverlay, { y: '-100%', duration: 0.8, ease: 'power4.inOut' });
+            menuBtn.innerText = "Menu";
+            menuBtn.style.borderColor = "rgba(255,255,255,0.2)";
+        }
+
+        // 5. THEME TOGGLE
+        document.getElementById('theme-btn').addEventListener('click', () => {
+            document.body.classList.toggle('light-mode');
+        });
+
+        // 6. CURSOR SYSTEM
+        const dot = document.querySelector('.c-dot');
+        const ring = document.querySelector('.c-ring');
+        
+        window.addEventListener('mousemove', (e) => {
+            gsap.to(dot, { x: e.clientX, y: e.clientY, duration: 0.1 });
+            gsap.to(ring, { x: e.clientX, y: e.clientY, duration: 0.4 });
+        });
+
+        document.querySelectorAll('a, button, .magnetic-target, .service-item').forEach(el => {
+            el.addEventListener('mouseenter', () => document.body.classList.add('is-hovering'));
+            el.addEventListener('mouseleave', () => document.body.classList.remove('is-hovering'));
+        });
+
+        // 7. 3D BACKGROUND (Ottimizzato)
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.getElementById('webgl-bg').appendChild(renderer.domElement);
+
+        const geometry = new THREE.IcosahedronGeometry(15, 1);
+        const material = new THREE.MeshBasicMaterial({ color: 0xEB5939, wireframe: true, transparent: true, opacity: 0.15 });
+        const sphere = new THREE.Mesh(geometry, material);
+        scene.add(sphere);
+        camera.position.z = 30;
+
+        function animate3D() {
+            requestAnimationFrame(animate3D);
+            sphere.rotation.x += 0.001;
+            sphere.rotation.y += 0.002;
+            
+            // Subtle paralax on mouse move if needed, here simple rotation
+            renderer.render(scene, camera);
+        }
+        animate3D();
+
+        // Resize handler
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>

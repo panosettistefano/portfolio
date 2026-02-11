@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="it" class="no-js">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#050505">
+    <title>Stefano Panosetti | High-End Creative Engineer</title>
+    <meta name="description" content="Portfolio avanzato di Stefano Panosetti. Visual Design & Creative Coding.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Darker+Grotesque:wght@300;400;500;600;700;800;900&family=Manrope:wght@200;300;400;500;600&family=Syncopate:wght@400;700&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+
+    <style>
+        /* 1. ROOT VARIABLES & CONFIG */
+        :root {
+            /* Colors */
+            --c-bg: #050505;
+            --c-surface: #0f0f0f;
+            --c-text-main: #e1e1e1;
+            --c-text-muted: #666666;
+            --c-accent: #EB5939; /* International Orange */
+            --c-line: rgba(255, 255, 255, 0.08);
+            
+            /* Typography */
+            --f-display: 'Syncopate', sans-serif;
+            --f-body: 'Manrope', sans-serif;
+            --f-title: 'Darker Grotesque', sans-serif;
+            
+            /* Dimensions */
+            --nav-height: 100px;
+            --container-width: 92vw;
+            
+            /* Animation Easings */
+            --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
+            --ease-in-out-circ: cubic-bezier(0.85, 0, 0.15, 1);
+        }
+
+        /* 2. RESET & BASE */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        html { 
+            font-size: 16px; 
+            background-color: var(--c-bg);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body {
+            font-family: var(--f-body);
+            color: var(--c-text-main);
+            background-color: var(--c-bg);
+            overflow-x: hidden;
+            cursor: none !important; /* FORZATURA CURSORE CUSTOM */
+            line-height: 1.6;
+        }
+
+        a, button, input, textarea { cursor: none !important; outline: none; text-decoration: none; color: inherit; }
+        ul { list-style: none; }
+        img { max-width: 100%; display: block; }
+
+        /* 3. UTILITY CLASSES */
+        .wrapper { width: var(--container-width); margin: 0 auto; position: relative; z-index: 2; }
+        .section-pad { padding: 12rem 0; }
+        .flex-center { display: flex; justify-content: center; align-items: center; }
+        .uppercase { text-transform: uppercase; }
+        .text-accent { color: var(--c-accent); }
+        .overflow-hide { overflow: hidden; }
+
+        /* Typography Scale */
+        .h-hero {
+            font-family: var(--f-title);
+            font-size: clamp(5rem, 16vw, 20rem);
+            font-weight: 800;
+            line-height: 0.8;
+            letter-spacing: -0.03em;
+            text-transform: uppercase;
+            color: var(--c-text-main);
+        }
+        
+        .h-section {
+            font-family: var(--f-display);
+            font-size: clamp(2rem, 5vw, 6rem);
+            font-weight: 700;
+            line-height: 1;
+            text-transform: uppercase;
+            letter-spacing: -0.02em;
+        }
+
+        .text-lead {
+            font-size: clamp(1.2rem, 2vw, 2.5rem);
+            font-weight: 300;
+            line-height: 1.3;
+            max-width: 40ch;
+        }
+
+        /* 4. CUSTOM CURSOR SYSTEM (THE FIX) */
+        #cursor-system {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 999999; overflow: hidden;
+        }
+        .c-dot {
+            position: absolute; top: 0; left: 0;
+            width: 8px; height: 8px; background: var(--c-accent);
+            border-radius: 50%; transform: translate(-50%, -50%);
+            z-index: 2; box-shadow: 0 0 10px var(--c-accent);
+        }
+        .c-ring {
+            position: absolute; top: 0; left: 0;
+            width: 40px; height: 40px; border: 1px solid rgba(255,255,255,0.4);
+            border-radius: 50%; transform: translate(-50%, -50%);
+            transition: width 0.3s, height 0.3s, background-color 0.3s, border-color 0.3s;
+            z-index: 1;
+        }
+        /* States */
+        body.is-hovering .c-ring {
+            width: 80px; height: 80px;
+            background-color: rgba(235, 89, 57, 0.1); /* Accent tint */
+            border-color: var(--c-accent);
+            mix-blend-mode: normal;
+        }
+        body.is-hovering .c-dot { transform: translate(-50%, -50%) scale(1.5); }
+        
+        /* 5. COMPONENTS */
+
+        /* Background Noise/Grid */
+        .bg-noise {
+            position: fixed; inset: 0; z-index: 0; opacity: 0.05; pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='1'/%3E%3C/svg%3E");
+        }
+        .bg-grid {
+            position: fixed; inset: 0; z-index: 0; pointer-events: none;
+            display: flex; justify-content: space-between; padding: 0 4vw;
+        }
+        .grid-line { width: 1px; height: 100%; background: var(--c-line); }
+
+        /* Navigation */
+        .nav-fixed {
+            position: fixed; top: 0; left: 0; width: 100%; height: var(--nav-height);
+            z-index: 100; display: flex; justify-content: space-between; align-items: center;
+            padding: 0 4vw; mix-blend-mode: difference;
+        }
+        .logo { font-family: var(--f-display); font-weight: 700; font-size: 1.5rem; letter-spacing: 0.1em; }
+        .menu-btn { 
+            font-family: var(--f-body); text-transform: uppercase; font-size: 0.9rem; letter-spacing: 0.1em; 
+            padding: 10px 20px; border: 1px solid white; border-radius: 50px; 
+            transition: all 0.3s ease;
+        }
+        .menu-btn:hover { background: white; color: black; }
+
+        /* Loader */
+        .preloader {
+            position: fixed; inset: 0; background: #000; z-index: 10000;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+        }
+        .loader-num { font-family: var(--f-title); font-size: 10vw; color: var(--c-accent); line-height: 1; }
+        .loader-bar-track { width: 200px; height: 1px; background: #333; margin-top: 2rem; overflow: hidden; }
+        .loader-bar-fill { height: 100%; background: #fff; width: 0%; }
+
+        /* Hero */
+        .hero-section {
+            min-height: 100vh; padding-top: 20vh; display: flex; flex-direction: column;
+            justify-content: center; position: relative;
+        }
+        .hero-reveal-mask { overflow: hidden; }
+        .hero-reveal-text { transform: translateY(110%); }
+
+        /* Marquee */
+        .marquee-section { padding: 4rem 0; border-top: 1px solid var(--c-line); border-bottom: 1px solid var(--c-line); background: var(--c-surface); }
+        .marquee-track { display: flex; white-space: nowrap; overflow: hidden; }
+        .marquee-item {
+            font-family: var(--f-display); font-size: 6vw; font-weight: 700; color: transparent;
+            -webkit-text-stroke: 1px rgba(255,255,255,0.3); margin-right: 4rem;
+            transition: color 0.3s;
+        }
+        .marquee-section:hover .marquee-item { color: var(--c-accent); -webkit-text-stroke: 0px; }
+
+        /* Works Gallery */
+        .work-item {
+            position: relative; margin-bottom: 15vh; border-top: 1px solid var(--c-line); padding-top: 2rem;
+            display: grid; grid-template-columns: 1fr 2fr; gap: 4rem;
+            transition: opacity 0.5s;
+        }
+        .work-meta { position: sticky; top: 150px; height: fit-content; }
+        .work-num { font-family: var(--f-display); font-size: 4rem; color: var(--c-line); margin-bottom: 1rem; display: block; }
+        .work-title { font-family: var(--f-title); font-size: 5rem; line-height: 0.9; margin-bottom: 2rem; text-transform: uppercase; }
+        .work-tags span { 
+            display: inline-block; padding: 5px 15px; border: 1px solid var(--c-line); 
+            border-radius: 100px; font-size: 0.8rem; margin-right: 0.5rem; text-transform: uppercase; 
+        }
+        .work-img-container {
+            width: 100%; aspect-ratio: 16/10; overflow: hidden; border-radius: 4px; position: relative;
+        }
+        .work-img-container img {
+            width: 100%; height: 100%; object-fit: cover; transform: scale(1.2); transition: transform 0.1s linear;
+        }
+        .view-btn {
+            display: inline-flex; align-items: center; gap: 10px; margin-top: 2rem;
+            font-family: var(--f-display); font-weight: 700; text-transform: uppercase;
+            border-bottom: 2px solid var(--c-accent); padding-bottom: 5px;
+        }
+
+        /* Services Accordion */
+        .service-item {
+            border-bottom: 1px solid var(--c-line); padding: 3rem 0;
+            cursor: pointer; position: relative;
+        }
+        .service-head { display: flex; justify-content: space-between; align-items: center; }
+        .service-title { font-family: var(--f-title); font-size: 4rem; text-transform: uppercase; transition: color 0.3s; }
+        .service-icon { width: 40px; height: 40px; position: relative; }
+        .service-icon::before, .service-icon::after {
+            content: ''; position: absolute; top: 50%; left: 50%; background: white;
+            transform: translate(-50%, -50%); transition: transform 0.3s;
+        }
+        .service-icon::before { width: 100%; height: 2px; }
+        .service-icon::after { width: 2px; height: 100%; }
+        .service-item:hover .service-title { color: var(--c-accent); padding-left: 20px; }
+        .service-desc { 
+            max-height: 0; overflow: hidden; opacity: 0; 
+            transition: all 0.5s var(--ease-out-expo); max-width: 600px; 
+        }
+        .service-item.active .service-desc { max-height: 200px; opacity: 1; padding-top: 2rem; }
+        .service-item.active .service-icon::after { transform: translate(-50%, -50%) rotate(90deg); }
+
+        /* Footer */
+        .main-footer {
+            padding: 10rem 0 4rem 0; background: var(--c-surface);
+            position: relative; overflow: hidden;
+        }
+        .footer-cta-title {
+            font-family: var(--f-title); font-size: 12vw; line-height: 0.8; 
+            text-transform: uppercase; text-align: center; margin-bottom: 4rem;
+        }
+        .footer-cta-title span { display: block; }
+        .footer-links {
+            display: flex; justify-content: space-between; align-items: flex-end;
+            border-top: 1px solid var(--c-line); pt: 2rem;
+        }
+
+        /* SVG Icons Inline Classes */
+        .icon-svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.5; }
+
+        /* Media Queries */
+        @media (max-width: 768px) {
+            .h-hero { font-size: 4rem; }
+            .work-item { grid-template-columns: 1fr; gap: 2rem; }
+            .work-meta { position: relative; top: 0; }
+            .service-title { font-size: 2rem; }
+            .nav-fixed { padding: 0 1rem; }
+            /* Mobile Cursor Reset */
+            #cursor-system { display: none; }
+            body, a, button { cursor: auto !important; }
+        }
+    </style>
+</head>
+
+<body class="loading">
+
+    <div id="cursor-system">
+        <div class="c-dot"></div>
+        <div class="c-ring"></div>
+    </div>
+
+    <div class="preloader" id="preloader">
+        <div class="loader-num"><span id="load-count">0</span>%</div>
+        <div class="loader-bar-track">
+            <div class="loader-bar-fill" id="load-bar"></div>
+        </div>
+        <div class="mt-4 font-mono text-xs uppercase text-gray-500 tracking-widest">Compiling Experience</div>
+    </div>
+
+    <div class="bg-noise"></div>
+    <div class="bg-grid">
+        <div class="grid-line"></div>
+        <div class="grid-line"></div>
+        <div class="grid-line"></div>
+        <div class="grid-line"></div>
+    </div>
+
+    <nav class="nav-fixed">
+        <div class="logo magnetic-target">SP<span class="text-accent">.</span></div>
+        <div class="hidden md:flex gap-8 font-mono text-xs uppercase tracking-widest text-gray-400">
+            <div>Available for 2026</div>
+            <div>Based in Italy</div>
+        </div>
+        <button class="menu-btn magnetic-target">Menu</button>
+    </nav>
+
+    <main id="smooth-wrapper">
+        <div id="smooth-content">
+
+            <section class="hero-section wrapper" id="hero">
+                <div class="hero-reveal-mask">
+                    <p class="font-mono text-accent uppercase tracking-widest mb-4 hero-reveal-text">Creative Engineer & Visual Designer</p>
+                </div>
+                
+                <div class="hero-reveal-mask">
+                    <h1 class="h-hero hero-reveal-text">Digital</h1>
+                </div>
+                <div class="hero-reveal-mask">
+                    <h1 class="h-hero hero-reveal-text" style="color: transparent; -webkit-text-stroke: 2px white;">Reality</h1>
+                </div>
+                <div class="hero-reveal-mask">
+                    <h1 class="h-hero hero-reveal-text ml-[10vw]">Architect</h1>
+                </div>
+
+                <div class="mt-20 grid grid-cols-1 md:grid-cols-12 gap-8 border-t border-white/10 pt-8 hero-reveal-text">
+                    <div class="col-span-12 md:col-span-6">
+                        <p class="text-lead">
+                            Creo ecosistemi digitali dove l'estetica brutale incontra la perfezione ingegneristica. 
+                            Nessun compromesso sulle performance.
+                        </p>
+                    </div>
+                    <div class="col-span-12 md:col-span-6 flex justify-end items-end">
+                        <div class="w-16 h-16 border border-white rounded-full flex items-center justify-center animate-bounce magnetic-target">
+                            <svg class="icon-svg" viewBox="0 0 24 24"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="marquee-section">
+                <div class="marquee-track" id="marquee-track">
+                    <span class="marquee-item">USER INTERFACE</span>
+                    <span class="marquee-item">CREATIVE CODING</span>
+                    <span class="marquee-item">WEBGL</span>
+                    <span class="marquee-item">ART DIRECTION</span>
+                    <span class="marquee-item">MOTION DESIGN</span>
+                    <span class="marquee-item">USER INTERFACE</span>
+                    <span class="marquee-item">CREATIVE CODING</span>
+                    <span class="marquee-item">WEBGL</span>
+                    <span class="marquee-item">ART DIRECTION</span>
+                </div>
+            </section>
+
+            <section class="section-pad wrapper" id="about">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-20">
+                    <div>
+                        <span class="font-mono text-accent text-sm uppercase tracking-widest block mb-4">(01) — The Philosophy</span>
+                        <h2 class="h-section">Code is<br>Design.</h2>
+                    </div>
+                    <div>
+                        <p class="text-xl md:text-2xl font-light leading-relaxed mb-8">
+                            Non uso template. Non uso costruttori visuali scadenti. Scrivo codice semantico, accessibile e veloce. 
+                            Il mio stack tecnologico è scelto per durare nel tempo, non per seguire l'hype del momento.
+                        </p>
+                        <div class="grid grid-cols-2 gap-8">
+                            <div>
+                                <h4 class="font-bold uppercase mb-2">Frontend</h4>
+                                <ul class="font-mono text-sm text-gray-400 space-y-2">
+                                    <li>— React.js / Next.js</li>
+                                    <li>— GSAP (GreenSock)</li>
+                                    <li>— Tailwind CSS</li>
+                                    <li>— Three.js / WebGL</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 class="font-bold uppercase mb-2">Design</h4>
+                                <ul class="font-mono text-sm text-gray-400 space-y-2">
+                                    <li>— Figma Mastery</li>
+                                    <li>— Adobe Creative Suite</li>
+                                    <li>— Blender 3D</li>
+                                    <li>— Prototyping</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section-pad wrapper" id="works">
+                <div class="mb-20">
+                    <span class="font-mono text-accent text-sm uppercase tracking-widest">(02) — Selected Works</span>
+                    <h2 class="h-section">Recent<br>Output</h2>
+                </div>
+
+                <article class="work-item">
+                    <div class="work-meta">
+                        <span class="work-num">01</span>
+                        <h3 class="work-title">Doja<br>Crypto</h3>
+                        <p class="text-lg text-gray-400 mb-6 max-w-sm">
+                            Dashboard finanziaria ad alta densità di dati. Progettata per trader professionisti con focus sulla leggibilità in dark mode.
+                        </p>
+                        <div class="work-tags">
+                            <span>React</span>
+                            <span>D3.js</span>
+                            <span>Fintech</span>
+                        </div>
+                        <a href="https://panosettistefano.github.io/Website/" target="_blank" class="view-btn magnetic-target">
+                            Live Project 
+                            <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                        </a>
+                    </div>
+                    <div class="work-img-wrapper magnetic-area">
+                        <div class="work-img-container">
+                            <img src="img/doja.png" alt="Doja Crypto Interface" data-speed="0.9">
+                        </div>
+                    </div>
+                </article>
+
+                <article class="work-item">
+                    <div class="work-meta">
+                        <span class="work-num">02</span>
+                        <h3 class="work-title">OTF<br>Zone</h3>
+                        <p class="text-lg text-gray-400 mb-6 max-w-sm">
+                            Esperienza E-commerce Brutalista. Un design system che rompe le regole della griglia per un brand di streetwear emergente.
+                        </p>
+                        <div class="work-tags">
+                            <span>WooCommerce</span>
+                            <span>Branding</span>
+                            <span>Strategy</span>
+                        </div>
+                        <a href="https://otfzone.altervista.org/" target="_blank" class="view-btn magnetic-target">
+                            Live Project
+                            <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                        </a>
+                    </div>
+                    <div class="work-img-wrapper magnetic-area">
+                        <div class="work-img-container">
+                            <img src="img/otfzone1.png" alt="OTF Zone Store" data-speed="0.9">
+                        </div>
+                    </div>
+                </article>
+
+                <article class="work-item">
+                    <div class="work-meta">
+                        <span class="work-num">03</span>
+                        <h3 class="work-title">Al Di<br>Fuori</h3>
+                        <p class="text-lg text-gray-400 mb-6 max-w-sm">
+                            Piattaforma editoriale immersiva. Tipografia cinetica e transizioni di pagina fluide per raccontare storie visive.
+                        </p>
+                        <div class="work-tags">
+                            <span>Editorial</span>
+                            <span>Art Direction</span>
+                            <span>WebGL</span>
+                        </div>
+                        <button class="view-btn magnetic-target opacity-50 cursor-not-allowed">Coming Soon</button>
+                    </div>
+                    <div class="work-img-wrapper magnetic-area">
+                        <div class="work-img-container">
+                            <img src="img/adfdq.png" alt="Al Di Fuori Project" data-speed="0.9">
+                        </div>
+                    </div>
+                </article>
+            </section>
+
+            <section class="section-pad bg-surface" id="services">
+                <div class="wrapper">
+                    <div class="mb-20 text-center">
+                        <span class="font-mono text-accent text-sm uppercase tracking-widest">(03) — Capabilities</span>
+                        <h2 class="h-section">What I Do</h2>
+                    </div>
+
+                    <div class="accordion-list">
+                        <div class="service-item magnetic-area" onclick="toggleService(this)">
+                            <div class="service-head">
+                                <h3 class="service-title">Art Direction</h3>
+                                <div class="service-icon"></div>
+                            </div>
+                            <div class="service-desc">
+                                <p class="text-xl font-light">
+                                    Definisco il linguaggio visivo del tuo brand. Dal logo alla palette colori, fino alla tipografia.
+                                    Creo sistemi di design scalabili che mantengono coerenza su ogni touchpoint.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="service-item magnetic-area" onclick="toggleService(this)">
+                            <div class="service-head">
+                                <h3 class="service-title">Creative Dev</h3>
+                                <div class="service-icon"></div>
+                            </div>
+                            <div class="service-desc">
+                                <p class="text-xl font-light">
+                                    Sviluppo frontend all'avanguardia. Animazioni complesse che girano a 60fps.
+                                    Utilizzo delle ultime tecnologie web per garantire velocità e indicizzazione SEO perfetta.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="service-item magnetic-area" onclick="toggleService(this)">
+                            <div class="service-head">
+                                <h3 class="service-title">E-Commerce</h3>
+                                <div class="service-icon"></div>
+                            </div>
+                            <div class="service-desc">
+                                <p class="text-xl font-light">
+                                    Non semplici negozi, ma esperienze d'acquisto. Ottimizzazione del funnel di conversione,
+                                    gestione carrello avanzata e integrazioni di pagamento sicure.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <footer class="main-footer" id="contact">
+                <div class="wrapper">
+                    <div class="text-center mb-8">
+                        <span class="font-mono text-accent text-sm uppercase tracking-widest">(04) — Start a Project</span>
+                    </div>
+                    
+                    <h2 class="footer-cta-title">
+                        <span class="magnetic-target hover:text-accent transition-colors">Let's</span>
+                        <span class="magnetic-target hover:text-accent transition-colors">Talk</span>
+                    </h2>
+
+                    <div class="footer-links">
+                        <div class="flex flex-col gap-2">
+                            <h4 class="font-bold uppercase text-sm mb-2">Drop a line</h4>
+                            <a href="mailto:panosettistefano@gmail.com" class="text-xl hover:text-accent magnetic-target">panosettistefano@gmail.com</a>
+                        </div>
+                        
+                        <div class="flex gap-6">
+                            <a href="#" class="w-12 h-12 border border-white/20 rounded-full flex items-center justify-center hover:bg-white hover:text-black transition-colors magnetic-target">
+                                <svg class="icon-svg" viewBox="0 0 24 24"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+                            </a>
+                            <a href="https://github.com/PanosettiStefano" class="w-12 h-12 border border-white/20 rounded-full flex items-center justify-center hover:bg-white hover:text-black transition-colors magnetic-target">
+                                <svg class="icon-svg" viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="mt-20 pt-8 border-t border-white/10 flex justify-between font-mono text-xs uppercase text-gray-500">
+                        <div>© 2026 Stefano Panosetti</div>
+                        <div>Coded with Passion</div>
+                    </div>
+                </div>
+            </footer>
+
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log("UX Engine: Initializing...");
+
+            // --- 1. CONFIG & UTILS ---
+            const lerp = (start, end, factor) => start + (end - start) * factor;
+
+            // --- 2. PRELOADER LOGIC ---
+            const loader = {
+                el: document.getElementById('preloader'),
+                bar: document.getElementById('load-bar'),
+                num: document.getElementById('load-count'),
+                progress: 0,
+                
+                init() {
+                    const interval = setInterval(() => {
+                        this.progress += Math.floor(Math.random() * 5) + 1;
+                        if(this.progress >= 100) {
+                            this.progress = 100;
+                            clearInterval(interval);
+                            this.hide();
+                        }
+                        this.render();
+                    }, 30);
+                },
+                
+                render() {
+                    this.bar.style.width = `${this.progress}%`;
+                    this.num.innerText = this.progress;
+                },
+                
+                hide() {
+                    gsap.to(this.el, {
+                        yPercent: -100,
+                        duration: 1.2,
+                        ease: "power4.inOut",
+                        onComplete: () => {
+                            initApp(); // Start rest of app
+                        }
+                    });
+                }
+            };
+
+            loader.init();
+
+            // --- 3. CORE APP LOGIC ---
+            function initApp() {
+                
+                // A. Initialize Lenis (Smooth Scroll)
+                const lenis = new Lenis({
+                    duration: 1.2,
+                    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+                    smooth: true,
+                });
+
+                function raf(time) {
+                    lenis.raf(time);
+                    requestAnimationFrame(raf);
+                }
+                requestAnimationFrame(raf);
+
+                // Connect GSAP ScrollTrigger
+                gsap.registerPlugin(ScrollTrigger);
+                
+                // B. Reveal Animations
+                const revealElements = document.querySelectorAll('.hero-reveal-text');
+                gsap.to(revealElements, {
+                    y: 0,
+                    stagger: 0.1,
+                    duration: 1.5,
+                    ease: "power4.out"
+                });
+
+                // C. Parallax Images
+                const images = document.querySelectorAll('[data-speed]');
+                images.forEach(img => {
+                    gsap.to(img, {
+                        yPercent: 20,
+                        ease: "none",
+                        scrollTrigger: {
+                            trigger: img.parentElement,
+                            start: "top bottom",
+                            end: "bottom top",
+                            scrub: true
+                        }
+                    });
+                });
+
+                // D. Marquee Animation
+                gsap.to(".marquee-track", {
+                    xPercent: -50,
+                    ease: "none",
+                    duration: 20,
+                    repeat: -1
+                });
+            }
+
+            // --- 4. ADVANCED CURSOR SYSTEM ---
+            const cursor = {
+                dot: document.querySelector('.c-dot'),
+                ring: document.querySelector('.c-ring'),
+                x: window.innerWidth / 2,
+                y: window.innerHeight / 2,
+                targetX: window.innerWidth / 2,
+                targetY: window.innerHeight / 2,
+                
+                init() {
+                    // Mouse Move
+                    window.addEventListener('mousemove', e => {
+                        this.targetX = e.clientX;
+                        this.targetY = e.clientY;
+                        
+                        // Instant dot
+                        gsap.to(this.dot, { x: this.targetX, y: this.targetY, duration: 0 });
+                    });
+
+                    // Ticker for smooth ring
+                    gsap.ticker.add(() => {
+                        this.x = lerp(this.x, this.targetX, 0.15);
+                        this.y = lerp(this.y, this.targetY, 0.15);
+                        
+                        gsap.set(this.ring, { x: this.x, y: this.y });
+                    });
+
+                    // Hover States
+                    const interactive = document.querySelectorAll('a, button, .magnetic-target, .magnetic-area');
+                    interactive.forEach(el => {
+                        el.addEventListener('mouseenter', () => document.body.classList.add('is-hovering'));
+                        el.addEventListener('mouseleave', () => document.body.classList.remove('is-hovering'));
+                        
+                        // Magnetic Effect (Optional for buttons)
+                        if(el.classList.contains('magnetic-target')) {
+                            el.addEventListener('mousemove', (e) => this.magneticMove(e, el));
+                            el.addEventListener('mouseleave', () => {
+                                gsap.to(el, { x: 0, y: 0, duration: 0.5, ease: "elastic.out(1, 0.3)" });
+                            });
+                        }
+                    });
+                },
+
+                magneticMove(e, el) {
+                    const rect = el.getBoundingClientRect();
+                    const centerX = rect.left + rect.width / 2;
+                    const centerY = rect.top + rect.height / 2;
+                    
+                    const deltaX = (e.clientX - centerX) * 0.3; // Strength
+                    const deltaY = (e.clientY - centerY) * 0.3;
+                    
+                    gsap.to(el, { x: deltaX, y: deltaY, duration: 0.5, ease: "power2.out" });
+                }
+            };
+
+            // Only init cursor on desktop
+            if (window.matchMedia("(pointer: fine)").matches) {
+                cursor.init();
+            }
+
+            // --- 5. SERVICES TOGGLE ---
+            window.toggleService = function(el) {
+                // Close others
+                document.querySelectorAll('.service-item').forEach(item => {
+                    if(item !== el) item.classList.remove('active');
+                });
+                // Toggle current
+                el.classList.toggle('active');
+            };
+
+        });
+    </script>
+</body>
+</html>
