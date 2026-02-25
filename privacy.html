@@ -16,28 +16,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
 
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        bg: 'var(--c-bg)',
-                        surface: 'var(--c-surface)',
-                        accent: 'var(--c-accent)',
-                        line: 'var(--c-line)'
-                    },
-                    fontFamily: {
-                        display: ['Syncopate', 'sans-serif'],
-                        body: ['Manrope', 'sans-serif'],
-                        title: ['Darker Grotesque', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
-
     <style>
-        /* VARIABILI IDENTICHE */
         :root {
             --c-bg: #050505;
             --c-surface: #0f0f0f;
@@ -54,14 +33,14 @@
             :root { --nav-height: 70px; --container-width: 90vw; }
         }
 
-        /* LIGHT MODE SINCRONIZZATA */
+       /* LIGHT MODE SINCRONIZZATA */
         body.light-mode {
             --c-bg: #e9e7ee !important;
             --c-surface: #d7d7d7 !important;
             --c-text-main: #181818 !important;
             --c-text-muted: #121212 !important;
             --c-line: rgba(255, 255, 255, 0.2) !important;
-            --c-accent: #FFFFFF !important;
+            --c-accent: #8DA376!important;
             --nav-bg: rgba(255, 255, 255, 0.85);
         }
         
@@ -70,7 +49,6 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        /* BASE */
         html, body { scrollbar-width: none; -ms-overflow-style: none; }
         ::-webkit-scrollbar { display: none; }
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -83,7 +61,6 @@
         a, button { cursor: none !important; outline: none; text-decoration: none; color: inherit; }
         .wrapper { width: var(--container-width); margin: 0 auto; position: relative; z-index: 2; }
 
-        /* HEADER IDENTICO A FILE3 */
         .nav-fixed {
             position: fixed; top: 0; left: 0; right: 0;
             height: var(--nav-height); z-index: 100; 
@@ -94,11 +71,11 @@
             transition: background 0.3s;
         }
 
-        /* TIPOGRAFIA */
         .h-hero {
             font-family: 'Darker Grotesque', sans-serif; 
             font-size: clamp(4rem, 12vw, 12rem);
-            font-weight: 800; line-height: 0.85; letter-spacing: -0.03em; text-transform: uppercase;
+            font-weight: 700; line-height: 0.85; letter-spacing: -0.03em; text-transform: uppercase;
+            
         }
         .h-section {
             font-family: 'Syncopate', sans-serif; 
@@ -111,28 +88,31 @@
             max-width: 70ch;
         }
         strong { color: var(--c-text-main); font-weight: 600; }
-        a.link { border-bottom: 1px solid var(--c-line); transition: 0.3s; }
-        a.link:hover { border-color: var(--c-accent); color: var(--c-accent); }
 
-        /* CURSOR */
         #cursor-system { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 999999; }
         .c-dot { position: absolute; top: 0; left: 0; width: 8px; height: 8px; background: var(--c-accent); border-radius: 50%; transform: translate(-50%, -50%); z-index: 2; }
         .c-ring { position: absolute; top: 0; left: 0; width: 40px; height: 40px; border: 1px solid rgba(127,127,127,0.5); border-radius: 50%; transform: translate(-50%, -50%); transition: width 0.3s, height 0.3s, background-color 0.3s, border-color 0.3s; z-index: 1; }
         body.is-hovering .c-ring { width: 80px; height: 80px; background-color: rgba(255, 255, 255, 0.05); border-color: var(--c-accent); }
 
-        /* DECORATIONS */
         body::before {
             content: ""; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             opacity: 0.04; pointer-events: none; z-index: 9999;
             background-image: url("https://upload.wikimedia.org/wikipedia/commons/7/76/1k_Points_1.png");
         }
 
-        /* MOBILE FIXES */
         @media screen and (max-width: 768px) {
              #cursor-system { display: none !important; }
              html, body, a, button { cursor: auto !important; }
              .container { width: 90vw !important; }
         }
+
+        .font-mono.uppercase{
+            
+            letter-spacing: 0.2em;
+            font-size: 0.65rem;
+            font-weight: 20;
+        }
+
     </style>
 </head>
 <body>
@@ -140,8 +120,8 @@
     <div id="cursor-system"><div class="c-dot"></div><div class="c-ring"></div></div>
 
     <header class="nav-fixed">
-        <div class="font-bold tracking-tighter text-lg z-50">SP.</div>
-        <a href="FILE3.HTML" class="z-50 text-xs font-mono uppercase tracking-widest mix-blend-difference text-white magnetic-target hover:opacity-70 transition-opacity">
+        <div class="text-xl md:text-2xl font-display font-bold magnetic-target block"><a href="">SP.</a></div>
+        <a href="index.html" class="magnetic-target px-4 md:px-6 py-2 border border-white/20 rounded-full font-mono text-xs md:text-sm uppercase hover:bg-white hover:text-black transition-colors">
             Indietro
         </a>
     </header>

@@ -1,0 +1,802 @@
+:root {
+    --c-bg: #050505;
+    --c-surface: #0f0f0f;
+    --c-text-main: #e1e1e1;
+    --c-text-muted: #888888;
+    --c-accent: #8DA376;
+    --c-line: rgba(255, 255, 255, 0.1);
+
+    --nav-height: 60px;
+    --container-width: 92vw;
+    --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+@media (max-width: 768px) {
+    :root {
+        --nav-height: 70px;
+        --container-width: 90vw;
+    }
+}
+
+/* FIX: REDESIGN LIGHT MODE - HIGH CONTRAST & SWISS STYLE */
+body.light-mode {
+    --c-bg: rgb(221, 210, 219);
+    /* Grigio Platino solido (no trasparenza) */
+    --c-surface: rgb(222, 206, 219);
+    /* Bianco Puro per i layer */
+    --c-text-main: #050505;
+    /* Nero profondo per massima leggibilità */
+    --c-text-muted: #404040;
+    /* Grigio scuro invece che medio */
+    --c-line: rgba(0, 0, 0, 0.15);
+    /* Linee più marcate */
+
+    --nav-bg: rgba(240, 240, 240, 0.85);
+    /* Header solido/semi-trasparente chiaro */
+    --nav-text: #000000;
+    --nav-border: rgba(0, 0, 0, 0.1);
+    --bg-overlay: rgba(255, 255, 255, 0.95);
+}
+
+/* FIX: Sfondo solido per i modali e menu in Light Mode per garantire la leggibilità */
+body.light-mode .project-overlay,
+body.light-mode .menu-overlay {
+    background-color: var(--c-surface) !important;
+    backdrop-filter: none;
+}
+
+/* ACCESSIBILITY & UTILITIES */
+html,
+body,
+.project-overlay {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+::-webkit-scrollbar {
+    display: none;
+    width: 0px;
+    background: transparent;
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    font-size: 16px;
+    background-color: var(--c-bg);
+    -webkit-font-smoothing: antialiased;
+}
+
+body {
+    font-family: 'Manrope', sans-serif;
+    color: var(--c-text-main);
+    background-color: var(--c-bg);
+    overflow-x: hidden;
+    cursor: none !important;
+    transition: background-color 0.8s var(--ease-out-expo), color 0.8s var(--ease-out-expo);
+}
+
+a,
+button,
+input,
+textarea {
+    cursor: none !important;
+    outline: none;
+    text-decoration: none;
+    color: inherit;
+}
+
+/* 3D BACKGROUND (DECORATIVE) */
+#webgl-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 1;
+    /* Opacity Full per vedere le stelle */
+}
+
+.wrapper {
+    width: var(--container-width);
+    margin: 0 auto;
+    position: relative;
+    z-index: 2;
+}
+
+.section-pad {
+    padding: 10rem 0;
+}
+
+@media (max-width: 768px) {
+    .section-pad {
+        padding: 5rem 0;
+    }
+}
+
+/* TYPOGRAPHY */
+.h-hero {
+    font-family: 'Darker Grotesque', sans-serif;
+    font-size: clamp(4rem, 14vw, 18rem);
+    font-weight: 800;
+    line-height: 0.85;
+    letter-spacing: -0.03em;
+    text-transform: uppercase;
+}
+
+.h-section {
+    font-family: 'Syncopate', sans-serif;
+    font-size: clamp(1.8rem, 6vw, 5rem);
+    font-weight: 700;
+    line-height: 1;
+    text-transform: uppercase;
+}
+
+/* PROJECT DIALOG/MODAL - FIX: Z-Index aumentato */
+.project-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: var(--c-bg);
+    z-index: 9999;
+    transform: translateY(100%);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    display: block;
+}
+
+.close-project-btn {
+    position: fixed;
+    top: 2rem;
+    right: 4vw;
+    z-index: 10000;
+    mix-blend-mode: difference;
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 10px 20px;
+    border-radius: 50px;
+    font-family: 'Manrope', sans-serif;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    cursor: pointer;
+}
+
+/* CURSOR SYSTEM (DECORATIVE) */
+#cursor-system {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 999999;
+}
+
+.c-dot {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 8px;
+    height: 8px;
+    background: var(--c-accent);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+}
+
+.c-ring {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 40px;
+    height: 40px;
+    border: 1px solid rgba(127, 127, 127, 0.5);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.3s, height 0.3s, background-color 0.3s, border-color 0.3s;
+    z-index: 1;
+}
+
+body.is-hovering .c-ring {
+    width: 80px;
+    height: 80px;
+    background-color: rgba(235, 89, 57, 0.05);
+    border-color: var(--c-accent);
+}
+
+
+
+/* --- HEADER AGGIORNATO: LIQUID GLASS FIX --- */
+.nav-fixed {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    /* Aggiunto right:0 per larghezza piena */
+    height: var(--nav-height);
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 4vw;
+
+    /* EFFETTO VETRO PER EVITARE SOVRAPPOSIZIONE */
+    /*background: rgba(255, 255, 255, 0.293); /* Sfondo scuro semitrasparente */
+    backdrop-filter: blur(15px);
+    /* Sfocatura potente */
+    -webkit-backdrop-filter: blur(25px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+
+    color: #868686;
+    transition: background 0.3s;
+}
+
+.menu-overlay {
+    position: fixed;
+    inset: 0;
+    background: var(--c-surface);
+    z-index: 90;
+    transform: translateY(-100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.menu-link {
+    font-family: 'Darker Grotesque', sans-serif;
+    font-size: clamp(3rem, 6vw, 6rem);
+    font-weight: 700;
+    line-height: 1.1;
+    text-transform: uppercase;
+    cursor: pointer;
+    color: var(--c-text-muted);
+    transition: color 0.3s;
+}
+
+.menu-link:hover {
+    color: var(--c-accent);
+}
+
+/* UI ELEMENTS */
+.theme-toggle {
+    position: fixed;
+    bottom: 2rem;
+    right: 4vw;
+    z-index: 100;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 1px solid var(--c-line);
+    background: var(--c-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.exp-row {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    border-top: 1px solid var(--c-line);
+    padding: 2rem 0;
+    transition: background 0.3s;
+}
+
+.exp-row:hover {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+/* DUOTONE IMAGES (Updated: Softer & Smoother) */
+.work-img-wrapper {
+    overflow: hidden;
+    border-radius: 4px;
+    position: relative;
+    background-color: transparent !important;
+}
+
+.work-img-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+
+    mix-blend-mode: multiply;
+    opacity: 0.9;
+    transition: all 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    filter: grayscale(100%) contrast(1.5) brightness(0.6) hue-rotate(-15deg);
+    will-change: transform, filter, opacity;
+}
+
+/* FIX: Hover mantiene stile mono ma aumenta il senso di fluidità tramite scale e contrasto */
+.work-item:hover .work-img-wrapper img {
+    transform: scale(1.1);
+    /* Aumentato scale per effetto fluido */
+    filter: grayscale(100%) contrast(1.2);
+    /* Mantiene mono */
+    mix-blend-mode: multiply;
+    /* Mantiene il duotone */
+    opacity: 1;
+}
+
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin-top: 4rem;
+}
+
+.gallery-grid img:first-child {
+    grid-column: span 2;
+    aspect-ratio: 21/9;
+}
+
+.gallery-grid img {
+    width: 100%;
+    border-radius: 4px;
+    object-fit: cover;
+    aspect-ratio: 4/3;
+}
+
+/* =========================================
+           FIX MOBILE DEFINITIVO (WORKS + LAYOUT)
+           Incolla questo alla FINE del CSS
+           ========================================= */
+@media screen and (max-width: 768px) {
+
+    /* 1. CONTAINER: Meno spazio ai lati, più contenuto */
+    .container {
+        padding-left: 20px !important;
+        padding-right: 20px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    /* 2. GRIGLIA: Diventa una colonna unica (niente cose affiancate) */
+    .grid {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 40px !important;
+        /* Spazio tra i lavori */
+    }
+
+    /* 3. IMMAGINI LAVORI: Sblocco la larghezza di 280px -> Diventano GRANDI */
+    .work-img-wrapper {
+        max-width: 100% !important;
+        width: 100% !important;
+        margin: 0 !important;
+        aspect-ratio: 4/3;
+        /* Formato più rettangolare per mobile */
+    }
+
+
+    /* 4. CODE DI LAVORO (TESTO): Allineato a sinistra e largo */
+    .work-item>div:not(.work-img-wrapper) {
+        max-width: 100% !important;
+        width: 100% !important;
+        margin-top: 15px !important;
+
+        /* Allineamento a SINISTRA (molto più leggibile su mobile del 'center') */
+        text-align: left !important;
+
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+    }
+
+    /* 5. TITOLI GIGANTI: Ridimensionati per non rompere lo schermo */
+    .text-8xl {
+        font-size: 3rem !important;
+        line-height: 1.1 !important;
+    }
+
+    .text-6xl {
+        font-size: 2.5rem !important;
+    }
+
+    .text-4xl {
+        font-size: 2rem !important;
+    }
+
+    /* 6. SPAZIATURE VERTICALI */
+    .py-32 {
+        padding-top: 4rem !important;
+        padding-bottom: 4rem !important;
+    }
+
+    .mb-32 {
+        margin-bottom: 4rem !important;
+    }
+}
+
+
+
+/* --- CONTACT FORM (FIX REALE - NO VARIABILI) --- */
+.input-group {
+    position: relative;
+    width: 100%;
+    margin-bottom: 2rem;
+}
+
+.input-group label {
+    display: block;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #888;
+    margin-bottom: 8px;
+}
+
+.input-group input,
+.input-group textarea {
+    width: 100%;
+    background: transparent;
+    border: none;
+    /* FORZO IL COLORE BIANCO PER LA DARK MODE */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+    font-family: 'Satoshi', sans-serif;
+    font-size: 18px;
+    padding: 10px 0;
+    border-radius: 0;
+    transition: border-color 0.3s ease;
+}
+
+/* FIX: Forza testo NERO in Light Mode */
+body.light-mode .input-group input,
+body.light-mode .input-group textarea {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+    color: #000000 !important;
+    /* Importante per vincere sull'autofill */
+}
+
+/* FIX AUTOFILL: Rende lo sfondo trasparente anche se il browser vuole metterlo bianco */
+.input-group input:-webkit-autofill,
+.input-group textarea:-webkit-autofill {
+    -webkit-text-fill-color: #ffffff !important;
+    /* Testo bianco su autofill dark */
+    transition: background-color 5000s ease-in-out 0s;
+}
+
+body.light-mode .input-group input:-webkit-autofill,
+body.light-mode .input-group textarea:-webkit-autofill {
+    -webkit-text-fill-color: #000000 !important;
+    /* Testo nero su autofill light */
+}
+
+.input-group input:focus,
+.input-group textarea:focus {
+    outline: none;
+    border-bottom: 1px solid var(--c-accent);
+}
+
+.submit-btn {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #ffffff;
+    padding: 15px 30px;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    width: 100%;
+    transition: all 0.3s ease;
+}
+
+body.light-mode .submit-btn {
+    border-color: rgba(0, 0, 0, 0.2);
+    color: #000000;
+}
+
+.submit-btn:hover {
+    border-color: var(--c-accent) !important;
+    ;
+    background: rgba(#8DA376, 0.5);
+}
+
+
+
+
+/* --- DISATTIVA CURSORE CUSTOM SU MOBILE --- */
+@media screen and (max-width: 768px) {
+
+    /* Nasconde l'elemento grafico del cursore */
+    .cursor,
+    .cursor-dot,
+    .cursor-circle {
+        display: none !important;
+        opacity: 0 !important;
+        visibility: hidden !important;
+        width: 0 !important;
+        height: 0 !important;
+    }
+
+    /* Ripristina il cursore di sistema (invisibile su touch, freccia su mouse bluetooth) */
+    body,
+    html,
+    a,
+    button,
+    input,
+    textarea {
+        cursor: auto !important;
+    }
+
+    /* Rimuove l'effetto 'none' se era impostato globalmente */
+    * {
+        cursor: auto !important;
+    }
+}
+
+/* --- WORKS: FOTO ANCORA PIÙ PICCOLE (220px) --- */
+.work-img-wrapper {
+    overflow: hidden;
+    border-radius: 4px;
+    position: relative;
+    background-color: var(--c-accent);
+    /* PRIMA ERA 280px -> ORA 220px (Più piccole) */
+    width: 100%;
+    max-width: 260px;
+    margin: 0 auto;
+}
+
+/* --- TESTO SOTTO LE FOTO (Adattato alla nuova larghezza) --- */
+.work-item>div:not(.work-img-wrapper) {
+    width: 100%;
+    max-width: 260px;
+    /* Segue la larghezza della foto */
+    margin: 1.5rem auto 0 auto;
+    text-align: left;
+    /* O center, come preferisci */
+}
+
+/* --- DISATTIVA CURSORE CUSTOM SU MOBILE (CORRETTO) --- */
+@media screen and (max-width: 768px) {
+
+    /* 1. Nascondi gli elementi REALI del tuo HTML (.c-dot e .c-ring) */
+    #cursor-system,
+    .c-dot,
+    .c-ring {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+    }
+
+    /* 2. Ripristina il cursore di sistema */
+    html,
+    body,
+    a,
+    button,
+    input,
+    textarea,
+    .work-item {
+        cursor: auto !important;
+    }
+
+    /* Reset globale di sicurezza */
+    * {
+        cursor: auto !important;
+    }
+}
+
+
+
+/*aggiungte2*/
+/*aggiungte2*/
+/*aggiungte2*/
+/*aggiungte2*/
+/*aggiungte2*/
+/*aggiungte2*/
+/*aggiungte2*/
+.exp-row {
+    display: grid;
+    /* Layout Desktop: 3 colonne */
+    grid-template-columns: 1fr 2fr 1fr;
+    border-top: 1px solid var(--c-line);
+    padding: 2rem 0;
+    transition: background 0.3s;
+}
+
+/* FIX MOBILE: Una colonna sola */
+@media screen and (max-width: 768px) {
+
+    /* Trasformiamo la griglia in un contenitore flessibile verticale */
+    .exp-row {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        /* Spazio tra anno, titolo e location */
+        padding: 1.5rem 0;
+    }
+
+    /* Reset della larghezza per le colonne originali */
+    .exp-row>div {
+        width: 100%;
+        text-align: left !important;
+    }
+
+    /* Allineamento a sinistra per la location che su desktop è a destra */
+    .exp-row .flex.md\:justify-end {
+        justify-content: flex-start !important;
+        opacity: 0.6;
+        /* Leggermente meno marcato per gerarchia */
+    }
+}
+
+@media screen and (max-width: 768px) {
+
+    /* 1. LAYER TOTALE PER TEMA SCURO (Default) */
+    #webgl-bg::after {
+        content: "";
+        position: fixed;
+        /* Copre tutta la visuale */
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(5, 5, 5, 0.5);
+        /* Scurisce lo sfondo */
+        /* backdrop-filter: blur(5px);     Sfoca leggermente tutto il 3D 
+                -webkit-backdrop-filter: blur(5px); */
+        pointer-events: none;
+        /* Permette di cliccare ciò che sta sotto */
+        z-index: 1;
+        /* Sta sopra al WebGL ma sotto al testo */
+    }
+
+    /* 2. LAYER TOTALE PER TEMA CHIARO */
+    body.light-mode #webgl-bg::after {
+        background: rgba(255, 255, 255, 0.5);
+        /* Schiarisce tutto (effetto latte) */
+        /* backdrop-filter: blur(8px);            Aumentiamo il blur per il tema chiaro 
+                -webkit-backdrop-filter: blur(8px);*/
+    }
+}
+
+/* Aggiungi questo al tuo <style> */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    opacity: 0.04;
+    /* Quasi invisibile */
+    pointer-events: none;
+    z-index: 9999;
+    background-image: url("https://upload.wikimedia.org/wikipedia/commons/7/76/1k_Points_1.png");
+    /* O un pattern noise */
+}
+
+.work-img-wrapper {
+    clip-path: inset(100% 0 0 0);
+    /* Curva 'Expo' per un movimento fluido e professionale */
+    transition: clip-path 1.4s cubic-bezier(0.19, 1, 0.22, 1);
+    will-change: clip-path;
+}
+
+/* FIX: Inset negativo per rimuovere la riga bianca di sub-pixel rendering */
+.work-img-wrapper.is-in-view {
+    clip-path: inset(-1px);
+}
+
+
+.h-hero:hover {
+    transform: skewX(-5deg);
+    transition: transform 0.5s var(--ease-out-expo);
+}
+
+
+/* Aggiungi questo per creare un'atmosfera più profonda */
+body::after {
+    content: "";
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 60vw;
+    height: 60vw;
+    background: radial-gradient(circle, rgba(235, 89, 57, 0.03) 0%, rgba(5, 5, 5, 0) 70%);
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.font-mono.uppercase {
+    letter-spacing: 0.2em;
+    /* Più aria tra le lettere per un look premium */
+    font-size: 0.65rem;
+}
+
+/* FIX: Font più grandi su desktop per leggibilità */
+@media (min-width: 768px) {
+    .font-mono.uppercase {
+        font-size: 0.85rem;
+    }
+}
+
+#p-desc p {
+    line-height: 1.8;
+    /* Migliora la leggibilità dei testi lunghi */
+}
+
+
+
+.work-img-wrapper img {
+    transition: transform 0.8s cubic-bezier(0.19, 1, 0.22, 1), filter 0.5s ease;
+    will-change: transform, filter;
+}
+
+/* Effetto quando passiamo sopra col mouse */
+.work-card:hover .work-img-wrapper img {
+    filter: contrast(1.1) brightness(1.1) drop-shadow(2px 0px 0px rgba(235, 89, 57, 0.5)) drop-shadow(-2px 0px 0px rgba(0, 255, 255, 0.3));
+    transform: scale(1.05);
+}
+
+/* FIX: ID corretto del filtro liquido (prima era #liquid-filter ma l'ID svg è #liquid-effect) */
+#main-container {
+    filter: url(#liquid-effect);
+    will-change: filter;
+}
+
+
+/*aggiungo pt2*/
+/* Miglioramento dell'effetto "Latte" in Light Mode */
+body.light-mode #webgl-bg::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    /* Mix di bianco semi-coprente e blur hardware-accelerated */
+    background: radial-gradient(circle at center, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.7) 100%);
+    backdrop-filter: blur(0.5px) saturate(150%);
+    -webkit-backdrop-filter: blur(0.5px) saturate(150%);
+    z-index: 1;
+    pointer-events: none;
+    transition: all 0.8s var(--ease-out-expo);
+}
+
+/* Ottimizzazione contrasto testi in Light Mode */
+body.light-mode .text-muted {
+    color: #333333 !important;
+    /* Grigio molto scuro invece di grigio medio */
+}
+
+body.light-mode .h-hero,
+body.light-mode .h-section {
+    /*color: #000000;*/
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+    /* Soft glow per staccare dal blur */
+}
+
+/* Header fix per visibilità su blur */
+body.light-mode .nav-fixed {
+    background: rgba(255, 255, 255, 0.4);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+
+
+
+/*FIX TOTALE CON IMPORTANT PER IL COLORE DELLE IMMAGINI*/
