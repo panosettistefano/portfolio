@@ -5,9 +5,9 @@ const projectsData = [
         year: "2025",
         tags: ["Figma", "Tailwind", "JavaScript", "UX Research"],
         desc: `
-                    <p class="mb-6"><strong>Il Contesto:</strong> Nel settore Fintech, la densità di informazioni spesso compromette l'usabilità. Ethereal Finance necessitava di una dashboard per trader professionisti che riducesse il carico cognitivo pur mantenendo la precisione dei dati in tempo reale.</p>
-                    <p class="mb-6"><strong>La Soluzione Tecnica:</strong> Abbiamo sviluppato una Single Page Application (SPA) basata su React Fiber, integrando uno shader custom GLSL per visualizzare la volatilità del mercato come flussi fluidi. L'architettura gestisce socket WebSocket per aggiornamenti < 50ms senza re-rendering pesanti del DOM.</p>
-                    <p><strong>Impatto:</strong> La piattaforma ha registrato un aumento del 200% nel tempo di permanenza medio e una riduzione del 30% degli errori operativi durante le sessioni di trading ad alta frequenza.</p>
+                    <p class="mb-6"><strong>Il Contesto:</strong> Realizzaione effettiva di una delle mie prime app disegnate in Figma durante un corso di UX/UI</p>
+                    <p class="mb-6"><strong>La Soluzione Tecnica:</strong> Sviluppo di un applicazione per acquisto di opere d'arte tramite cryptovalute. Implementazione di accesso, dashboard, piccolo db per aggiunta di opere fittizie e monitoraggio del portfolio</p>
+                    <p><strong>Impatto:</strong> In questo lavoro ho creato un brand Poi ho strutturato una palette, il logo, il design del sito con Figma e l'ho applicato realizzando un HTML/CSS basi integrando un piccolo database.</p>
                 `,
         images: [
             "dojaimg/1 (1).png",
@@ -20,9 +20,9 @@ const projectsData = [
         year: "2025",
         tags: ["Graphic Design", "Brand Identity", "Wordpress", "Elementor"],
         desc: `
-                    <p class="mb-6"><strong>Il Contesto:</strong> Lo studio di architettura radicale "Neon" richiedeva una presenza digitale che riflettesse la loro filosofia decostruttivista. Il sito web doveva comportarsi non come un archivio, ma come un'estensione abitabile dei loro progetti fisici.</p>
-                    <p class="mb-6"><strong>La Soluzione Tecnica:</strong> Abbiamo creato un ambiente 3D navigabile utilizzando Three.js, ottimizzando i modelli tramite compressione Draco per garantire il caricamento rapido anche su mobile (Lighthouse score: 95/100). La navigazione utilizza transizioni di camera fluide sincronizzate con l'audio spaziale.</p>
-                    <p><strong>Impatto:</strong> Premiato come "Site of the Day" su Awwwards. Ha generato un incremento del 150% nelle richieste di preventivo da parte di clienti internazionali nel primo trimestre.</p>
+                    <p class="mb-6"><strong>Il Contesto:</strong> Uno dei miei primi siti realizzati in WordPress durante un corso di web design.</p>
+                    <p class="mb-6"><strong>La Soluzione Tecnica:</strong>Ho utilizzato Elementor come Page Builder, ho creato un profilo utente quindi una sezione dedicata soltanto agli abbonati, un login e diverse sezioni con un form di contatto.</p>
+                    <p><strong>Impatto:</strong> In questo progetto ho unito la brand identity del brand OTF creata durante un progetto universitario e realizzarla con WordPress.</p>
                 `,
         images: [
             "otfzoneimg/2 (2).png",
@@ -35,9 +35,9 @@ const projectsData = [
         year: "2023",
         tags: ["Wordpress", "Blog Site", "Gutemberg", "HTML CSS"],
         desc: `
-                    <p class="mb-6"><strong>Il Contesto:</strong> Apex Industries necessitava di un'interfaccia di controllo touch-screen per la nuova linea di robotica collaborativa. La sfida era ridurre la latenza di input a zero per garantire la sicurezza degli operatori.</p>
-                    <p class="mb-6"><strong>La Soluzione Tecnica:</strong> Abbiamo bypassato i protocolli HTTP standard utilizzando una connessione diretta MQTT su WebSockets. L'interfaccia Vue.js utilizza Web Workers dedicati per elaborare la telemetria in entrata senza bloccare il thread principale dell'animazione.</p>
-                    <p><strong>Impatto:</strong> Aumento del 45% nell'efficienza operativa e riduzione drastica degli incidenti di fermo macchina grazie alla diagnostica predittiva visualizzata in dashboard.</p>
+                    <p class="mb-6"><strong>Il Contesto:</strong> Progetto comune durante il corso di web design in WordPress.</p>
+                    <p class="mb-6"><strong>La Soluzione Tecnica:</strong> Questo piccolo sito vetrina è stato realizzato con il resto della classe del corso e l'abbiamo fatto in circa 3 giorni realizzando appunto prima su Figma</p>
+                    <p><strong>Impatto:</strong> E' stato realizzato un sito che propone un servizio di addestramento canino con diverse specifiche e un blog dedicato</p>
                 `,
         images: [
             "dogtypeimg/1 (1).png",
@@ -52,9 +52,9 @@ const projectsData = [
         year: "2024",
         tags: ["Brand Identity", "Adobe Suite", "Graphic Design"],
         desc: `
-                    <p class="mb-6"><strong>Il Contesto:</strong> Un brand di moda emergente voleva rompere gli schemi del classico grid e-commerce. L'obiettivo era trasmettere l'esclusività dei capi attraverso il movimento digitale.</p>
-                    <p class="mb-6"><strong>La Soluzione Tecnica:</strong> Sviluppo di un tema Shopify Headless personalizzato. Abbiamo implementato un effetto di distorsione liquida sulle immagini dei prodotti al passaggio del mouse utilizzando shader custom, rendendo la navigazione del catalogo un'esperienza tattile.</p>
-                    <p><strong>Impatto:</strong> Il tasso di conversione è raddoppiato rispetto al tema standard precedente, con un tempo medio di sessione aumentato di 4 minuti.</p>
+                    <p class="mb-6"><strong>Il Contesto:</strong> Questo è un esempio che riguarda soltanto il graphic design e è stato realizzatal'identità di un'erboristeria.</p>
+                    <p class="mb-6"><strong>La Soluzione Tecnica:</strong> Utilizzo di Suite Adobe e comFUI</p>
+                    
                 `,
         images: [
             "verdenaimg/1 (1).png",
