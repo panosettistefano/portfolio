@@ -2,7 +2,7 @@
     --c-bg: #050505;
     --c-surface: #0f0f0f;
     --c-text-main: #e1e1e1;
-    --c-text-muted: #888888;
+    --c-text-muted: #272727;
     --c-accent: #8DA376;
     --c-line: rgba(255, 255, 255, 0.1);
 
@@ -515,6 +515,12 @@ body.light-mode .submit-btn {
     border-color: var(--c-accent) !important;
     ;
     background: rgba(#8DA376, 0.5);
+}
+
+.submit-btn:disabled {
+    opacity: 0.6;
+    cursor: wait;
+    pointer-events: none;
 }
 
 

@@ -1,0 +1,38 @@
+@import url('https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,100..900;1,100..900&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Archivo", ui-sans-serif, system-ui, sans-serif;
+  --color-supreme-red: #ED1C24;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    @apply bg-white text-black antialiased overflow-x-hidden selection:bg-supreme-red selection:text-white;
+    font-family: var(--font-sans);
+  }
+
+  /* Optimize for CLS and Rendering */
+  img {
+    content-visibility: auto;
+  }
+}
+
+@layer utilities {
+  .futura-bold-oblique {
+    font-weight: 900;
+    font-style: italic;
+    letter-spacing: -0.05em;
+    text-transform: uppercase;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 0px;
+}

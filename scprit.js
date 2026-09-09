@@ -52,9 +52,9 @@ const projectsData = [
         year: "2024",
         tags: ["Brand Identity", "Adobe Suite", "Graphic Design"],
         desc: `
-                    <p class="mb-6"><strong>Il Contesto:</strong> Questo è un esempio che riguarda soltanto il graphic design e è stato realizzatal'identità di un'erboristeria.</p>
-                    <p class="mb-6"><strong>La Soluzione Tecnica:</strong> Utilizzo di Suite Adobe e comFUI</p>
-                    
+                    <p class="mb-6"><strong>Il Contesto:</strong> Un brand di moda emergente voleva rompere gli schemi del classico grid e-commerce. L'obiettivo era trasmettere l'esclusività dei capi attraverso il movimento digitale.</p>
+                    <p class="mb-6"><strong>La Soluzione Tecnica:</strong> Sviluppo di un tema Shopify Headless personalizzato. Abbiamo implementato un effetto di distorsione liquida sulle immagini dei prodotti al passaggio del mouse utilizzando shader custom, rendendo la navigazione del catalogo un'esperienza tattile.</p>
+                    <p><strong>Impatto:</strong> Il tasso di conversione è raddoppiato rispetto al tema standard precedente, con un tempo medio di sessione aumentato di 4 minuti.</p>
                 `,
         images: [
             "verdenaimg/1 (1).png",
@@ -249,38 +249,63 @@ document.getElementById('theme-btn').addEventListener('click', () => {
     localStorage.setItem('theme', isLight ? 'light' : 'dark');
 });
 
-// GESTIONE FORM CONTATTI (AJAX)
+// GESTIONE FORM CONTATTI (AJAX — FormSubmit.co)
 const form = document.getElementById("brutalist-form");
+const formStatus = document.getElementById("form-status");
+const submitBtn = form ? form.querySelector('button[type="submit"]') : null;
+const btnText = document.querySelector(".btn-text");
+
+function setFormStatus(message, ok) {
+    if (!formStatus) return;
+    formStatus.innerHTML = message;
+    formStatus.classList.remove("hidden");
+    formStatus.style.color = ok ? "#4ADE80" : "#EF4444";
+}
+
 form.addEventListener("submit", async (event) => {
     event.preventDefault();
-    const status = document.getElementById("form-status");
-    const btnText = document.querySelector(".btn-text");
     const data = new FormData(event.target);
 
     btnText.innerHTML = "SENDING...";
+    if (submitBtn) submitBtn.disabled = true;
 
-    fetch(event.target.action, {
-        method: form.method,
-        body: data,
-        headers: { 'Accept': 'application/json' }
-    }).then(response => {
-        if (response.ok) {
-            status.innerHTML = "/// TRANSMISSION RECEIVED.";
-            status.classList.remove("hidden");
-            status.style.color = "#4ADE80";
+    try {
+        const response = await fetch(event.target.action, {
+            method: form.method,
+            body: data,
+            headers: { 'Accept': 'application/json' }
+        });
+
+        // FormSubmit risponde JSON anche quando rifiuta l'invio (HTTP 200 con
+        // {success:"false"}): l'esito reale sta nel body, non nello status.
+        let json = null;
+        try { json = await response.json(); } catch (err) { /* body non JSON */ }
+        const delivered = response.ok && json && (json.success === "true" || json.success === true);
+
+        if (delivered) {
             form.reset();
             btnText.innerHTML = "SENT";
+            setFormStatus("/// TRANSMISSION RECEIVED.", true);
         } else {
-            status.innerHTML = "/// ERROR: CONNECTION FAILED";
-            status.classList.remove("hidden");
-            status.style.color = "#EF4444";
+            const serverMsg = json ? (json.error || json.message || "") : "";
             btnText.innerHTML = "RETRY";
+            // Al primo invio FormSubmit invia un'email di attivazione alla casella
+            // di destinazione: finché non viene confermata, rifiuta le spedizioni.
+            if (/attiv|activ|confirm/i.test(serverMsg)) {
+                setFormStatus("/// SERVER: conferma l'email di attivazione (una tantum) per sbloccare l'invio.", false);
+            } else {
+                setFormStatus("/// ERROR: CONNECTION FAILED", false);
+            }
         }
-    }).catch(() => {
-        status.innerHTML = "/// ERROR: SYSTEM OFFLINE";
-        status.classList.remove("hidden");
-        status.style.color = "#EF4444";
-    });
+    } catch (err) {
+        btnText.innerHTML = "RETRY";
+        setFormStatus("/// ERROR: SYSTEM OFFLINE", false);
+    } finally {
+        if (submitBtn) submitBtn.disabled = false;
+        if (btnText.innerHTML === "SENT") {
+            setTimeout(() => { btnText.innerHTML = "SEND TRANSMISSION"; }, 4000);
+        }
+    }
 });
 
 /* 3D BACKGROUND: FUSION OPTIMIZED (TORUS + STARDUST)

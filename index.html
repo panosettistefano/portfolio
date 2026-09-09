@@ -323,7 +323,12 @@
                                 <h2 class="text-3xl md:text-5xl font-bold mb-6">Start a<br>Project</h2>
                             </div>
                             <div class="col-span-12 md:col-span-8">
-                                <form id="brutalist-form" action="https://formspree.io/f/xbjqlqzv" method="POST" class="w-full">
+                                <form id="brutalist-form" action="https://formsubmit.co/ajax/panosettistefano@gmail.com" method="POST" class="w-full">
+                                    <!-- Campi nascosti FormSubmit: niente captcha, template "table", honeypot anti-spam -->
+                                    <input type="hidden" name="_subject" value="Nuovo messaggio dal portfolio di Stefano Panosetti">
+                                    <input type="hidden" name="_template" value="table">
+                                    <input type="hidden" name="_captcha" value="false">
+                                    <input type="text" name="_honey" class="hidden" tabindex="-1" autocomplete="off" aria-hidden="true">
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
                                         <div class="input-group">
                                             <label for="name">ID / Name</label>
@@ -348,9 +353,9 @@
                     </div>
                 </section>
 
-                <footer id="contact" class="min-h-screen flex flex-col justify-center items-center text-center wrapper relative" aria-label="Contatti">
+                <footer class="min-h-screen flex flex-col justify-center items-center text-center wrapper relative" aria-label="Contatti">
                     <p class="font-mono text-accent uppercase mb-4">Available for new opportunities</p>
-                    <a href="mailto:stefano@example.com" class="h-hero magnetic-target hover:text-accent transition-colors duration-500 text-[12vw] md:text-[15vw]" aria-label="Inviami una email">LET'S TALK</a>
+                    <a href="mailto:panosettistefano@gmail.com" class="h-hero magnetic-target hover:text-accent transition-colors duration-500 text-[12vw] md:text-[15vw]" aria-label="Inviami una email">LET'S TALK</a>
                     
                     <div class="absolute bottom-8 w-full flex flex-col md:flex-row justify-between items-center font-mono text-xs opacity-40 uppercase gap-4">
                         <div>© 2026 Stefano Panosetti. All rights reserved.</div>
